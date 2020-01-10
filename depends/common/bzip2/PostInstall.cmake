@@ -1,0 +1,11 @@
+file(GLOB bzip2Executables ${CMAKE_INSTALL_PREFIX}/bin/bz*)
+foreach(bzip2Executable ${bzip2Executables})
+  message(STATUS "Delete bzip2 executable: ${bzip2Executable}")
+  file(REMOVE ${bzip2Executable})
+endforeach()
+
+file(GLOB bzip2Executables ${CMAKE_INSTALL_PREFIX}/bin/bun*)
+foreach(bzip2Executable ${bzip2Executables})
+  message(STATUS "Delete bzip2 executable: ${bzip2Executable}")
+  file(REMOVE ${bzip2Executable})
+endforeach()

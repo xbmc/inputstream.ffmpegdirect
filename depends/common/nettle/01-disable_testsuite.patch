@@ -1,0 +1,11 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -17,7 +17,7 @@
+ 
+ OPT_NETTLE_SOURCES = @OPT_NETTLE_SOURCES@
+ 
+-SUBDIRS = tools testsuite examples
++SUBDIRS = tools examples
+ 
+ include config.make
+ 

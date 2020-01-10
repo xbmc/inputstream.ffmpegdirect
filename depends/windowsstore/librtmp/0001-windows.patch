@@ -1,0 +1,51 @@
+--- a/librtmp/rtmp.c
++++ b/librtmp/rtmp.c
+@@ -1381,11 +1381,6 @@
+   return bHasMediaPacket;
+ }
+ 
+-#ifdef _DEBUG
+-extern FILE *netstackdump;
+-extern FILE *netstackdump_read;
+-#endif
+-
+ static int
+ ReadN(RTMP *r, char *buffer, int n)
+ {
+@@ -1469,10 +1464,6 @@
+ 	        return FALSE;
+ 	}
+       /*RTMP_Log(RTMP_LOGDEBUG, "%s: %d bytes\n", __FUNCTION__, nBytes); */
+-#ifdef _DEBUG
+-      fwrite(ptr, 1, nBytes, netstackdump_read);
+-#endif
+-
+       if (nBytes == 0)
+ 	{
+ 	  RTMP_Log(RTMP_LOGDEBUG, "%s, RTMP socket closed by peer", __FUNCTION__);
+@@ -4298,10 +4289,6 @@
+ {
+   int rc;
+ 
+-#ifdef _DEBUG
+-  fwrite(buf, 1, len, netstackdump);
+-#endif
+-
+ #if defined(CRYPTO) && !defined(NO_SSL)
+   if (sb->sb_ssl)
+     {
+--- a/librtmp/rtmp_sys.h
++++ b/librtmp/rtmp_sys.h
+@@ -28,10 +28,10 @@
+ #include <ws2tcpip.h>
+ 
+ #ifdef _MSC_VER	/* MSVC */
+-#define snprintf _snprintf
++// #define snprintf _snprintf
+ #define strcasecmp stricmp
+ #define strncasecmp strnicmp
+-#define vsnprintf _vsnprintf
++// #define vsnprintf _vsnprintf
+ #endif
+ 
+ #define GetSockError()	WSAGetLastError()

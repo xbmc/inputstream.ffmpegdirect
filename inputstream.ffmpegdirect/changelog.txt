@@ -1,0 +1,2 @@
+v1.0.0
+- Added: Initial version working for both normal streams and those supporting catchup

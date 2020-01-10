@@ -1,0 +1,26 @@
+# build artifacts
+build/
+debian/changelog
+debian/files
+debian/kodi-inputstream-ffmpegarchive-dbg.debhelper.log
+debian/kodi-inputstream-ffmpegarchive-dbg.substvars
+debian/kodi-inputstream-ffmpegarchive-dbg/
+debian/kodi-inputstream-ffmpegarchive.debhelper.log
+debian/kodi-inputstream-ffmpegarchive.postinst.debhelper
+debian/kodi-inputstream-ffmpegarchive.postrm.debhelper
+debian/kodi-inputstream-ffmpegarchive.substvars
+debian/kodi-inputstream-ffmpegarchive/
+debian/tmp/
+obj-x86_64-linux-gnu/
+inputstream.ffmpegarchive/addon.xml
+
+# clion
+.idea/
+
+# Eclipse/CDT
+.cproject
+.project
+.settings/
+
+# VSCode
+.vscode

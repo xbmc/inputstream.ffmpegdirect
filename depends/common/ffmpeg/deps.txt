@@ -1,0 +1,4 @@
+nettle
+gnutls
+zvbi
+libxml2

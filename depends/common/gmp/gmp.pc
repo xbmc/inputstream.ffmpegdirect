@@ -1,0 +1,11 @@
+prefix=/Users/phunkyfish/kodi-repos/xbmc-inputstream/tools/depends/target/binary-addons/macosx10.14_x86_64-target-debug/build/depends
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: gmp
+Description: GNU Multiple Precision Arithmetic Library
+URL: http://gmplib.org
+Version: 6.1.2
+Libs: -L${libdir} -lgmp
+Cflags: -I${includedir}

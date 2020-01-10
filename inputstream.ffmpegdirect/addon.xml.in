@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="inputstream.ffmpegdirect"
+  version="1.0.0"
+  name="Inputstream FFmpeg Direct"
+  provider-name="phunkyfish">
+  <requires>@ADDON_DEPENDS@</requires>
+  <extension
+    point="kodi.inputstream"
+    name="ffmpegdirect"
+    extension=""
+    tags="true"
+    listitemprops="mime_type|program_number||stream_mode|realtime_url|is_realtime_stream|playback_as_live|programme_start_time|programme_end_time|catchup_url_format_string|catchup_buffer_start_time|catchup_buffer_end_time|catchup_buffer_offset|timezone_shift|default_programme_duration"
+    library_@PLATFORM@="@LIBRARY_FILENAME@" />
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">InputStream Client for FFmpeg streams (libavformat)</summary>
+    <description lang="en_GB">InputStream Client for streams that can be opened by FFmpeg's libavformat such as plain TS, HLS and DASH (without DRM) streams.&#10;    &#10;The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.&#10;    &#10;For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md&#10;    </description>
+    <platform>@PLATFORM@</platform>
+  </extension>
+</addon>
