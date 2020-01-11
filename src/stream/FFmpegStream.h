@@ -70,11 +70,11 @@ public:
   virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
   virtual bool PosTime(int ms) override;
 
-  virtual int GetChapter() override { return -1; };
-  virtual int GetChapterCount() override { return 0; };
-  virtual const char* GetChapterName(int ch) override { return nullptr; };
-  virtual int64_t GetChapterPos(int ch) override { return 0; };
-  virtual bool SeekChapter(int ch) override { return false; };
+  virtual int GetChapter() override;
+  virtual int GetChapterCount() override;
+  virtual const char* GetChapterName(int ch) override;
+  virtual int64_t GetChapterPos(int ch) override;
+  virtual bool SeekChapter(int ch) override;
 
   virtual bool CanPauseStream() override;
   virtual bool CanSeekStream() override;

@@ -150,15 +150,12 @@ void FFmpegStream::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
 {
   kodi::Log(ADDON_LOG_DEBUG, "GetCapabilities()");
   caps.m_mask = INPUTSTREAM_CAPABILITIES::SUPPORTS_IDEMUX |
-    //INPUTSTREAM_CAPABILITIES::SUPPORTS_IDISPLAYTIME |
+    // INPUTSTREAM_CAPABILITIES::SUPPORTS_IDISPLAYTIME |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_IPOSTIME |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_SEEK |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_PAUSE;
-    INPUTSTREAM_CAPABILITIES::SUPPORTS_IPOSTIME;
-// #if INPUTSTREAM_VERSION_LEVEL > 1
-//   caps.m_mask |= INPUTSTREAM_CAPABILITIES::SUPPORTS_ICHAPTER;
-// #endif
+    INPUTSTREAM_CAPABILITIES::SUPPORTS_ICHAPTER;
 }
 
 INPUTSTREAM_IDS FFmpegStream::GetStreamIds()
@@ -1983,4 +1980,70 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
   // }
 
   return options;
+}
+
+int FFmpegStream::GetChapterCount()
+{
+  if (m_pFormatContext == NULL)
+    return 0;
+
+  return m_pFormatContext->nb_chapters;
+}
+
+int FFmpegStream::GetChapter()
+{
+  if (m_pFormatContext == NULL || m_currentPts == DVD_NOPTS_VALUE)
+    return -1;
+
+  for(unsigned i = 0; i < m_pFormatContext->nb_chapters; i++)
+  {
+    AVChapter* chapter = m_pFormatContext->chapters[i];
+    if (m_currentPts >= ConvertTimestamp(chapter->start, chapter->time_base.den, chapter->time_base.num) &&
+        m_currentPts <  ConvertTimestamp(chapter->end,   chapter->time_base.den, chapter->time_base.num))
+      return i + 1;
+  }
+
+  return -1;
+}
+
+const char* FFmpegStream::GetChapterName(int chapterIdx)
+{
+  if (chapterIdx <= 0 || chapterIdx > GetChapterCount())
+    chapterIdx = GetChapter();
+
+  if (chapterIdx <= 0)
+    return nullptr;
+
+  AVDictionaryEntry* titleTag = av_dict_get(m_pFormatContext->chapters[chapterIdx - 1]->metadata,
+                                                        "title", NULL, 0);
+  if (titleTag)
+    return titleTag->value;
+
+  return nullptr;
+}
+
+int64_t FFmpegStream::GetChapterPos(int chapterIdx)
+{
+  if (chapterIdx <= 0 || chapterIdx > GetChapterCount())
+    chapterIdx = GetChapter();
+  if (chapterIdx <= 0)
+    return 0;
+
+  return static_cast<int64_t>(m_pFormatContext->chapters[chapterIdx - 1]->start * av_q2d(m_pFormatContext->chapters[chapterIdx - 1]->time_base));
+}
+
+bool FFmpegStream::SeekChapter(int chapter)
+{
+  if (chapter < 1)
+    chapter = 1;
+
+  if (m_pFormatContext == NULL)
+    return false;
+
+  if (chapter < 1 || chapter > (int)m_pFormatContext->nb_chapters)
+    return false;
+
+  AVChapter* ch = m_pFormatContext->chapters[chapter - 1];
+  double dts = ConvertTimestamp(ch->start, ch->time_base.den, ch->time_base.num);
+  return SeekTime(DVD_TIME_TO_MSEC(dts), true);
 }
