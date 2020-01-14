@@ -10,6 +10,10 @@ else()
   set(ffmpeg_conf --cc=${CMAKE_C_COMPILER} --cxx=${CMAKE_CXX_COMPILER})
 endif()
 
+if(CORE_SYSTEM_NAME STREQUAL android)
+  set(CROSSCOMPILING 1)
+endif()
+
 if(CROSSCOMPILING)
   set(pkgconf "PKG_CONFIG_LIBDIR=${ADDON_DEPENDS_PATH}/lib/pkgconfig")
   list(APPEND ffmpeg_conf --pkg-config=${PKG_CONFIG_EXECUTABLE} --pkg-config-flags=--static)
