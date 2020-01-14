@@ -9,6 +9,8 @@ list(APPEND zvbi_conf LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/lib)
 
 if (CORE_SYSTEM_NAME STREQUAL osx)
   list(APPEND zvbi_conf CFLAGS=-fnested-functions)
+elseif (CORE_SYSTEM_NAME STREQUAL android)
+  list(APPEND zvbi_conf LIBS=-liconv)
 endif()
 
 include(ExternalProject)

@@ -1,0 +1,1 @@
+libiconv http://mirrors.kodi.tv/build-deps/sources/libiconv-1.15.tar.gz
