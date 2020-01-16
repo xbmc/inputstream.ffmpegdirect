@@ -10,7 +10,7 @@ else()
   set(ffmpeg_conf --cc=${CMAKE_C_COMPILER} --cxx=${CMAKE_CXX_COMPILER})
 endif()
 
-if(CORE_SYSTEM_NAME STREQUAL android)
+if(CORE_SYSTEM_NAME STREQUAL android OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   set(CROSSCOMPILING 1)
 endif()
 
