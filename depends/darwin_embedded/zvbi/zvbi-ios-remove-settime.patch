@@ -1,0 +1,22 @@
+diff -ur zvbi/test/date.c zvbi-patched/test/date.c
+--- zvbi/test/date.c	2020-01-14 15:05:17.000000000 +0000
++++ zvbi-patched/test/date.c	2020-01-15 19:48:30.000000000 +0000
+@@ -86,18 +86,6 @@
+ static void
+ set_time			(const vbi_local_time *	lt)
+ {
+-#if defined HAVE_CLOCK_SETTIME && defined CLOCK_REALTIME
+-	{
+-		struct timespec ts;
+-
+-		ts.tv_sec = lt->time; /* UTC */
+-		ts.tv_nsec = 0;
+-
+-		if (0 == clock_settime (CLOCK_REALTIME, &ts))
+-			return;
+-	}
+-#endif
+-
+ 	{
+ 		struct timeval tv;
+ 
