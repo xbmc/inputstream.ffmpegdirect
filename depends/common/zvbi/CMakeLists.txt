@@ -25,6 +25,8 @@ externalproject_add(zvbi
                       --disable-nls
                       --disable-proxy
                       --without-doxygen
+                      --with-pic
+                      --without-x
                       ${zvbi_ldflags}
                       ${zvbi_conf})
 
