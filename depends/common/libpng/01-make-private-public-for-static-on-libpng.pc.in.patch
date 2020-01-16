@@ -1,0 +1,24 @@
+From 07a81169b4c29e3556069547da823eb450db2ea1 Mon Sep 17 00:00:00 2001
+From: Alwin Esch <alwin.esch@web.de>
+Date: Wed, 15 Jan 2020 15:23:06 +0100
+Subject: [PATCH] make private public for static on libpng.pc.in
+
+---
+ libpng.pc.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libpng.pc.in b/libpng.pc.in
+index 9708e9a..a5cde77 100644
+--- a/libpng.pc.in
++++ b/libpng.pc.in
+@@ -7,6 +7,6 @@ Name: libpng
+ Description: Loads and saves PNG files
+ Version: @PNGLIB_VERSION@
+ Requires: zlib
+-Libs: -L${libdir} -lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@
++Libs: -L${libdir} -lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@ -lm @LIBS@
+ Libs.private: @LIBS@
+ Cflags: -I${includedir}
+--
+2.20.1
+
