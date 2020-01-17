@@ -92,7 +92,7 @@ message(STATUS "FFMPEG_CONF: ${ffmpeg_conf}")
 include(ExternalProject)
 externalproject_add(ffmpeg
                     SOURCE_DIR ${CMAKE_SOURCE_DIR}
-                    CONFIGURE_COMMAND ${CMAKE_SOURCE_DIR}/configure
+                    CONFIGURE_COMMAND PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/lib/pkgconfig ${CMAKE_SOURCE_DIR}/configure
                       --prefix=${CMAKE_INSTALL_PREFIX}
                       --extra-version="kodi-${FFMPEG_VER}"
                       --disable-devices
