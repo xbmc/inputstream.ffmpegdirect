@@ -1,0 +1,12 @@
+diff -ur zvbi/test/date.c zvbi-patched/test/date.c
+--- zvbi/test/date.c	2020-01-14 15:05:17.000000000 +0000
++++ zvbi-patched/test/date.c	2020-01-17 09:34:16.000000000 +0000
+@@ -86,7 +86,7 @@
+ static void
+ set_time			(const vbi_local_time *	lt)
+ {
+-#if defined HAVE_CLOCK_SETTIME && defined CLOCK_REALTIME
++#if defined HAVE_CLOCK_SETTIME && defined CLOCK_REALTIME && !defined DARWIN_EMBEDDED
+ 	{
+ 		struct timespec ts;
+ 
