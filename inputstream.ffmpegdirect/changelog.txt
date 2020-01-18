@@ -1,3 +1,6 @@
+v1.2.1
+- Fixed: Support for XCode build with GCC via travis
+
 v1.2.0
 - Added: Jenkinsfile and .travel.yml
 - Added: Support for Android and linux
