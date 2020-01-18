@@ -1,2 +1,3 @@
 nettle
 gmp
+xz-utils

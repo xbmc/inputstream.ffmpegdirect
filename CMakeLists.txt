@@ -94,6 +94,8 @@ add_definitions(-DCATCHUP_VERSION=${CATCHUP_VERSION})
 
 build_addon(inputstream.ffmpegdirect CATCHUP DEPLIBS)
 
+set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS "${FFMPEG_LDFLAGS}")
+
 if(CORE_SYSTEM_NAME STREQUAL windowsstore)
     # fix linking
     set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/LTCG /defaultlib:vccorlib.lib /defaultlib:msvcrt.lib")

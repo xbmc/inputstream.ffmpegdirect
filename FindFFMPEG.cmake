@@ -179,21 +179,24 @@ if(NOT ENABLE_INTERNAL_FFMPEG OR KODI_DEPENDSBUILD)
   if(FFMPEG_FOUND)
     set(FFMPEG_LDFLAGS ${PC_FFMPEG_LDFLAGS} CACHE STRING "ffmpeg linker flags")
 
+    set(FFMPEG_LIBRARIES ${FFMPEG_LIBAVCODEC} ${FFMPEG_LIBAVFILTER}
+                         ${FFMPEG_LIBAVFORMAT} ${FFMPEG_LIBAVUTIL}
+                         ${FFMPEG_LIBSWSCALE} ${FFMPEG_LIBSWRESAMPLE}
+                         ${FFMPEG_LIBPOSTPROC} ${FFMPEG_LDFLAGS})
+    list(APPEND FFMPEG_DEFINITIONS -DFFMPEG_VER_SHA=\"${FFMPEG_VERSION}\")
+
     # check if ffmpeg libs are statically linked
     set(FFMPEG_LIB_TYPE SHARED)
     foreach(_fflib IN LISTS FFMPEG_LIBRARIES)
       if(${_fflib} MATCHES ".+\.a$" AND PC_FFMPEG_STATIC_LDFLAGS)
         set(FFMPEG_LDFLAGS ${PC_FFMPEG_STATIC_LDFLAGS} CACHE STRING "ffmpeg linker flags" FORCE)
         set(FFMPEG_LIB_TYPE STATIC)
+        if(NOT APPLE AND NOT WIN32)
+          set(FFMPEG_LDFLAGS "-Wl,-Bsymbolic ${FFMPEG_LDFLAGS}")
+        endif()
         break()
       endif()
     endforeach()
-
-    set(FFMPEG_LIBRARIES ${FFMPEG_LIBAVCODEC} ${FFMPEG_LIBAVFILTER}
-                         ${FFMPEG_LIBAVFORMAT} ${FFMPEG_LIBAVUTIL}
-                         ${FFMPEG_LIBSWSCALE} ${FFMPEG_LIBSWRESAMPLE}
-                         ${FFMPEG_LIBPOSTPROC} ${FFMPEG_LDFLAGS})
-    list(APPEND FFMPEG_DEFINITIONS -DFFMPEG_VER_SHA=\"${FFMPEG_VERSION}\")
 
     if(NOT TARGET ffmpeg)
       add_library(ffmpeg ${FFMPEG_LIB_TYPE} IMPORTED)

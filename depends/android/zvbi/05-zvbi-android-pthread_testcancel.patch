@@ -1,0 +1,44 @@
+diff -ru zvbi/src/io-v4l.c zvbi-new/src/io-v4l.c
+--- zvbi/src/io-v4l.c	2020-01-14 07:05:18.000000000 -0800
++++ zvbi-new/src/io-v4l.c	2020-01-14 07:10:15.000000000 -0800
+@@ -45,6 +45,7 @@
+ #include <sys/stat.h>		/* S_ISCHR */
+ #include <sys/ioctl.h>		/* for (_)videodev.h */
+ #include <pthread.h>
++#include <signal.h>
+
+ #include "videodev.h"
+ #include "_videodev.h"
+@@ -208,7 +209,9 @@
+ 	v->read_active = TRUE;
+
+ 	for (;;) {
+-		pthread_testcancel();
++		sigset_t waiting_mask;
++		if(sigpending (&waiting_mask))
++			pthread_exit(0);
+
+ 		r = read(v->fd, raw->data, raw->size);
+
+diff -ru zvbi/src/io-v4l2k.c zvbi-new/src/io-v4l2k.c
+--- zvbi/src/io-v4l2k.c	2020-01-14 07:05:18.000000000 -0800
++++ zvbi-new/src/io-v4l2k.c	2020-01-14 07:13:43.000000000 -0800
+@@ -54,6 +54,7 @@
+ #include <sys/mman.h>		/* PROT_READ, MAP_SHARED */
+ #include <asm/types.h>		/* __u8 and friends for videodev2k.h */
+ #include <pthread.h>
++#include <signal.h>
+
+ #include "raw_decoder.h"
+ #include "version.h"
+@@ -654,7 +655,9 @@
+
+ 	for (;;) {
+ 		/* from zapping/libvbi/v4lx.c */
+-		pthread_testcancel();
++		sigset_t waiting_mask;
++		if(sigpending (&waiting_mask))
++			pthread_exit(0);
+
+ 		r = read(v->fd, raw->data, raw->size);
+

@@ -1,0 +1,12 @@
+diff -ur zvbi/configure zvbi-patched/configure
+--- zvbi/configure	2020-01-14 15:05:17.000000000 +0000
++++ zvbi-patched/configure	2020-01-17 22:39:33.000000000 +0000
+@@ -16515,7 +16515,7 @@
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_png_png_destroy_write_struct" >&5
+ $as_echo "$ac_cv_lib_png_png_destroy_write_struct" >&6; }
+ if test "x$ac_cv_lib_png_png_destroy_write_struct" = x""yes; then :
+-  LIBS="$LIBS -lpng -lz"
++  LIBS="-lpng -lz $LIBS"
+ else
+   HAVE_PNG="no"
+ fi

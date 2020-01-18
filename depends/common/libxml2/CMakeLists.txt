@@ -15,6 +15,7 @@ externalproject_add(libxml2
                       --without-python
                       --without-iconv
                       --disable-shared
+                      --with-pic
                       ${libxml2_conf})
 
 externalproject_add_step(libxml2

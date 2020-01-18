@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.1.0"
+  version="1.2.0"
   name="Inputstream FFmpeg Direct"
   provider-name="phunkyfish">
   <requires>@ADDON_DEPENDS@</requires>
@@ -17,6 +17,12 @@
     <description lang="en_GB">InputStream Client for streams that can be opened by FFmpeg's libavformat such as plain TS, HLS and DASH (without DRM) streams.&#10;    &#10;The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.&#10;    &#10;For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md&#10;    </description>
     <platform>@PLATFORM@</platform>
     <news>
+v1.2.0
+- Added: Jenkinsfile and .travel.yml
+- Added: Support for Android and linux
+- Fixed: Some depnds errors for iOS, still more to fix
+- Added: Clang and g++ build supported from Travis, osx travis not working
+
 v1.1.0
 - Added: Support for chapters
 

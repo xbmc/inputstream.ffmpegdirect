@@ -10,6 +10,10 @@ else()
   set(ffmpeg_conf --cc=${CMAKE_C_COMPILER} --cxx=${CMAKE_CXX_COMPILER})
 endif()
 
+if(CORE_SYSTEM_NAME STREQUAL android OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+  set(CROSSCOMPILING 1)
+endif()
+
 if(CROSSCOMPILING)
   set(pkgconf "PKG_CONFIG_LIBDIR=${ADDON_DEPENDS_PATH}/lib/pkgconfig")
   list(APPEND ffmpeg_conf --pkg-config=${PKG_CONFIG_EXECUTABLE} --pkg-config-flags=--static)
@@ -88,7 +92,7 @@ message(STATUS "FFMPEG_CONF: ${ffmpeg_conf}")
 include(ExternalProject)
 externalproject_add(ffmpeg
                     SOURCE_DIR ${CMAKE_SOURCE_DIR}
-                    CONFIGURE_COMMAND ${CMAKE_SOURCE_DIR}/configure
+                    CONFIGURE_COMMAND PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/lib/pkgconfig ${CMAKE_SOURCE_DIR}/configure
                       --prefix=${CMAKE_INSTALL_PREFIX}
                       --extra-version="kodi-${FFMPEG_VER}"
                       --disable-devices

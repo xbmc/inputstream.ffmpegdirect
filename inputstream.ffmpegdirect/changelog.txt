@@ -1,3 +1,9 @@
+v1.2.0
+- Added: Jenkinsfile and .travel.yml
+- Added: Support for Android and linux
+- Fixed: Some depnds errors for iOS, still more to fix
+- Added: Clang and g++ build supported from Travis, osx travis not working
+
 v1.1.0
 - Added: Support for chapters
 

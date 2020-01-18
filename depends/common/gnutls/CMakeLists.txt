@@ -16,13 +16,16 @@ externalproject_add(gnutls
                       --prefix=${CMAKE_INSTALL_PREFIX}
                       --disable-shared
                       --without-p11-kit
+                      --without-idn
                       --disable-nls
                       --with-included-unistring
                       --with-included-libtasn1
                       --enable-local-libopts
+                      --without-nettle-mini
                       --disable-doc
                       --disable-tests
                       --disable-guile
+                      --with-pic
                       ${gnutls_conf})
 
 install(CODE "Message(Done)")
