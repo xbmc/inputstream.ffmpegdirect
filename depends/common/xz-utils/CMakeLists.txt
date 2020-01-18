@@ -8,6 +8,7 @@ externalproject_add(xz-utils
                       --prefix=${OUTPUT_DIR}
                       --enable-static
                       --disable-shared
+                      --disable-doc
                       --with-pic
                       ${EXTRA_CFLAGS}
                     INSTALL_COMMAND ""
