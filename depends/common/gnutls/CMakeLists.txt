@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 3.5)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
+# GnuTLS automake can request a rebuild even though we don't have
+# all the tools installed so we disable it for the build
+list(APPEND gnutls_conf --disable-maintainer-mode)
+
 list(APPEND gnutls_conf PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 list(APPEND gnutls_conf CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/include)
 list(APPEND gnutls_conf LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/lib)
@@ -34,4 +38,3 @@ externalproject_add(gnutls
                       ${gnutls_conf})
 
 install(CODE "Message(Done)")
-
