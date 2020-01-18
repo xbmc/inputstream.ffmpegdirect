@@ -9,6 +9,11 @@ list(APPEND gnutls_conf CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/include)
 list(APPEND gnutls_conf LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/lib)
 list(APPEND gnutls_conf LIBS=-lgmp)
 
+if(APPLE)
+  list(APPEND gnutls_conf ac_cv_func_vfork_works=no)
+  list(APPEND gnutls_conf ac_cv_func_fork=no)
+endif()
+
 include(ExternalProject)
 externalproject_add(gnutls
                     SOURCE_DIR ${CMAKE_SOURCE_DIR}
