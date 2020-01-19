@@ -19,10 +19,21 @@ endif()
 # Darwin based OSes will use -isysroot, however libtool will expect --sysroot
 # So we hack around this otherwise libttol won't be able to find the standard C headers
 #
-if(CORE_SYSTEM_NAME STREQUAL osx OR CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+if(CORE_SYSTEM_NAME STREQUAL osx)# OR CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   set (COMPILER_WITH_LIBTOOL_SYSROOT_APPLE
   "CC_FOR_BUILD=${CMAKE_C_COMPILER} --sysroot ${CMAKE_OSX_SYSROOT}"
   "CPP_FOR_BUILD=${CMAKE_C_COMPILER} -E --sysroot ${CMAKE_OSX_SYSROOT}"
+#  "CC_FOR_BUILD=${CMAKE_C_COMPILER}"
+#  "CPP_FOR_BUILD=${CMAKE_C_COMPILER} -E"
+  "--with-sysroot=${CMAKE_OSX_SYSROOT}"
+  )
+elseif(CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+  set (COMPILER_WITH_LIBTOOL_SYSROOT_APPLE
+#  "CC_FOR_BUILD=${CMAKE_C_COMPILER} --sysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk"
+#  "CPP_FOR_BUILD=${CMAKE_C_COMPILER} -E --sysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk"
+  "CC_FOR_BUILD=${CMAKE_C_COMPILER}"
+  "CPP_FOR_BUILD=${CMAKE_C_COMPILER} -E"
+  "--with-sysroot=/Applications/Xcode10.2.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk"
   )
 else()
   set (COMPILER_WITH_LIBTOOL_SYSROOT_APPLE "")
