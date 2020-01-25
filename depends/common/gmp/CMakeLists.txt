@@ -38,7 +38,7 @@ if(CORE_SYSTEM_NAME STREQUAL osx OR
 
   if(CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
     if(CPU STREQUAL armv7)
-      set(ARCH armv7s)
+      set(ARCH armv7)
     elseif(CPU STREQUAL arm64)
       set(ARCH arm64)
     else()
