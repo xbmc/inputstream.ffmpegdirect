@@ -1,41 +1,60 @@
-project(gmp)
-
 cmake_minimum_required(VERSION 3.5)
+project(gmp)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
-if(CORE_SYSTEM_NAME MATCHES "linux")
-  if (CPU MATCHES "i.86")
-    list(APPEND gmp_conf ABI=32)
-  endif()
-  list(APPEND gmp_conf --with-pic)
-elseif(CORE_SYSTEM_NAME MATCHES "darwin_embedded")
-  list(APPEND gmp_conf --disable-assembly)
-elseif(CORE_SYSTEM_NAME MATCHES "osx")
-  list(APPEND gmp_conf --with-pic)
-endif()
-
-#
-# Darwin based OSes will use -isysroot, however libtool will expect --sysroot
-# So we hack around this otherwise libttol won't be able to find the standard C headers
-#
-if(CORE_SYSTEM_NAME STREQUAL osx OR CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
-  set (COMPILER_WITH_LIBTOOL_SYSROOT_APPLE
-  "CC_FOR_BUILD=${CMAKE_C_COMPILER} --sysroot ${CMAKE_OSX_SYSROOT}"
-  "CPP_FOR_BUILD=${CMAKE_C_COMPILER} -E --sysroot ${CMAKE_OSX_SYSROOT}"
-  )
-else()
-  set (COMPILER_WITH_LIBTOOL_SYSROOT_APPLE "")
-endif()
-
 include(ExternalProject)
-externalproject_add(gmp
-                    SOURCE_DIR ${CMAKE_SOURCE_DIR}
-                    CONFIGURE_COMMAND <SOURCE_DIR>/configure
-                      ${COMPILER_WITH_LIBTOOL_SYSROOT_APPLE}
-                      --prefix=${CMAKE_INSTALL_PREFIX}
-                      --disable-shared
-                      ${gmp_conf})
+
+if(CORE_SYSTEM_NAME STREQUAL osx OR
+   CORE_SYSTEM_NAME STREQUAL ios OR
+   CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+
+  if(CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+    set(EXTRA_ARGS "--disable-assembly")
+  else()
+    set(EXTRA_ARGS "--with-pic")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      set(EXTRA_ARGS "${EXTRA_ARGS} ABI=64")
+    else()
+      set(EXTRA_ARGS "${EXTRA_ARGS} ABI=32")
+    endif()
+  endif()
+
+  externalproject_add(gmp
+                      SOURCE_DIR ${CMAKE_SOURCE_DIR}
+                      CONFIGURE_COMMAND
+                          bash --login -c
+                          "./configure \
+                          --prefix=${CMAKE_BINARY_DIR}/gmpbuild \
+                          CC='${CMAKE_C_COMPILER} ${CMAKE_C_FLAGS}' \
+                          LDFLAGS='${CMAKE_EXE_LINKER_FLAGS}' \
+                          CPP='${CMAKE_C_COMPILER} -E' \
+                          CPPFLAGS='${CMAKE_C_FLAGS}' \
+                          --host=x86_64-apple-darwin \
+                          ${EXTRA_ARGS} \
+                          --enable-static \
+                          --disable-shared"
+                      BUILD_COMMAND  make
+                      INSTALL_COMMAND
+                        make install &&
+                        # Is installed to different place to become no conflict during configure with
+                        # "./share/config.site" on addon depends binary folder
+                        cmake -E copy_directory ${CMAKE_BINARY_DIR}/gmpbuild ${CMAKE_INSTALL_PREFIX}
+                      BUILD_IN_SOURCE TRUE)
+else()
+  if(CORE_SYSTEM_NAME MATCHES "linux" AND CPU MATCHES "i.86")
+      list(APPEND gmp_conf ABI=32)
+  endif()
+
+  externalproject_add(gmp
+                      SOURCE_DIR ${CMAKE_SOURCE_DIR}
+                      CONFIGURE_COMMAND <SOURCE_DIR>/configure
+                        --prefix=${CMAKE_INSTALL_PREFIX}
+                        --disable-assembly
+                        --enable-static
+                        --disable-shared
+                        --with-pic
+                        ${gmp_conf})
+endif()
 
 install(CODE "Message(Done)")
-
