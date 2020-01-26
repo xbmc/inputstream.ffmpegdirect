@@ -1,4 +1,4 @@
-project(gmp)
+project(gnutls)
 
 cmake_minimum_required(VERSION 3.5)
 
