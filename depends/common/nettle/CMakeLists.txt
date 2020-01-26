@@ -15,7 +15,6 @@ list(APPEND nettle_conf LIBS=-lgmp)
 include(ExternalProject)
 externalproject_add(nettle
                     SOURCE_DIR ${CMAKE_SOURCE_DIR}
-                    UPDATE_COMMAND <SOURCE_DIR>/.bootstrap
                     CONFIGURE_COMMAND <SOURCE_DIR>/configure
                       --prefix=${CMAKE_INSTALL_PREFIX}
                       --libdir=${CMAKE_INSTALL_PREFIX}/lib
