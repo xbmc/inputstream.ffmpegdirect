@@ -11,7 +11,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <pthread.h>
 #include <string.h>
 #if defined(TARGET_DARWIN)

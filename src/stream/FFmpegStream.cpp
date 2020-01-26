@@ -25,9 +25,8 @@
 
 // #include <kodi/addon-instance/Inputstream.h>
 
-#ifdef TARGET_POSIX
-#include "platform/posix/XTimeUtils.h"
-#endif
+#include <chrono>
+#include <ctime>
 
 #ifndef __STDC_CONSTANT_MACROS
 #define __STDC_CONSTANT_MACROS
@@ -1197,7 +1196,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
       if (pkt)
         m_demuxPacketMamnager->FreeDemuxPacketFromInputStreamAPI(pkt);
       else
-        Sleep(10);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
       m_pkt.result = -1;
       av_packet_unref(&m_pkt.pkt);
 

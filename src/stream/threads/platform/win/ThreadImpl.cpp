@@ -6,10 +6,7 @@
  *  See LICENSES/README.md for more information.
  */
 
-#include "utils/log.h"
-
-#include "platform/win32/WIN32Util.h"
-
+#include <kodi/General.h>
 #include <process.h>
 #include <windows.h>
 
@@ -42,7 +39,8 @@ void CThread::SetThreadInfo()
   {
   }
 
-  CWIN32Util::SetThreadLocalLocale(true); // avoid crashing with setlocale(), see https://connect.microsoft.com/VisualStudio/feedback/details/794122
+  // avoid crashing with setlocale(), see https://connect.microsoft.com/VisualStudio/feedback/details/794122
+  _configthreadlocale(_ENABLE_PER_THREAD_LOCALE);
 }
 
 std::uintptr_t CThread::GetCurrentThreadNativeHandle()
