@@ -1,4 +1,4 @@
-project(zvbi)
+project(libzvbi)
 
 cmake_minimum_required(VERSION 3.5)
 
@@ -11,10 +11,12 @@ if (CORE_SYSTEM_NAME STREQUAL osx)
   list(APPEND zvbi_conf CFLAGS=-fnested-functions)
 elseif (CORE_SYSTEM_NAME STREQUAL android)
   list(APPEND zvbi_conf LIBS=-liconv)
+elseif (CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+  list(APPEND zvbi_conf CFLAGS=-DDARWIN_EMBEDDED)
 endif()
 
 include(ExternalProject)
-externalproject_add(zvbi
+externalproject_add(libzvbi
                     SOURCE_DIR ${CMAKE_SOURCE_DIR}
                     CONFIGURE_COMMAND <SOURCE_DIR>/configure
                       --prefix=${CMAKE_INSTALL_PREFIX}
@@ -25,6 +27,8 @@ externalproject_add(zvbi
                       --disable-nls
                       --disable-proxy
                       --without-doxygen
+                      --with-pic
+                      --without-x
                       ${zvbi_ldflags}
                       ${zvbi_conf})
 
