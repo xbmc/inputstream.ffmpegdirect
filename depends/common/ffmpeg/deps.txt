@@ -1,4 +1,6 @@
 nettle
+gas-preprocessor
 gnutls
-zvbi
+zlib
+libzvbi
 libxml2

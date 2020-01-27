@@ -1,0 +1,119 @@
+--- /dev/null
++++ b/MinGWConfig.cmake.in
+@@ -0,0 +1,116 @@
++# The from build defined Path where bash.exe is found
++set(MINGW_BASH_DIR @CMAKE_CURRENT_SOURCE_DIR@/usr/bin)
++
++# @brief Translate on ${WINDOWS_PATH_ENTRY} defined content to Mingw path style
++macro(MinGW_convertPathToPosix)
++  set(POSIX_PATH "")
++  if(WINDOWS_PATH)
++    foreach(WINDOWS_PATH_ENTRY IN ITEMS ${WINDOWS_PATH})
++      string(REGEX MATCH  "^(.*:)" DRIVE_NAME ${WINDOWS_PATH_ENTRY})
++      string(TOLOWER ${DRIVE_NAME} DRIVE_NAME)
++      string(REPLACE "\\" "/" WINDOWS_PATH_ENTRY ${WINDOWS_PATH_ENTRY})
++      string(REGEX REPLACE "^(.*:)" "" PATH_NAME ${WINDOWS_PATH_ENTRY})
++      set(VALUES "${DRIVE_NAME}${PATH_NAME}")
++      string(REGEX REPLACE "^([a-zA-Z]):\/" "/\\1/" VALUES ${VALUES})
++      if(NOT POSIX_PATH)
++        set(POSIX_PATH "${VALUES}")
++      else()
++        set(POSIX_PATH "${POSIX_PATH}:${VALUES}")
++      endif()
++    endforeach()
++  endif()
++endmacro()
++
++# @brief Change on given FLAGS the slash (/) to a minus (-),
++# Mingw interprets this as a path and everything goes wrong then.
++function(MinGW_ChangeSlashToMinus FLAGS)
++  if(FLAGS)
++    string(REPLACE " " ";" FLAGS ${FLAGS})
++    set(VALUES "")
++    foreach(flag IN LISTS FLAGS)
++      string(REGEX REPLACE "^[\/]([a-zA-Z])" "-\\1" flag ${flag})
++      set(VALUES "${VALUES} ${flag}")
++    endforeach()
++    set(FLAGS ${VALUES} PARENT_SCOPE)
++  endif()
++endfunction()
++
++if($ENV{PROCESSOR_ARCHITECTURE} MATCHES "AMD64" OR
++   $ENV{PROCESSOR_ARCHITECTURE} MATCHES "IA64")
++  set(MINGW_CPU_ARCH "x86_64")
++else()
++  set(MINGW_CPU_ARCH "i686")
++endif()
++
++include(CheckSymbolExists)
++check_symbol_exists(_X86_ "Windows.h" _X86_)
++check_symbol_exists(_AMD64_ "Windows.h" _AMD64_)
++check_symbol_exists(_ARM_ "Windows.h" _ARM_)
++check_symbol_exists(_ARM64_ "Windows.h" _ARM64_)
++
++if(_X86_)
++  set(MINGW_TARGET_ARCH "x86")
++elseif(_AMD64_)
++  set(MINGW_TARGET_ARCH "x86_64")
++elseif(_ARM_)
++  set(MINGW_TARGET_ARCH "arm")
++elseif(_ARM64_)
++  set(MINGW_TARGET_ARCH "arm64")
++else()
++  message(FATAL_ERROR "Unsupported architecture")
++endif()
++
++# Source folder to mingw allowed folder
++set(WINDOWS_PATH ${CMAKE_SOURCE_DIR})
++MinGW_convertPathToPosix()
++set(MINGW_SOURCE_DIR ${POSIX_PATH})
++
++# Install folder to mingw allowed folder
++set(WINDOWS_PATH ${CMAKE_INSTALL_PREFIX})
++MinGW_convertPathToPosix()
++set(MINGW_INSTALL_PREFIX ${POSIX_PATH})
++
++# Binary build folder to mingw allowed folder
++set(WINDOWS_PATH ${CMAKE_BINARY_DIR})
++MinGW_convertPathToPosix()
++set(MINGW_BUILD_DIRECTORY ${POSIX_PATH})
++
++# Environment binary folder to mingw allowed folder
++set(WINDOWS_PATH $ENV{PATH})
++MinGW_convertPathToPosix()
++set(MINGW_ENV_PATH ${POSIX_PATH})
++
++# Environment include folder to mingw allowed folder
++set(WINDOWS_PATH $ENV{INCLUDE})
++MinGW_convertPathToPosix()
++set(MINGW_INCLUDE ${POSIX_PATH})
++
++# Environment lib folder to mingw allowed folder
++set(WINDOWS_PATH $ENV{LIB})
++MinGW_convertPathToPosix()
++set(MINGW_LIB ${POSIX_PATH})
++
++# Enviroonment lib path folder to mingw allowed folder
++set(WINDOWS_PATH $ENV{LIBPATH})
++MinGW_convertPathToPosix()
++set(MINGW_LIBPATH ${POSIX_PATH})
++
++# @brief Main define to use on depends by builds to have it running within Mingw
++set(MINGW_CALL cmake -E chdir ${CMAKE_SOURCE_DIR}
++               ${MINGW_BASH_DIR}/bash.exe --login ${MINGW_INSTALL_PREFIX}/caller.sh
++               --source [DQ]${MINGW_SOURCE_DIR}[DQ] -- )
++
++# Write path configuration file to addon build (used to add by Mingw paths)
++set(MINGW_CONTROL "\
++MINGW_ENV_PATH=\"${MINGW_ENV_PATH}\"
++MINGW_INCLUDE=\"${MINGW_INCLUDE}\"
++MINGW_LIB=\"${MINGW_LIB}\"
++MINGW_LIBPATH=\"${MINGW_LIBPATH}\"
++MINGW_BASH_DIR=\"${MINGW_BASH_DIR}\"
++MINGW_SOURCE_DIR=\"${MINGW_SOURCE_DIR}\"
++MINGW_BUILD_DIRECTORY=\"${MINGW_BUILD_DIRECTORY}\"
++MINGW_CPU_ARCH=\"${MINGW_CPU_ARCH}\"
++MINGW_TARGET_ARCH=\"${MINGW_TARGET_ARCH}\"
++MINGW_INSTALL_PREFIX=\"${MINGW_INSTALL_PREFIX}\"
++")
++file(WRITE ${CMAKE_SOURCE_DIR}/mingw.conf ${MINGW_CONTROL})

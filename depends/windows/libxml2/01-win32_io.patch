@@ -1,0 +1,20 @@
+--- /xmlIO.c	2015-11-03 07:36:33.000000000 -0500
++++ /xmlIO_new.c	2016-03-20 21:32:59.960019300 -0400
+@@ -2319,7 +2319,7 @@
+ 	return;
+ 
+ #if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+-    xmlInitPlatformSpecificIo();
++//    xmlInitPlatformSpecificIo();
+ #endif
+ 
+     xmlRegisterInputCallbacks(xmlFileMatch, xmlFileOpen,
+@@ -2357,7 +2357,7 @@
+ 	return;
+ 
+ #if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+-    xmlInitPlatformSpecificIo();
++//    xmlInitPlatformSpecificIo();
+ #endif
+ 
+     xmlRegisterOutputCallbacks(xmlFileMatch, xmlFileOpenW,

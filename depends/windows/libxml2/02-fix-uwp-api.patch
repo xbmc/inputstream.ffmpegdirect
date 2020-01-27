@@ -1,0 +1,156 @@
+diff --git a/catalog.c b/catalog.c
+index 6dfdfbb..a5655f0 100644
+--- a/catalog.c
++++ b/catalog.c
+@@ -77,6 +77,9 @@
+ #endif
+ 
+ #if defined(_WIN32) && defined(_MSC_VER)
++#if defined(WINAPI_FAMILY) && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP
++# define getenv(x) NULL
++#endif
+ #undef XML_XML_DEFAULT_CATALOG
+ static char XML_XML_DEFAULT_CATALOG[256] = "file:///etc/xml/catalog";
+ #if defined(_WIN32_WCE)
+@@ -3122,6 +3125,7 @@ xmlInitializeCatalog(void) {
+ 	if (catalogs == NULL)
+ #if defined(_WIN32) && defined(_MSC_VER)
+     {
++#if (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+ 		void* hmodule;
+ 		hmodule = GetModuleHandleA("libxml2.dll");
+ 		if (hmodule == NULL)
+@@ -3144,6 +3148,7 @@ xmlInitializeCatalog(void) {
+ 				}
+ 			}
+ 		}
++#endif
+ 		catalogs = XML_XML_DEFAULT_CATALOG;
+     }
+ #else
+diff --git a/include/libxml/xmlversion.h b/include/libxml/xmlversion.h
+index dd7d71c..e232c0a 100644
+--- a/include/libxml/xmlversion.h
++++ b/include/libxml/xmlversion.h
+@@ -174,7 +174,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
+  *
+  * Whether the FTP support is configured in
+  */
+-#if 1
++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+ #define LIBXML_FTP_ENABLED
+ #endif
+ 
+@@ -183,7 +183,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
+  *
+  * Whether the HTTP support is configured in
+  */
+-#if 1
++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+ #define LIBXML_HTTP_ENABLED
+ #endif
+ 
+diff --git a/nanoftp.c b/nanoftp.c
+index 2135ab9..2b2225d 100644
+--- a/nanoftp.c
++++ b/nanoftp.c
+@@ -108,6 +108,10 @@
+ #endif
+ #endif
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
++# define getenv(x) NULL
++#endif
++
+ #ifndef XML_SOCKLEN_T
+ #define XML_SOCKLEN_T unsigned int
+ #endif
+diff --git a/nanohttp.c b/nanohttp.c
+index e109ad7..2782b3d 100644
+--- a/nanohttp.c
++++ b/nanohttp.c
+@@ -113,6 +113,10 @@
+ #define XML_SOCKLEN_T unsigned int
+ #endif
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
++# define getenv(x) NULL
++#endif
++
+ #ifdef STANDALONE
+ #define DEBUG_HTTP
+ #define xmlStrncasecmp(a, b, n) strncasecmp((char *)a, (char *)b, n)
+diff --git a/xmlIO.c b/xmlIO.c
+index 1a79c09..9d8bd15 100644
+--- a/xmlIO.c
++++ b/xmlIO.c
+@@ -99,6 +99,10 @@
+ #include "buf.h"
+ #include "enc.h"
+ 
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
++#include <io.h>
++#endif
++
+ /* #define VERBOSE_FAILURE */
+ /* #define DEBUG_EXTERNAL_ENTITIES */
+ /* #define DEBUG_INPUT */
+@@ -733,7 +737,11 @@ xmlInitPlatformSpecificIo(void)
+ 
+     osvi.dwOSVersionInfoSize = sizeof(osvi);
+ 
++#if (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+     if(GetVersionEx(&osvi) && (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT)) {
++#else
++    if (1) {
++#endif
+       xmlWrapStat = xmlWrapStatUtf8;
+       xmlWrapOpen = xmlWrapOpenUtf8;
+ #ifdef HAVE_ZLIB_H
+@@ -3841,7 +3849,7 @@ xmlParserGetDirectory(const char *filename) {
+ 	else *cur = 0;
+ 	ret = xmlMemStrdup(dir);
+     } else {
+-        if (getcwd(dir, 1024) != NULL) {
++        if (_getcwd(dir, 1024) != NULL) {
+	    dir[1023] = 0;
+	    ret = xmlMemStrdup(dir);
+	}
+diff --git a/xmlmemory.c b/xmlmemory.c
+index f08c8c3..8b9c35e 100644
+--- a/xmlmemory.c
++++ b/xmlmemory.c
+@@ -56,6 +56,10 @@ static xmlMutexPtr xmlMemMutex = NULL;
+ 
+ void xmlMallocBreakpoint(void);
+ 
++#if defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_APP
++# define getenv(x) NULL
++#endif
++
+ /************************************************************************
+  *									*
+  *		Macros, variables and associated types			*
+diff --git a/xmlmodule.c b/xmlmodule.c
+index 50ed666..be21bcc 100644
+--- a/xmlmodule.c
++++ b/xmlmodule.c
+@@ -308,7 +308,14 @@ xmlModulePlatformSymbol(void *handle, const char *name, void **symbol)
+ static void *
+ xmlModulePlatformOpen(const char *name)
+ {
+-    return LoadLibraryA(name);
++#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
++     return LoadLibraryA(name);
++#else
++     wchar_t* nameW = (wchar_t*)malloc(strlen(name)+1);
++     mbstowcs(nameW, name, strlen(name));
++     return LoadPackagedLibrary(nameW, 0);
++     free(nameW);
++#endif
+ }
+ 
+ /*
+-- 
+2.13.2.windows.1
+

@@ -1,0 +1,11 @@
+--- a/test/date.c
++++ b/test/date.c
+@@ -86,7 +86,7 @@
+ static void
+ set_time			(const vbi_local_time *	lt)
+ {
+-#if defined HAVE_CLOCK_SETTIME && defined CLOCK_REALTIME
++#if defined HAVE_CLOCK_SETTIME && defined CLOCK_REALTIME && !defined DARWIN_EMBEDDED
+ 	{
+ 		struct timespec ts;
+ 

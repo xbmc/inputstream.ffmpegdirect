@@ -1,0 +1,65 @@
+--- a/win_iconv.c
++++ b/win_iconv.c
+@@ -45,6 +45,12 @@
+ #define FLAG_TRANSLIT           2 /* //TRANSLIT */
+ #define FLAG_IGNORE             4 /* //IGNORE */
+ 
++/* Default family is DESKTOP_APP which is DESKTOP | APP
++ * We want to know when we're only building for apps */
++#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
++#define G_WINAPI_ONLY_APP
++#endif
++
+ typedef unsigned char uchar;
+ typedef unsigned short ushort;
+ typedef unsigned int uint;
+@@ -714,7 +720,13 @@ load_mlang(void)
+     HMODULE h;
+     if (ConvertINetString != NULL)
+         return TRUE;
++  /* When building for UWP, load app asset DLLs instead of filesystem DLLs.
++   * Needs MSVC, Windows 8 and newer, and is only usable from apps. */
++#if _WIN32_WINNT >= 0x0602 && defined(G_WINAPI_ONLY_APP)
++    h = LoadPackagedLibrary(TEXT("mlang.dll"), 0);
++#else
+     h = LoadLibrary(TEXT("mlang.dll"));
++#endif
+     if (!h)
+         return FALSE;
+     ConvertINetString = (CONVERTINETSTRING)GetProcAddressA(h, "ConvertINetString");
+@@ -1171,7 +1183,26 @@ libiconv_iconv_open(rec_iconv_t *cd, const char *tocode, const char *fromcode)
+         dllname = xstrndup(p, e - p);
+         if (dllname == NULL)
+             return FALSE;
++  /* When building for UWP, load app asset DLLs instead of filesystem DLLs.
++   * Needs MSVC, Windows 8 and newer, and is only usable from apps. */
++#if _WIN32_WINNT >= 0x0602 && defined(G_WINAPI_ONLY_APP)
++        int result = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, dllname, strlen(dllname), NULL, 0);
++        if (result == 0)
++          return FALSE;
++
++        wchar_t* newStr = (wchar_t*)malloc(result*sizeof(wchar_t));
++        result = MultiByteToWideChar( CP_UTF8, MB_ERR_INVALID_CHARS, dllname, strlen(dllname), newStr, result );
++        if (result == 0)
++        {
++          free( newStr );
++          return FALSE;
++        }
++
++        hlibiconv = LoadPackagedLibrary( newStr, 0 );
++        free( newStr );
++#else
+         hlibiconv = LoadLibraryA(dllname);
++#endif
+         free(dllname);
+         if (hlibiconv != NULL)
+         {
+@@ -1574,7 +1605,7 @@ static int
+ utf32_mbtowc(csconv_t *cv, const uchar *buf, int bufsize, ushort *wbuf, int *wbufsize)
+ {
+     int codepage = cv->codepage;
+-    uint wc = 0xD800;
++    uint wc = 0xD800;
+ 
+     /* swap endian: 12000 <-> 12001 */
+     if (cv->mode & UNICODE_MODE_SWAPPED)
