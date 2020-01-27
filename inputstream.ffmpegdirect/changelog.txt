@@ -1,3 +1,7 @@
+v1.3.0
+- Added: Support for Windows and iOS
+- Update: To gmp-6.2.0
+
 v1.2.1
 - Fixed: Support for XCode build with GCC via travis
 
