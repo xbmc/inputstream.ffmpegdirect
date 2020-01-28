@@ -96,6 +96,7 @@ if(CORE_SYSTEM_NAME STREQUAL osx OR
   find_library(COREFOUNDATION CoreFoundation)
   find_library(COREMEDIA CoreMedia)
   find_library(VIDEOTOOLBOX VideoToolbox)
+  find_library(SECURITY Security)
 
   include_directories(${AVFOUNDATION}
                       ${COCOA}
@@ -104,9 +105,10 @@ if(CORE_SYSTEM_NAME STREQUAL osx OR
                       ${COREVIDEO}
                       ${COREMEDIAIO}
                       ${VIDEOTOOLBOX}
+                      ${SECURITY}
                       ${COCOA})
 
-  list(APPEND DEPLIBS ${AUDIOTOOLBOX} ${COREFOUNDATION} ${COREMEDIA} ${VIDEOTOOLBOX})
+  list(APPEND DEPLIBS ${AUDIOTOOLBOX} ${COREFOUNDATION} ${COREMEDIA} ${VIDEOTOOLBOX} ${SECURITY})
 endif()
 
 addon_version(inputstream.ffmpegdirect CATCHUP)

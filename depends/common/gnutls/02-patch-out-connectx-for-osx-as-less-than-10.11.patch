@@ -1,0 +1,12 @@
+diff -ur gnutls/lib/system/fastopen.c gnutls-patch/lib/system/fastopen.c
+--- gnutls/lib/system/fastopen.c	2020-01-27 20:24:23.000000000 +0000
++++ gnutls-patch/lib/system/fastopen.c	2020-01-28 07:52:10.000000000 +0000
+@@ -38,7 +38,7 @@
+
+ /* TCP Fast Open on OSX behaves differently from Linux, so define these helpers */
+ #if defined __APPLE__ && defined __MACH__ && defined CONNECT_DATA_IDEMPOTENT && defined CONNECT_RESUME_ON_READ_WRITE
+-# define TCP_FASTOPEN_OSX
++# define TCP_FASTOPEN_OSX_DISABLED // This patch simply disables fastopen on osx as we want to be able to run on osx versions < 10.11
+ #elif defined TCP_FASTOPEN && defined MSG_FASTOPEN
+ # define TCP_FASTOPEN_LINUX
+ #endif
