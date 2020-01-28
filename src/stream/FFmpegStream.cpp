@@ -111,7 +111,7 @@ FFmpegStream::~FFmpegStream()
 
 bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty)
 {
-  kodi::Log(ADDON_LOG_DEBUG, "inputstream.ffmpegdirect: OpenStream()");
+  Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect: OpenStream()");
 
   m_streamUrl = streamUrl;
   m_mimeType = mimeType;
@@ -147,7 +147,7 @@ void FFmpegStream::Close()
 
 void FFmpegStream::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
 {
-  kodi::Log(ADDON_LOG_DEBUG, "GetCapabilities()");
+  Log(LOGLEVEL_DEBUG, "GetCapabilities()");
   caps.m_mask = INPUTSTREAM_CAPABILITIES::SUPPORTS_IDEMUX |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_IDISPLAYTIME |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME |

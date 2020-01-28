@@ -37,12 +37,12 @@ CInputStreamLibavformat::~CInputStreamLibavformat()
 
 bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
 {
-  kodi::Log(ADDON_LOG_NOTICE, "inputstream.ffmpegdirect: OpenStream() - Num Props: %d", props.m_nCountInfoValues);
+  Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect: OpenStream() - Num Props: %d", props.m_nCountInfoValues);
   std::string tempString;
 
   for (size_t i = 0; i < props.m_nCountInfoValues; ++i)
   {
-    kodi::Log(ADDON_LOG_NOTICE, "inputstream.ffmpegdirect property: %s = %s", props.m_ListItemProperties[i].m_strKey, props.m_ListItemProperties[i].m_strValue);
+    Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect property: %s = %s", props.m_ListItemProperties[i].m_strKey, props.m_ListItemProperties[i].m_strValue);
 
     if (MIME_TYPE == props.m_ListItemProperties[i].m_strKey)
     {
@@ -143,7 +143,7 @@ void CInputStreamLibavformat::Close()
 
 void CInputStreamLibavformat::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
 {
-  kodi::Log(ADDON_LOG_DEBUG, "GetCapabilities()");
+  Log(LOGLEVEL_DEBUG, "GetCapabilities()");
   m_stream->GetCapabilities(caps);
 }
 
@@ -200,7 +200,7 @@ void CInputStreamLibavformat::DemuxSetSpeed(int speed)
 
 void CInputStreamLibavformat::SetVideoResolution(int width, int height)
 {
-  kodi::Log(ADDON_LOG_NOTICE, "inputstream.ffmpegdirect: SetVideoResolution()");
+  Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect: SetVideoResolution()");
 
   m_videoWidth = width;
   m_videoHeight = height;
