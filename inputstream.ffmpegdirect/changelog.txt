@@ -1,3 +1,8 @@
+v1.4.0
+- Added: gnutls patch to add libdl to support newer OSes
+- Added: Add support for mms and rtp/udp streams with sources
+- Fixed: Add workaround for CMake and Frameworks on Darwin
+
 v1.3.0
 - Added: Support for Windows and iOS
 - Update: To gmp-6.2.0
