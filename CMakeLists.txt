@@ -102,11 +102,9 @@ if(CORE_SYSTEM_NAME STREQUAL osx OR
                       ${COCOA}
                       ${COREFOUNDATION}
                       ${COREMEDIA}
-                      ${COREVIDEO}
                       ${COREMEDIAIO}
                       ${VIDEOTOOLBOX}
-                      ${SECURITY}
-                      ${COCOA})
+                      ${SECURITY})
 
   list(APPEND DEPLIBS ${AUDIOTOOLBOX} ${COREFOUNDATION} ${COREMEDIA} ${VIDEOTOOLBOX} ${SECURITY})
 endif()
