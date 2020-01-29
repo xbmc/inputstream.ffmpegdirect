@@ -73,14 +73,17 @@ include_directories(${p8-platform_INCLUDE_DIRS}
                     ${LIBXML2_INCLUDE_DIRS}
                     ${KODI_INCLUDE_DIR}/..) # Hack way with "/..", need bigger Kodi cmake rework to match right include ways (becomes done in future)
 
+# We don't add FFMPEG_LIBRARIES here as we handle them at the end
 list(APPEND DEPLIBS ${p8-platform_LIBRARIES}
-                    ${FFMPEG_LIBRARIES}
                     ${ZLIB_LIBRARIES}
                     ${BZIP2_LIBRARIES})
+
 if(WIN32)
+  # Windows does need to know about FFMPEG_LIBRARIES here
   list(APPEND DEPLIBS ${ICONV_LIBRARIES}
                       ${OPENSSL_LIBRARIES}
-                      ${LIBXML2_LIBRARIES})
+                      ${LIBXML2_LIBRARIES}
+                      ${FFMPEG_LIBRARIES})
 endif()
 
 # to see linker output
@@ -114,6 +117,12 @@ add_definitions(-DCATCHUP_VERSION=${CATCHUP_VERSION})
 
 build_addon(inputstream.ffmpegdirect CATCHUP DEPLIBS)
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  # Due to a bug in CMake and frameworks on OSX we strip them from FFMPEG_LDFLAGS
+  # and along with the ';''s and allow CMake to add them back
+  string(REGEX REPLACE "-framework;([A-Za-z0-9_]+);?" "" FFMPEG_LDFLAGS "${FFMPEG_LDFLAGS}")
+  string(REGEX REPLACE ";" " " FFMPEG_LDFLAGS "${FFMPEG_LDFLAGS}")
+endif()
 set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS "${FFMPEG_LDFLAGS}")
 
 if(CORE_SYSTEM_NAME STREQUAL windowsstore)
