@@ -141,13 +141,13 @@ int64_t FFmpegCatchupStream::SeekStream(int64_t position, int whence /* SEEK_SET
   int64_t ret = -1;
   if (m_catchupBufferStartTime > 0)
   {
-    Log(LOGLEVEL_NOTICE, "SeekLiveStream - iPosition = %lld, iWhence = %d", position, whence);
+    Log(LOGLEVEL_DEBUG, "SeekLiveStream - iPosition = %lld, iWhence = %d", position, whence);
     const time_t timeNow = time(0);
     switch (whence)
     {
       case SEEK_SET:
       {
-        Log(LOGLEVEL_NOTICE, "SeekLiveStream - SeekSet: %lld", static_cast<long long>(position));
+        Log(LOGLEVEL_DEBUG, "SeekLiveStream - SeekSet: %lld", static_cast<long long>(position));
         position += 500;
         position /= 1000;
         if (m_catchupBufferStartTime + position < timeNow - 10)
@@ -170,12 +170,12 @@ int64_t FFmpegCatchupStream::SeekStream(int64_t position, int whence /* SEEK_SET
       case SEEK_CUR:
       {
         int64_t offset = m_catchupBufferOffset;
-        //Log(LOGLEVEL_NOTICE, "SeekLiveStream - timeNow = %d, startTime = %d, iTvgShift = %d, offset = %d", timeNow, m_catchupStartTime, m_programmeChannelTvgShift, offset);
+        //Log(LOGLEVEL_DEBUG, "SeekLiveStream - timeNow = %d, startTime = %d, iTvgShift = %d, offset = %d", timeNow, m_catchupStartTime, m_programmeChannelTvgShift, offset);
         ret = offset * DVD_TIME_BASE;
       }
       break;
       default:
-        Log(LOGLEVEL_NOTICE, "SeekLiveStream - Unsupported SEEK command (%d)", whence);
+        Log(LOGLEVEL_DEBUG, "SeekLiveStream - Unsupported SEEK command (%d)", whence);
       break;
     }
   }
@@ -192,7 +192,7 @@ int64_t FFmpegCatchupStream::LengthStream()
       length = static_cast<int64_t>(times.ptsEnd - times.ptsBegin);
   }
 
-  Log(LOGLEVEL_NOTICE, "LengthLiveStream: %lld", static_cast<long long>(length));
+  Log(LOGLEVEL_DEBUG, "LengthLiveStream: %lld", static_cast<long long>(length));
 
   return length;
 }
@@ -211,9 +211,9 @@ bool FFmpegCatchupStream::GetTimes(INPUTSTREAM_TIMES& times)
   else // it's like a video
     times.ptsEnd = static_cast<double>(std::min(dateTimeNow, m_catchupBufferEndTime) - times.startTime) * DVD_TIME_BASE;
 
-  // Log(LOGLEVEL_NOTICE, "GetStreamTimes - Ch = %u \tTitle = \"%s\" \tepgTag->startTime = %ld \tepgTag->endTime = %ld",
+  // Log(LOGLEVEL_DEBUG, "GetStreamTimes - Ch = %u \tTitle = \"%s\" \tepgTag->startTime = %ld \tepgTag->endTime = %ld",
   //           m_programmeUniqueChannelId, m_programmeTitle.c_str(), m_catchupBufferStartTime, m_catchupBufferEndTime);
-  Log(LOGLEVEL_NOTICE, "GetStreamTimes - startTime = %ld \tptsStart = %lld \tptsBegin = %lld \tptsEnd = %lld",
+  Log(LOGLEVEL_DEBUG, "GetStreamTimes - startTime = %ld \tptsStart = %lld \tptsBegin = %lld \tptsEnd = %lld",
             times.startTime, static_cast<long long>(times.ptsStart), static_cast<long long>(times.ptsBegin), static_cast<long long>(times.ptsEnd));
 
   return true;
@@ -312,7 +312,7 @@ std::string FormatDateTime(time_t dateTimeEpg, time_t duration, const std::strin
   FormatUtc("{duration}", duration, fomrattedUrl);
   FormatOffset(dateTimeNow - dateTimeEpg, fomrattedUrl);
 
-  Log(LOGLEVEL_NOTICE, "CArchiveConfig::FormatDateTime - \"%s\"", fomrattedUrl.c_str());
+  Log(LOGLEVEL_DEBUG, "CArchiveConfig::FormatDateTime - \"%s\"", fomrattedUrl.c_str());
 
   return fomrattedUrl;
 }
@@ -330,7 +330,7 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
     if (m_programmeStartTime > 0 && m_programmeStartTime < m_programmeEndTime)
       duration = m_programmeEndTime - m_programmeStartTime;
 
-    Log(LOGLEVEL_NOTICE, "Offset Time - \"%lld\" - %s", static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
+    Log(LOGLEVEL_DEBUG, "Offset Time - \"%lld\" - %s", static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
 
     std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, m_catchupUrlFormatString);
     if (!catchupUrl.empty())
