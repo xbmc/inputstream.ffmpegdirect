@@ -126,9 +126,7 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
   //   checkStreamInfo = false;
   // }
 
-Log(LOGLEVEL_NOTICE, "AttemptOpen");
   m_opened = Open(checkStreamInfo);
-Log(LOGLEVEL_NOTICE, "AttemptOpen %d", m_opened);
 
   return m_opened;
 }
@@ -187,7 +185,7 @@ INPUTSTREAM_INFO FFmpegStream::GetStream(int streamid)
     0, 0, 0, 0, 0,
     CRYPTO_INFO::CRYPTO_KEY_SYSTEM_NONE ,0 ,0 ,0};
 
-  Log(LOGLEVEL_NOTICE, "GetStream(%d)", streamid);
+  Log(LOGLEVEL_DEBUG, "GetStream(%d)", streamid);
 
   DemuxStream* stream = nullptr;
   auto streamPair = m_streams.find(streamid);
@@ -308,7 +306,6 @@ DemuxPacket* FFmpegStream::DemuxRead()
 
       if (IsProgramChange())
       {
-        Log(LOGLEVEL_NOTICE, "CDVDDemuxFFmpeg::Read() stream change XXXXX");
         av_dump_format(m_pFormatContext, 0, CURL::GetRedacted(m_streamUrl).c_str(), 0);
 
         // update streams

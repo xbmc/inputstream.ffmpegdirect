@@ -200,7 +200,7 @@ void CInputStreamLibavformat::DemuxSetSpeed(int speed)
 
 void CInputStreamLibavformat::SetVideoResolution(int width, int height)
 {
-  Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect: SetVideoResolution()");
+  Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect: SetVideoResolution()");
 
   m_videoWidth = width;
   m_videoHeight = height;
