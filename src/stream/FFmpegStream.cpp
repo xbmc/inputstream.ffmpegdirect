@@ -111,7 +111,7 @@ FFmpegStream::~FFmpegStream()
 
 bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty)
 {
-  kodi::Log(ADDON_LOG_DEBUG, "inputstream.ffmpegdirect: OpenStream()");
+  Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect: OpenStream()");
 
   m_streamUrl = streamUrl;
   m_mimeType = mimeType;
@@ -147,7 +147,7 @@ void FFmpegStream::Close()
 
 void FFmpegStream::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
 {
-  kodi::Log(ADDON_LOG_DEBUG, "GetCapabilities()");
+  Log(LOGLEVEL_DEBUG, "GetCapabilities()");
   caps.m_mask = INPUTSTREAM_CAPABILITIES::SUPPORTS_IDEMUX |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_IDISPLAYTIME |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME |
@@ -840,30 +840,72 @@ bool FFmpegStream::OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptC
 
   CURL url;
   url.Parse(m_streamUrl);
+  std::string strFile = m_streamUrl;
 
-  m_pFormatContext->flags |= AVFMT_FLAG_PRIV_OPT;
-  if (avformat_open_input(&m_pFormatContext, m_streamUrl.c_str(), iformat, &options) < 0)
+  int result = -1;
+  if (url.IsProtocol("mms"))
   {
-    Log(LOGLEVEL_DEBUG, "Error, could not open file %s", CURL::GetRedacted(m_streamUrl).c_str());
-    Dispose();
-    av_dict_free(&options);
-    return false;
+    // try mmsh, then mmst
+    url.SetProtocol("mmsh");
+    url.SetProtocolOptions("");
+    result = avformat_open_input(&m_pFormatContext, url.Get().c_str(), iformat, &options);
+    if (result < 0)
+    {
+      url.SetProtocol("mmst");
+      strFile = url.Get();
+    }
   }
-
-  av_dict_free(&options);
-  avformat_close_input(&m_pFormatContext);
-  m_pFormatContext = avformat_alloc_context();
-  m_pFormatContext->interrupt_callback = int_cb;
-  m_pFormatContext->flags &= ~AVFMT_FLAG_PRIV_OPT;
-  options = GetFFMpegOptionsFromInput();
-  av_dict_set_int(&options, "load_all_variants", 0, AV_OPT_SEARCH_CHILDREN);
-
-  if (avformat_open_input(&m_pFormatContext, m_streamUrl.c_str(), iformat, &options) < 0)
+  else if (url.IsProtocol("udp") || url.IsProtocol("rtp"))
   {
-    Log(LOGLEVEL_DEBUG, "Error, could not open file (2) %s", CURL::GetRedacted(m_streamUrl).c_str());
-    Dispose();
+    std::string strURL = url.Get();
+    Log(LOGLEVEL_DEBUG, "CDVDDemuxFFmpeg::Open() UDP/RTP Original URL '%s'", strURL.c_str());
+    size_t found = strURL.find("://");
+    if (found != std::string::npos)
+    {
+      size_t start = found + 3;
+      found = strURL.find("@");
+
+      if (found != std::string::npos && found > start)
+      {
+        // sourceip found
+        std::string strSourceIp = strURL.substr(start, found - start);
+
+        strFile = strURL.substr(0, start);
+        strFile += strURL.substr(found);
+        if(strFile.back() == '/')
+          strFile.pop_back();
+        strFile += "?sources=";
+        strFile += strSourceIp;
+        Log(LOGLEVEL_DEBUG, "CDVDDemuxFFmpeg::Open() UDP/RTP URL '%s'", strFile.c_str());
+      }
+    }
+  }
+  if (result < 0)
+  {
+    m_pFormatContext->flags |= AVFMT_FLAG_PRIV_OPT;
+    if (avformat_open_input(&m_pFormatContext, m_streamUrl.c_str(), iformat, &options) < 0)
+    {
+      Log(LOGLEVEL_DEBUG, "Error, could not open file %s", CURL::GetRedacted(m_streamUrl).c_str());
+      Dispose();
+      av_dict_free(&options);
+      return false;
+    }
+
     av_dict_free(&options);
-    return false;
+    avformat_close_input(&m_pFormatContext);
+    m_pFormatContext = avformat_alloc_context();
+    m_pFormatContext->interrupt_callback = int_cb;
+    m_pFormatContext->flags &= ~AVFMT_FLAG_PRIV_OPT;
+    options = GetFFMpegOptionsFromInput();
+    av_dict_set_int(&options, "load_all_variants", 0, AV_OPT_SEARCH_CHILDREN);
+
+    if (avformat_open_input(&m_pFormatContext, m_streamUrl.c_str(), iformat, &options) < 0)
+    {
+      Log(LOGLEVEL_DEBUG, "Error, could not open file (2) %s", CURL::GetRedacted(m_streamUrl).c_str());
+      Dispose();
+      av_dict_free(&options);
+      return false;
+    }
   }
 
   av_dict_free(&options);

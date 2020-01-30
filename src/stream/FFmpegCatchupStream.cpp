@@ -126,7 +126,7 @@ DemuxPacket* FFmpegCatchupStream::DemuxRead()
 
 void FFmpegCatchupStream::GetCapabilities(INPUTSTREAM_CAPABILITIES& caps)
 {
-  kodi::Log(ADDON_LOG_DEBUG, "GetCapabilities()");
+  Log(LOGLEVEL_DEBUG, "GetCapabilities()");
   caps.m_mask = INPUTSTREAM_CAPABILITIES::SUPPORTS_IDEMUX |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_IDISPLAYTIME |
     INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME |
