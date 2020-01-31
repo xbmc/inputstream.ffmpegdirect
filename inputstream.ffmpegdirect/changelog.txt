@@ -1,3 +1,6 @@
+v1.5.0
+- Update: FFmpeg-n4.2.2, patches refreshed
+
 v1.4.1
 - Update: Cleanup logging
 

@@ -1,1 +1,1 @@
-ffmpeg https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz
+ffmpeg https://github.com/FFmpeg/FFmpeg/archive/n4.2.2.tar.gz
