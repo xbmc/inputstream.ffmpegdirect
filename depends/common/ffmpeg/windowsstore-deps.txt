@@ -5,3 +5,4 @@ openssl
 mingw
 xz-utils
 zlib
+pthreads
