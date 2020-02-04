@@ -5,7 +5,8 @@ This is a [Kodi](http://kodi.tv) input stream addon for streams that can be open
 The addon also has support for Archive/Catchup services where there is a replay window (usually in days) and can timeshift across that span.
 
 [![Build Status](https://travis-ci.org/xbmc/inputstream.ffmpegdirect.svg?branch=master)](https://travis-ci.org/xbmc/inputstream.ffmpegdirect)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/xbmc/inputstream.ffmpegdirect?svg=true)](https://ci.appveyor.com/project/xbmc/inputstream-ffmpegdirect)
+[![Build Status](https://dev.azure.com/alwinus/binary-addons/_apis/build/status/xbmc.inputstream.ffmpegdirect?branchName=Matrix)](https://dev.azure.com/alwinus/binary-addons/_build/latest?definitionId=4&branchName=Matrix)
+<!--- [![Build Status](https://ci.appveyor.com/api/projects/status/github/xbmc/inputstream.ffmpegdirect?svg=true)](https://ci.appveyor.com/project/xbmc/inputstream-ffmpegdirect) -->
 
 ## Build instructions
 
