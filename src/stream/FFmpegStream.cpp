@@ -837,7 +837,8 @@ bool FFmpegStream::OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptC
 
   CURL url;
   url.Parse(m_streamUrl);
-  std::string strFile = m_streamUrl;
+  url.SetProtocolOptions("");
+  std::string strFile = url.Get();
 
   int result = -1;
   if (url.IsProtocol("mms"))
