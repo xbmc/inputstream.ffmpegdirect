@@ -23,7 +23,8 @@ public:
                       time_t catchupBufferEndTime,
                       long long catchupBufferOffset,
                       int timezoneShift,
-                      int defaultProgrammeDuration);
+                      int defaultProgrammeDuration,
+                      std::string& m_programmeCatchupId);
   ~FFmpegCatchupStream();
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
@@ -53,6 +54,7 @@ protected:
   long long m_catchupBufferOffset = 0;
   int m_timezoneShift = 0;
   int m_defaultProgrammeDuration = 0;
+  std::string m_programmeCatchupId;
 
   bool m_bIsOpening;
   double m_seekOffset;

@@ -31,6 +31,7 @@ static const std::string CATCHUP_BUFFER_END_TIME = "inputstream.ffmpegdirect.cat
 static const std::string CATCHUP_BUFFER_OFFSET = "inputstream.ffmpegdirect.catchup_buffer_offset";
 static const std::string TIMEZONE_SHIFT = "inputstream.ffmpegdirect.timezone_shift";
 static const std::string DEFAULT_PROGRAMME_DURATION = "inputstream.ffmpegdirect.default_programme_duration";
+static const std::string PROGRAMME_CATCHUP_ID = "inputstream.ffmpegdirect.programme_catchup_id";
 
 enum class StreamMode
   : int // same type as addon settings
@@ -107,6 +108,7 @@ private:
   long long m_catchupBufferOffset = 0;
   int m_timezoneShiftSecs = 0;
   int m_defaultProgrammeDurationSecs = 3600; //One hour
+  std::string m_programmeCatchupId;
 
   int m_videoWidth;
   int m_videoHeight;

@@ -108,6 +108,10 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
       tempString = props.m_ListItemProperties[i].m_strValue;
       m_defaultProgrammeDurationSecs = std::stoi(tempString);
     }
+    else if (PROGRAMME_CATCHUP_ID == props.m_ListItemProperties[i].m_strKey)
+    {
+      m_programmeCatchupId = props.m_ListItemProperties[i].m_strValue;
+    }
   }
 
   m_streamUrl = props.m_strURL;
@@ -123,7 +127,8 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
                                                      m_catchupBufferEndTime,
                                                      m_catchupBufferOffset,
                                                      m_timezoneShiftSecs,
-                                                     m_defaultProgrammeDurationSecs);
+                                                     m_defaultProgrammeDurationSecs,
+                                                     m_programmeCatchupId);
   else
     m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this));
 
