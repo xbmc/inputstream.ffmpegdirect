@@ -18,6 +18,10 @@
     <platform>@PLATFORM@</platform>
     <license>GPL-2.0</license>
     <source>https://github.com/xbmc/inputstream.ffmpegdirect</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
     <news>
 v1.5.0
 - Update: FFmpeg-n4.2.2, patches refreshed
