@@ -73,6 +73,9 @@ include_directories(${p8-platform_INCLUDE_DIRS}
                     ${LIBXML2_INCLUDE_DIRS}
                     ${KODI_INCLUDE_DIR}/..) # Hack way with "/..", need bigger Kodi cmake rework to match right include ways (becomes done in future)
 
+# to see linker output
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v")
+
 # We don't add FFMPEG_LIBRARIES here as we handle them at the end
 list(APPEND DEPLIBS ${p8-platform_LIBRARIES}
                     ${ZLIB_LIBRARIES}
@@ -83,18 +86,13 @@ if(WIN32)
   list(APPEND DEPLIBS ${ICONV_LIBRARIES}
                       ${OPENSSL_LIBRARIES}
                       ${LIBXML2_LIBRARIES}
-                      ${FFMPEG_LIBRARIES})
-endif()
-
-# to see linker output
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v")
-
-if(CORE_SYSTEM_NAME MATCHES "windows")
-  list(APPEND DEPLIBS Winmm.lib WS2_32.lib Bcrypt.lib Secur32.lib)
-endif()
-
-if(CORE_SYSTEM_NAME STREQUAL osx OR
-   CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+                      ${FFMPEG_LIBRARIES}
+                      Winmm.lib
+                      WS2_32.lib
+                      Bcrypt.lib
+                      Secur32.lib)
+elseif(CORE_SYSTEM_NAME STREQUAL osx OR
+       CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   find_library(AUDIOTOOLBOX AudioToolbox)
   find_library(COREFOUNDATION CoreFoundation)
   find_library(COREMEDIA CoreMedia)
@@ -110,6 +108,8 @@ if(CORE_SYSTEM_NAME STREQUAL osx OR
                       ${SECURITY})
 
   list(APPEND DEPLIBS ${AUDIOTOOLBOX} ${COREFOUNDATION} ${COREMEDIA} ${VIDEOTOOLBOX} ${SECURITY})
+else()
+  list(APPEND DEPLIBS ${FFMPEG_LIBRARIES})
 endif()
 
 addon_version(inputstream.ffmpegdirect CATCHUP)
