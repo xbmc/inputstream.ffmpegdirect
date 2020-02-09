@@ -1,3 +1,17 @@
+v1.7.0
+- Update: remove unrequired gnutls patch
+- Fixed: Replace ;'s workaround for cmake bug for ffmpeg LDFLAGS
+- Added: Patch for ffmpeg using rtp protocol where sources option is not retained
+- Update: Document programme_catchup_id stream property in README
+- Added: Support for timestamp catchup format specifier
+- Added: Support duration units format specifer to convert duration to mins or hours
+- Update: Update darwin deprecated thread call
+- Fixed: validate duration format specifier and cap to time now
+- Added: Add optional stream property for live catchup url
+- Added: Support for offset catchup format specifier
+- Fixed: Disable Neon for arm for iOS/tvOS
+- Fixed: Raspberry Pi build
+
 v1.6.0
 - Added: Support catchup-id stream property
 - Added: Enable pthreads for FFmpeg on Windows to allow circular buffer for UDP streams
@@ -9,7 +23,6 @@ v1.6.0
 - Fixed: Wrong mms/rtp/udp url being used
 - Fixed: Android linkage for ffmpeg broken
 - Fixed: Travis status image
-
 - Update: To gnutls-3.6.12
 
 v1.5.0
