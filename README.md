@@ -99,6 +99,7 @@ http://127.0.0.1:3002/mystream.m3u8
 - `catchup_buffer_offset`: The offset from the catchup buffer start time where playback should begin.
 - `timezone_shift`: The value in seconds to shift the catchup times by for your timezone. Valid values range from -43200 to 50400 (from -12 hours to +14 hours).
 - `default_programme_duration`: The the programme duration is unknown use this default value in seconds instead. If this value is not provided 3600 will be used.
+- `programme_catchup_id`: For providers that require a programme specifc id the following value can be used in the url format string.
 
 Note: setting `playback_as_live` to `true` only makes sense when the catchup start and end times are set to the size of the catchup windows (e.g. 3 days). If the catchup start and end times are set to the programme times then `playback_as_live` will have little effect.
 
