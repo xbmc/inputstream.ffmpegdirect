@@ -837,7 +837,8 @@ bool FFmpegStream::OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptC
 
   CURL url;
   url.Parse(m_streamUrl);
-  std::string strFile = m_streamUrl;
+  url.SetProtocolOptions("");
+  std::string strFile = url.Get();
 
   int result = -1;
   if (url.IsProtocol("mms"))
@@ -880,9 +881,9 @@ bool FFmpegStream::OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptC
   if (result < 0)
   {
     m_pFormatContext->flags |= AVFMT_FLAG_PRIV_OPT;
-    if (avformat_open_input(&m_pFormatContext, m_streamUrl.c_str(), iformat, &options) < 0)
+    if (avformat_open_input(&m_pFormatContext, strFile.c_str(), iformat, &options) < 0)
     {
-      Log(LOGLEVEL_DEBUG, "Error, could not open file %s", CURL::GetRedacted(m_streamUrl).c_str());
+      Log(LOGLEVEL_DEBUG, "Error, could not open file %s", CURL::GetRedacted(strFile).c_str());
       Dispose();
       av_dict_free(&options);
       return false;
@@ -896,9 +897,9 @@ bool FFmpegStream::OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptC
     options = GetFFMpegOptionsFromInput();
     av_dict_set_int(&options, "load_all_variants", 0, AV_OPT_SEARCH_CHILDREN);
 
-    if (avformat_open_input(&m_pFormatContext, m_streamUrl.c_str(), iformat, &options) < 0)
+    if (avformat_open_input(&m_pFormatContext, strFile.c_str(), iformat, &options) < 0)
     {
-      Log(LOGLEVEL_DEBUG, "Error, could not open file (2) %s", CURL::GetRedacted(m_streamUrl).c_str());
+      Log(LOGLEVEL_DEBUG, "Error, could not open file (2) %s", CURL::GetRedacted(strFile).c_str());
       Dispose();
       av_dict_free(&options);
       return false;

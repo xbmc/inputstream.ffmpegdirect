@@ -1,3 +1,17 @@
+v1.6.0
+- Added: Support catchup-id stream property
+- Added: Enable pthreads for FFmpeg on Windows to allow circular buffer for UDP streams
+- Added: Fanart and icon
+- Added: Move from appveyor to Azure DevOps to windows CI
+- Added: Source and license to addon.xml
+- Added: p8-platform to addon depends
+- Fixed: Remove kodi protocol options before opening URL
+- Fixed: Wrong mms/rtp/udp url being used
+- Fixed: Android linkage for ffmpeg broken
+- Fixed: Travis status image
+
+- Update: To gnutls-3.6.12
+
 v1.5.0
 - Update: FFmpeg-n4.2.2, patches refreshed
 
@@ -13,7 +27,7 @@ v1.3.0
 - Added: Support for Windows and iOS
 - Update: To gmp-6.2.0
 - Update: To nettle-3.5.1
-- Update: To gnutls-6.3.11.1
+- Update: To gnutls-3.6.11.1
 
 v1.2.1
 - Fixed: Support for XCode build with GCC via travis

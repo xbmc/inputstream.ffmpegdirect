@@ -50,13 +50,15 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
                                          time_t catchupBufferEndTime,
                                          long long catchupBufferOffset,
                                          int timezoneShift,
-                                         int defaultProgrammeDuration)
+                                         int defaultProgrammeDuration,
+                                         std::string& programmeCatchupId)
   : FFmpegStream(demuxPacketManager), m_bIsOpening(false), m_seekOffset(0),
     m_defaultUrl(defaultUrl), m_playbackAsLive(playbackAsLive),
     m_programmeStartTime(programmeStartTime), m_programmeEndTime(programmeEndTime),
     m_catchupUrlFormatString(catchupUrlFormatString),
     m_catchupBufferStartTime(catchupBufferStartTime), m_catchupBufferEndTime(catchupBufferEndTime),
-    m_catchupBufferOffset(catchupBufferOffset), m_timezoneShift(timezoneShift), m_defaultProgrammeDuration(defaultProgrammeDuration)
+    m_catchupBufferOffset(catchupBufferOffset), m_timezoneShift(timezoneShift), 
+    m_defaultProgrammeDuration(defaultProgrammeDuration), m_programmeCatchupId(programmeCatchupId)
 {
 }
 
@@ -333,6 +335,11 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
     Log(LOGLEVEL_DEBUG, "Offset Time - \"%lld\" - %s", static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
 
     std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, m_catchupUrlFormatString);
+
+    static const std::regex CATCHUP_ID_REGEX("\\{catchup-id\\}");
+    if (!m_programmeCatchupId.empty())
+      catchupUrl = std::regex_replace(catchupUrl, CATCHUP_ID_REGEX, m_programmeCatchupId);
+
     if (!catchupUrl.empty())
       return catchupUrl;
   }
