@@ -57,7 +57,7 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
     m_programmeStartTime(programmeStartTime), m_programmeEndTime(programmeEndTime),
     m_catchupUrlFormatString(catchupUrlFormatString),
     m_catchupBufferStartTime(catchupBufferStartTime), m_catchupBufferEndTime(catchupBufferEndTime),
-    m_catchupBufferOffset(catchupBufferOffset), m_timezoneShift(timezoneShift), 
+    m_catchupBufferOffset(catchupBufferOffset), m_timezoneShift(timezoneShift),
     m_defaultProgrammeDuration(defaultProgrammeDuration), m_programmeCatchupId(programmeCatchupId)
 {
 }
@@ -241,17 +241,16 @@ bool FFmpegCatchupStream::CanSeekStream()
 namespace
 {
 
-void FormatOffset(time_t tTime, std::string &urlFormatString)
+void FormatUnits(time_t tTime, const std::string& name, std::string &urlFormatString)
 {
-  const std::string regexStr = ".*(\\{offset:(\\d+)\\}).*";
+  const std::regex timeSecondsRegex(".*(\\{" + name + ":(\\d+)\\}).*");
   std::cmatch mr;
-  std::regex rx(regexStr);
-  if (std::regex_match(urlFormatString.c_str(), mr, rx) && mr.length() >= 3)
+  if (std::regex_match(urlFormatString.c_str(), mr, timeSecondsRegex) && mr.length() >= 3)
   {
-    std::string offsetExp = mr[1].first;
+    std::string timeSecondsExp = mr[1].first;
     std::string second = mr[1].second;
     if (second.length() > 0)
-      offsetExp = offsetExp.erase(offsetExp.find(second));
+      timeSecondsExp = timeSecondsExp.erase(timeSecondsExp.find(second));
     std::string dividerStr = mr[2].first;
     second = mr[2].second;
     if (second.length() > 0)
@@ -260,10 +259,10 @@ void FormatOffset(time_t tTime, std::string &urlFormatString)
     const time_t divider = stoi(dividerStr);
     if (divider != 0)
     {
-      time_t offset = tTime / divider;
-      if (offset < 0)
-        offset = 0;
-      urlFormatString.replace(urlFormatString.find(offsetExp), offsetExp.length(), std::to_string(offset));
+      time_t units = tTime / divider;
+      if (units < 0)
+        units = 0;
+      urlFormatString.replace(urlFormatString.find(timeSecondsExp), timeSecondsExp.length(), std::to_string(units));
     }
   }
 }
@@ -313,7 +312,8 @@ std::string FormatDateTime(time_t dateTimeEpg, time_t duration, const std::strin
   FormatUtc("{lutc}", dateTimeNow, formattedUrl);
   FormatUtc("${timestamp}", dateTimeNow, formattedUrl);
   FormatUtc("{duration}", duration, formattedUrl);
-  FormatOffset(dateTimeNow - dateTimeEpg, formattedUrl);
+  FormatUnits(duration, "duration", formattedUrl);
+  FormatUnits(dateTimeNow - dateTimeEpg, "offset", formattedUrl);
 
   Log(LOGLEVEL_DEBUG, "CArchiveConfig::FormatDateTime - \"%s\"", formattedUrl.c_str());
 
