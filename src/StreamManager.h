@@ -109,7 +109,7 @@ private:
   time_t m_catchupBufferEndTime = 0;
   long long m_catchupBufferOffset = 0;
   int m_timezoneShiftSecs = 0;
-  int m_defaultProgrammeDurationSecs = 3600; //One hour
+  int m_defaultProgrammeDurationSecs = 4 * 60 * 60; //Four hours
   std::string m_programmeCatchupId;
 
   int m_videoWidth;

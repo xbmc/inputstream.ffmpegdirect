@@ -332,8 +332,14 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
   if (m_catchupBufferStartTime > 0 && offset < (timeNow - 5))
   {
     time_t duration = m_defaultProgrammeDuration;
-    if (m_programmeStartTime > 0 && m_programmeStartTime < m_programmeEndTime)
+    // use the programme duration if it's valid for the offset
+    if (m_programmeStartTime > 0 && m_programmeStartTime < m_programmeEndTime &&
+        m_programmeStartTime <= offset && m_programmeEndTime >= offset)
       duration = m_programmeEndTime - m_programmeStartTime;
+
+    // cap duration to timeNow
+    if (offset + duration > timeNow)
+      duration = timeNow - offset;
 
     // if we have a different URL format to use when we are close to live
     // use if we are within 4 hours of a live stream
