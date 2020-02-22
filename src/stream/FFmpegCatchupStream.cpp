@@ -46,6 +46,7 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
                                          time_t programmeStartTime,
                                          time_t programmeEndTime,
                                          std::string& catchupUrlFormatString,
+                                         std::string& catchupUrlNearLiveFormatString,
                                          time_t catchupBufferStartTime,
                                          time_t catchupBufferEndTime,
                                          long long catchupBufferOffset,
@@ -56,6 +57,7 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
     m_defaultUrl(defaultUrl), m_playbackAsLive(playbackAsLive),
     m_programmeStartTime(programmeStartTime), m_programmeEndTime(programmeEndTime),
     m_catchupUrlFormatString(catchupUrlFormatString),
+    m_catchupUrlNearLiveFormatString(catchupUrlNearLiveFormatString),
     m_catchupBufferStartTime(catchupBufferStartTime), m_catchupBufferEndTime(catchupBufferEndTime),
     m_catchupBufferOffset(catchupBufferOffset), m_timezoneShift(timezoneShift),
     m_defaultProgrammeDuration(defaultProgrammeDuration), m_programmeCatchupId(programmeCatchupId)
@@ -333,9 +335,15 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
     if (m_programmeStartTime > 0 && m_programmeStartTime < m_programmeEndTime)
       duration = m_programmeEndTime - m_programmeStartTime;
 
+    // if we have a different URL format to use when we are close to live
+    // use if we are within 4 hours of a live stream
+    std::string urlFormatString = m_catchupUrlFormatString;
+    if (offset > (timeNow - m_defaultProgrammeDuration) && !m_catchupUrlNearLiveFormatString.empty())
+      urlFormatString = m_catchupUrlNearLiveFormatString;
+
     Log(LOGLEVEL_DEBUG, "Offset Time - \"%lld\" - %s", static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
 
-    std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, m_catchupUrlFormatString);
+    std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, urlFormatString);
 
     static const std::regex CATCHUP_ID_REGEX("\\{catchup-id\\}");
     if (!m_programmeCatchupId.empty())
