@@ -315,6 +315,7 @@ std::string FormatDateTime(time_t dateTimeEpg, time_t duration, const std::strin
   FormatUtc("${timestamp}", dateTimeNow, formattedUrl);
   FormatUtc("{duration}", duration, formattedUrl);
   FormatUnits(duration, "duration", formattedUrl);
+  FormatUtc("${offset}", dateTimeNow - dateTimeEpg, formattedUrl);
   FormatUnits(dateTimeNow - dateTimeEpg, "offset", formattedUrl);
 
   Log(LOGLEVEL_DEBUG, "CArchiveConfig::FormatDateTime - \"%s\"", formattedUrl.c_str());
