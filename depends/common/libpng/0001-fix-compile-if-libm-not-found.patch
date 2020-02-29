@@ -1,0 +1,13 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -45,6 +45,9 @@ endif()
+ 
+ if(UNIX AND NOT APPLE AND NOT BEOS AND NOT HAIKU)
+   find_library(M_LIBRARY m)
++  if(NOT M_LIBRARY)
++    set(M_LIBRARY "")
++  endif()
+ else()
+   # libm is not needed and/or not available
+   set(M_LIBRARY "")
+
