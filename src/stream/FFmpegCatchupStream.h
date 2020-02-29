@@ -19,6 +19,7 @@ public:
                       time_t programmeStartTime,
                       time_t programmeEndTime,
                       std::string& catchupUrlFormatString,
+                      std::string& catchupUrlNearLiveFormatString,
                       time_t catchupBufferStartTime,
                       time_t catchupBufferEndTime,
                       long long catchupBufferOffset,
@@ -49,6 +50,7 @@ protected:
   time_t m_programmeStartTime = 0;
   time_t m_programmeEndTime = 0;
   std::string m_catchupUrlFormatString;
+  std::string m_catchupUrlNearLiveFormatString;
   time_t m_catchupBufferStartTime = 0;
   time_t m_catchupBufferEndTime = 0;
   long long m_catchupBufferOffset = 0;

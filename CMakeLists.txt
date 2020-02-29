@@ -121,10 +121,10 @@ build_addon(inputstream.ffmpegdirect CATCHUP DEPLIBS)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Due to a bug in CMake and frameworks on OSX we strip them from FFMPEG_LDFLAGS
-  # and along with the ';''s and allow CMake to add them back
   string(REGEX REPLACE "-framework;([A-Za-z0-9_]+);?" "" FFMPEG_LDFLAGS "${FFMPEG_LDFLAGS}")
-  string(REGEX REPLACE ";" " " FFMPEG_LDFLAGS "${FFMPEG_LDFLAGS}")
 endif()
+# Now remove ';''s for all platforms and allow CMake to add them back
+string(REGEX REPLACE ";" " " FFMPEG_LDFLAGS "${FFMPEG_LDFLAGS}")
 set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS "${FFMPEG_LDFLAGS}")
 
 if(CORE_SYSTEM_NAME STREQUAL windowsstore)

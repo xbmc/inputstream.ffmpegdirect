@@ -83,6 +83,10 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
     {
       m_catchupUrlFormatString = props.m_ListItemProperties[i].m_strValue;
     }
+    else if (CATCHUP_URL_NEAR_LIVE_FORMAT_STRING == props.m_ListItemProperties[i].m_strKey)
+    {
+      m_catchupUrlNearLiveFormatString = props.m_ListItemProperties[i].m_strValue;
+    }
     else if (CATCHUP_BUFFER_START_TIME == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
@@ -123,6 +127,7 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
                                                      m_programmeStartTime,
                                                      m_programmeEndTime,
                                                      m_catchupUrlFormatString,
+                                                     m_catchupUrlNearLiveFormatString,
                                                      m_catchupBufferStartTime,
                                                      m_catchupBufferEndTime,
                                                      m_catchupBufferOffset,

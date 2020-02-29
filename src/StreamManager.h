@@ -26,6 +26,7 @@ static const std::string PLAYBACK_AS_LIVE = "inputstream.ffmpegdirect.playback_a
 static const std::string PROGRAMME_START_TIME = "inputstream.ffmpegdirect.programme_start_time";
 static const std::string PROGRAMME_END_TIME = "inputstream.ffmpegdirect.programme_end_time";
 static const std::string CATCHUP_URL_FORMAT_STRING = "inputstream.ffmpegdirect.catchup_url_format_string";
+static const std::string CATCHUP_URL_NEAR_LIVE_FORMAT_STRING = "inputstream.ffmpegdirect.catchup_url_near_live_format_string";
 static const std::string CATCHUP_BUFFER_START_TIME = "inputstream.ffmpegdirect.catchup_buffer_start_time";
 static const std::string CATCHUP_BUFFER_END_TIME = "inputstream.ffmpegdirect.catchup_buffer_end_time";
 static const std::string CATCHUP_BUFFER_OFFSET = "inputstream.ffmpegdirect.catchup_buffer_offset";
@@ -103,11 +104,12 @@ private:
   time_t m_programmeStartTime = 0;
   time_t m_programmeEndTime = 0;
   std::string m_catchupUrlFormatString;
+  std::string m_catchupUrlNearLiveFormatString;
   time_t m_catchupBufferStartTime = 0;
   time_t m_catchupBufferEndTime = 0;
   long long m_catchupBufferOffset = 0;
   int m_timezoneShiftSecs = 0;
-  int m_defaultProgrammeDurationSecs = 3600; //One hour
+  int m_defaultProgrammeDurationSecs = 4 * 60 * 60; //Four hours
   std::string m_programmeCatchupId;
 
   int m_videoWidth;

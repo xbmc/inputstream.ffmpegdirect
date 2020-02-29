@@ -46,6 +46,7 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
                                          time_t programmeStartTime,
                                          time_t programmeEndTime,
                                          std::string& catchupUrlFormatString,
+                                         std::string& catchupUrlNearLiveFormatString,
                                          time_t catchupBufferStartTime,
                                          time_t catchupBufferEndTime,
                                          long long catchupBufferOffset,
@@ -56,8 +57,9 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
     m_defaultUrl(defaultUrl), m_playbackAsLive(playbackAsLive),
     m_programmeStartTime(programmeStartTime), m_programmeEndTime(programmeEndTime),
     m_catchupUrlFormatString(catchupUrlFormatString),
+    m_catchupUrlNearLiveFormatString(catchupUrlNearLiveFormatString),
     m_catchupBufferStartTime(catchupBufferStartTime), m_catchupBufferEndTime(catchupBufferEndTime),
-    m_catchupBufferOffset(catchupBufferOffset), m_timezoneShift(timezoneShift), 
+    m_catchupBufferOffset(catchupBufferOffset), m_timezoneShift(timezoneShift),
     m_defaultProgrammeDuration(defaultProgrammeDuration), m_programmeCatchupId(programmeCatchupId)
 {
 }
@@ -241,17 +243,16 @@ bool FFmpegCatchupStream::CanSeekStream()
 namespace
 {
 
-void FormatOffset(time_t tTime, std::string &urlFormatString)
+void FormatUnits(time_t tTime, const std::string& name, std::string &urlFormatString)
 {
-  const std::string regexStr = ".*(\\{offset:(\\d+)\\}).*";
+  const std::regex timeSecondsRegex(".*(\\{" + name + ":(\\d+)\\}).*");
   std::cmatch mr;
-  std::regex rx(regexStr);
-  if (std::regex_match(urlFormatString.c_str(), mr, rx) && mr.length() >= 3)
+  if (std::regex_match(urlFormatString.c_str(), mr, timeSecondsRegex) && mr.length() >= 3)
   {
-    std::string offsetExp = mr[1].first;
+    std::string timeSecondsExp = mr[1].first;
     std::string second = mr[1].second;
     if (second.length() > 0)
-      offsetExp = offsetExp.erase(offsetExp.find(second));
+      timeSecondsExp = timeSecondsExp.erase(timeSecondsExp.find(second));
     std::string dividerStr = mr[2].first;
     second = mr[2].second;
     if (second.length() > 0)
@@ -260,10 +261,10 @@ void FormatOffset(time_t tTime, std::string &urlFormatString)
     const time_t divider = stoi(dividerStr);
     if (divider != 0)
     {
-      time_t offset = tTime / divider;
-      if (offset < 0)
-        offset = 0;
-      urlFormatString.replace(urlFormatString.find(offsetExp), offsetExp.length(), std::to_string(offset));
+      time_t units = tTime / divider;
+      if (units < 0)
+        units = 0;
+      urlFormatString.replace(urlFormatString.find(timeSecondsExp), timeSecondsExp.length(), std::to_string(units));
     }
   }
 }
@@ -295,28 +296,31 @@ void FormatUtc(const char *str, time_t tTime, std::string &urlFormatString)
 
 std::string FormatDateTime(time_t dateTimeEpg, time_t duration, const std::string &urlFormatString)
 {
-  std::string fomrattedUrl = urlFormatString;
+  std::string formattedUrl = urlFormatString;
 
   const time_t dateTimeNow = std::time(0);
   tm* dateTime = std::localtime(&dateTimeEpg);
 
-  FormatTime('Y', dateTime, fomrattedUrl);
-  FormatTime('m', dateTime, fomrattedUrl);
-  FormatTime('d', dateTime, fomrattedUrl);
-  FormatTime('H', dateTime, fomrattedUrl);
-  FormatTime('M', dateTime, fomrattedUrl);
-  FormatTime('S', dateTime, fomrattedUrl);
-  FormatUtc("{utc}", dateTimeEpg, fomrattedUrl);
-  FormatUtc("${start}", dateTimeEpg, fomrattedUrl);
-  FormatUtc("{utcend}", dateTimeEpg + duration, fomrattedUrl);
-  FormatUtc("${end}", dateTimeEpg + duration, fomrattedUrl);
-  FormatUtc("{lutc}", dateTimeNow, fomrattedUrl);
-  FormatUtc("{duration}", duration, fomrattedUrl);
-  FormatOffset(dateTimeNow - dateTimeEpg, fomrattedUrl);
+  FormatTime('Y', dateTime, formattedUrl);
+  FormatTime('m', dateTime, formattedUrl);
+  FormatTime('d', dateTime, formattedUrl);
+  FormatTime('H', dateTime, formattedUrl);
+  FormatTime('M', dateTime, formattedUrl);
+  FormatTime('S', dateTime, formattedUrl);
+  FormatUtc("{utc}", dateTimeEpg, formattedUrl);
+  FormatUtc("${start}", dateTimeEpg, formattedUrl);
+  FormatUtc("{utcend}", dateTimeEpg + duration, formattedUrl);
+  FormatUtc("${end}", dateTimeEpg + duration, formattedUrl);
+  FormatUtc("{lutc}", dateTimeNow, formattedUrl);
+  FormatUtc("${timestamp}", dateTimeNow, formattedUrl);
+  FormatUtc("{duration}", duration, formattedUrl);
+  FormatUnits(duration, "duration", formattedUrl);
+  FormatUtc("${offset}", dateTimeNow - dateTimeEpg, formattedUrl);
+  FormatUnits(dateTimeNow - dateTimeEpg, "offset", formattedUrl);
 
-  Log(LOGLEVEL_DEBUG, "CArchiveConfig::FormatDateTime - \"%s\"", fomrattedUrl.c_str());
+  Log(LOGLEVEL_DEBUG, "CArchiveConfig::FormatDateTime - \"%s\"", formattedUrl.c_str());
 
-  return fomrattedUrl;
+  return formattedUrl;
 }
 
 } // unnamed namespace
@@ -329,12 +333,24 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
   if (m_catchupBufferStartTime > 0 && offset < (timeNow - 5))
   {
     time_t duration = m_defaultProgrammeDuration;
-    if (m_programmeStartTime > 0 && m_programmeStartTime < m_programmeEndTime)
+    // use the programme duration if it's valid for the offset
+    if (m_programmeStartTime > 0 && m_programmeStartTime < m_programmeEndTime &&
+        m_programmeStartTime <= offset && m_programmeEndTime >= offset)
       duration = m_programmeEndTime - m_programmeStartTime;
+
+    // cap duration to timeNow
+    if (offset + duration > timeNow)
+      duration = timeNow - offset;
+
+    // if we have a different URL format to use when we are close to live
+    // use if we are within 4 hours of a live stream
+    std::string urlFormatString = m_catchupUrlFormatString;
+    if (offset > (timeNow - m_defaultProgrammeDuration) && !m_catchupUrlNearLiveFormatString.empty())
+      urlFormatString = m_catchupUrlNearLiveFormatString;
 
     Log(LOGLEVEL_DEBUG, "Offset Time - \"%lld\" - %s", static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
 
-    std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, m_catchupUrlFormatString);
+    std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, urlFormatString);
 
     static const std::regex CATCHUP_ID_REGEX("\\{catchup-id\\}");
     if (!m_programmeCatchupId.empty())
