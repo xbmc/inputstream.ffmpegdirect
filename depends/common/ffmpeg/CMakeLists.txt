@@ -219,8 +219,7 @@ else()
                           --prefix=[DQ]${CMAKE_INSTALL_PREFIX}[DQ]
                           --arch=${EXTRA_ARCH}
                           --toolchain=msvc
-                          --disable-w32threads
-                          --enable-pthreads
+                          --enable-w32threads
                           --enable-openssl
                           --enable-nonfree
                           --disable-gnutls
