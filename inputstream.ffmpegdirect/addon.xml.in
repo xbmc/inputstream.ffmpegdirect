@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.7.0"
+  version="1.7.1"
   name="Inputstream FFmpeg Direct"
   provider-name="phunkyfish">
   <requires>@ADDON_DEPENDS@</requires>
@@ -23,6 +23,9 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.7.1
+- Fixed: tvOS build
+
 v1.7.0
 - Update: remove unrequired gnutls patch
 - Fixed: Replace ;'s workaround for cmake bug for ffmpeg LDFLAGS
