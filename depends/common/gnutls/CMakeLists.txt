@@ -13,9 +13,13 @@ list(APPEND gnutls_conf CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/include)
 list(APPEND gnutls_conf LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/lib)
 list(APPEND gnutls_conf LIBS=-lgmp)
 
-if(APPLE)
+#if(APPLE)
+#endif()
+
+if(CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   list(APPEND gnutls_conf ac_cv_func_vfork_works=no)
   list(APPEND gnutls_conf ac_cv_func_fork=no)
+  list(APPEND gnutls_conf --disable-hardware-acceleration)
 endif()
 
 include(ExternalProject)

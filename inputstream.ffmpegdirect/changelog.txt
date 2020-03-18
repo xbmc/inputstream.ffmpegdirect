@@ -1,3 +1,6 @@
+v1.7.1
+- Fixed: tvOS build
+
 v1.7.0
 - Update: remove unrequired gnutls patch
 - Fixed: Replace ;'s workaround for cmake bug for ffmpeg LDFLAGS

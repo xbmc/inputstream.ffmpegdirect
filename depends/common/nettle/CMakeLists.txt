@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.5)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
-if(CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+if(CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   list(APPEND nettle_conf -disable-assembler)
 endif()
 
