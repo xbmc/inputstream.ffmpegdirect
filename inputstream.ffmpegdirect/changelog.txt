@@ -1,3 +1,6 @@
+v1.7.2
+- Test
+
 v1.7.1
 - Fixed: tvOS build
 
