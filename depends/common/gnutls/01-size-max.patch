@@ -2,7 +2,7 @@
 +++ b/gl/read-file.c
 @@ -27,6 +27,7 @@
  
- /* Get SIZE_MAX.  */
+ /* Get PTRDIFF_MAX.  */
  #include <stdint.h>
 +#include <limits.h>
  
@@ -12,7 +12,7 @@
 +++ b/src/gl/read-file.c
 @@ -27,6 +27,7 @@
  
- /* Get SIZE_MAX.  */
+ /* Get PTRDIFF_MAX.  */
  #include <stdint.h>
 +#include <limits.h>
  
