@@ -16,7 +16,7 @@
     <summary lang="en_GB">InputStream Client for FFmpeg streams (libavformat)</summary>
     <description lang="en_GB">InputStream Client for streams that can be opened by FFmpeg's libavformat such as plain TS, HLS and DASH (without DRM) streams.&#10;    &#10;The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.&#10;    &#10;For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md&#10;    </description>
     <platform>@PLATFORM@</platform>
-    <license>GPL-2.0</license>
+	  <license>GPL-2.0-or-later</license>
     <source>https://github.com/xbmc/inputstream.ffmpegdirect</source>
     <assets>
       <icon>icon.png</icon>
