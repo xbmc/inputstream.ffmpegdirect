@@ -1,1 +1,1 @@
-gmp http://mirrors.kodi.tv/build-deps/sources/gmp-6.1.2.tar.bz2
+gmp https://gmplib.org/download/gmp/gmp-6.2.0.tar.xz

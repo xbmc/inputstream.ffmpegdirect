@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.7.1"
+  version="1.7.2"
   name="Inputstream FFmpeg Direct"
   provider-name="phunkyfish">
   <requires>@ADDON_DEPENDS@</requires>
@@ -16,13 +16,21 @@
     <summary lang="en_GB">InputStream Client for FFmpeg streams (libavformat)</summary>
     <description lang="en_GB">InputStream Client for streams that can be opened by FFmpeg's libavformat such as plain TS, HLS and DASH (without DRM) streams.&#10;    &#10;The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.&#10;    &#10;For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md&#10;    </description>
     <platform>@PLATFORM@</platform>
-    <license>GPL-2.0</license>
+	  <license>GPL-2.0-or-later</license>
     <source>https://github.com/xbmc/inputstream.ffmpegdirect</source>
     <assets>
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.7.2
+- Update: w32pthreads
+- Fixed: gnutls disable tools for OSX 10.15.4 compatibility
+- Fixed: libxml2 patch for OSX 10.15.4/Xcode 11.4 compatibility
+- Update: SPDX, headers and badges
+- Update: gnutls to 3.6.13
+- Update: gmp on android to 6.2.0
+
 v1.7.1
 - Fixed: tvOS build
 

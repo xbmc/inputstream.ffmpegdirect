@@ -35,6 +35,7 @@ externalproject_add(gnutls
                       --disable-doc
                       --disable-tests
                       --disable-guile
+                      --disable-tools
                       --with-pic
                       ${gnutls_conf})
 

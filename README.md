@@ -1,12 +1,13 @@
+[![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%20v2+-blue.svg)](LICENSE.md)
+[![Build Status](https://travis-ci.org/xbmc/inputstream.ffmpegdirect.svg?branch=Matrix)](https://travis-ci.org/xbmc/inputstream.ffmpegdirect/branches)
+[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.inputstream.ffmpegdirect?branchName=Matrix)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=30&branchName=Matrix)
+[![Build Status](https://jenkins.kodi.tv/view/Addons/job/xbmc/job/inputstream.ffmpegdirect/job/Matrix/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/xbmc%2Finputstream.ffmpegdirect/branches/)
+
 # inputstream.ffmpegdirect addon for Kodi
 
 This is a [Kodi](http://kodi.tv) input stream addon for streams that can be opened by FFmpeg's libavformat, such as plain TS, HLS and DASH streams. Note that the only DASH streams supported are those without DRM.
 
 The addon also has support for Archive/Catchup services where there is a replay window (usually in days) and can timeshift across that span.
-
-[![Build Status](https://travis-ci.org/xbmc/inputstream.ffmpegdirect.svg?branch=Matrix)](https://travis-ci.org/xbmc/inputstream.ffmpegdirect)
-[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.inputstream.ffmpegdirect?branchName=Matrix)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=30&branchName=Matrix)
-<!--- [![Build Status](https://ci.appveyor.com/api/projects/status/github/xbmc/inputstream.ffmpegdirect?svg=true)](https://ci.appveyor.com/project/xbmc/inputstream-ffmpegdirect) -->
 
 ## Build instructions
 
