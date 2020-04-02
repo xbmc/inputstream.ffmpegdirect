@@ -12,6 +12,8 @@ externalproject_add(libxml2
                     SOURCE_DIR ${CMAKE_SOURCE_DIR}
                     CONFIGURE_COMMAND <SOURCE_DIR>/configure
                       --prefix=${CMAKE_INSTALL_PREFIX}
+                      --without-http
+                      --without-ftp
                       --without-python
                       --without-iconv
                       --disable-shared
