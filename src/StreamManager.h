@@ -20,6 +20,7 @@
 static const std::string MIME_TYPE = "inputstream.ffmpegdirect.mime_type";
 static const std::string PROGRAM_NUMBER = "inputstream.ffmpegdirect.program_number";
 static const std::string IS_REALTIME_STREAM = "inputstream.ffmpegdirect.is_realtime_stream";
+static const std::string CHUNK_SIZE_KB = "inputstream.ffmpegdirect.chunk_size_kb";
 static const std::string STREAM_MODE = "inputstream.ffmpegdirect.stream_mode";
 static const std::string DEFAULT_URL = "inputstream.ffmpegdirect.default_url";
 static const std::string PLAYBACK_AS_LIVE = "inputstream.ffmpegdirect.playback_as_live";
@@ -33,6 +34,8 @@ static const std::string CATCHUP_BUFFER_OFFSET = "inputstream.ffmpegdirect.catch
 static const std::string TIMEZONE_SHIFT = "inputstream.ffmpegdirect.timezone_shift";
 static const std::string DEFAULT_PROGRAMME_DURATION = "inputstream.ffmpegdirect.default_programme_duration";
 static const std::string PROGRAMME_CATCHUP_ID = "inputstream.ffmpegdirect.programme_catchup_id";
+
+static const int CHUNK_SIZE_KB_MAX = 128;
 
 enum class StreamMode
   : int // same type as addon settings
@@ -83,6 +86,7 @@ public:
   virtual int64_t LengthStream() override;
   virtual void PauseStream(double time) override;
   virtual bool IsRealTimeStream() override; // { return true; }
+  virtual int GetBlockSize() override;
 
   DemuxPacket* AllocateDemuxPacketFromInputStreamAPI(int dataSize) override;
   DemuxPacket* AllocateEncryptedDemuxPacketFromInputStreamAPI(int dataSize, unsigned int encryptedSubsampleCount) override;
@@ -97,6 +101,7 @@ private:
   std::string m_mimeType;
   std::string m_programProperty;
   bool m_isRealTimeStream;
+  int m_streamReadChunkSizeKb = 0;
   StreamMode m_streamMode = StreamMode::NONE;
   std::string m_defaultUrl;
 

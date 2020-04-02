@@ -56,6 +56,13 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
     {
       m_isRealTimeStream = StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "true");
     }
+    else if (CHUNK_SIZE_KB == props.m_ListItemProperties[i].m_strKey)
+    {
+      tempString = props.m_ListItemProperties[i].m_strValue;
+      m_streamReadChunkSizeKb = std::atoi(tempString.c_str());
+      if (m_streamReadChunkSizeKb < 0 || m_streamReadChunkSizeKb > CHUNK_SIZE_KB_MAX)
+        m_streamReadChunkSizeKb = 0;
+    }
     else if (STREAM_MODE == props.m_ListItemProperties[i].m_strKey)
     {
       if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "catchup"))
@@ -299,6 +306,12 @@ void CInputStreamLibavformat::PauseStream(double time)
 bool CInputStreamLibavformat::IsRealTimeStream()
 {
   return m_stream->IsRealTimeStream();
+}
+
+int CInputStreamLibavformat::GetBlockSize() 
+{
+  Log(LOGLEVEL_NOTICE, "Block Size(): %d", m_streamReadChunkSizeKb);
+  return m_streamReadChunkSizeKb * 1024;
 }
 
 /*****************************************************************************************************/
