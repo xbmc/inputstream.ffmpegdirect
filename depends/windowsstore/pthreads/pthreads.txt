@@ -1,1 +1,0 @@
-pthreads http://mirrors.kodi.tv/build-deps/sources/pthreads4w-code-v3.0.0.zip
