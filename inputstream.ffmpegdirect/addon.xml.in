@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.7.2"
+  version="1.8.0"
   name="Inputstream FFmpeg Direct"
   provider-name="phunkyfish">
   <requires>@ADDON_DEPENDS@</requires>
@@ -23,6 +23,10 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.8.0
+- Added: Support Chunk (a.k.a Block) size
+- Update: Remove pthreads library as now w32pthreads is used instead
+
 v1.7.2
 - Update: w32pthreads
 - Fixed: gnutls disable tools for OSX 10.15.4 compatibility
