@@ -14,6 +14,10 @@ externalproject_add(libxml2
                       --prefix=${CMAKE_INSTALL_PREFIX}
                       --without-python
                       --without-iconv
+                      --without-http
+                      --without-ftp
+                      --without-catalog
+                      --without-modules
                       --disable-shared
                       --with-pic
                       ${libxml2_conf})
