@@ -8,7 +8,6 @@ if(WIN32)
   find_package(LibXml2 REQUIRED)
   find_package(Iconv REQUIRED)
   find_package(OpenSSL REQUIRED)
-  find_package(PThreads REQUIRED)
 endif()
 find_package(p8-platform REQUIRED)
 find_package(Kodi REQUIRED)
@@ -88,7 +87,6 @@ if(WIN32)
                       ${OPENSSL_LIBRARIES}
                       ${LIBXML2_LIBRARIES}
                       ${FFMPEG_LIBRARIES}
-                      ${PTHREADS_LIBRARIES}
                       Winmm.lib
                       WS2_32.lib
                       Bcrypt.lib

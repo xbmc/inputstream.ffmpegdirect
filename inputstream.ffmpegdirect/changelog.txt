@@ -1,3 +1,9 @@
+v1.7.3
+- Update: Remove pthreads library as now w32pthreads is used instead
+- Update: libxml2 disable unused components for common depends and remove unrequired patch
+- Update: Update libxml2 to 2.9.10 for windows, disable html module and remove unrequired patches
+- Update: Enable asm for gnutls and nettle for darwin_embedded
+
 v1.7.2
 - Update: w32pthreads
 - Fixed: gnutls disable tools for OSX 10.15.4 compatibility

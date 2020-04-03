@@ -16,7 +16,6 @@ list(APPEND gnutls_conf LIBS=-lgmp)
 if(CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   list(APPEND gnutls_conf ac_cv_func_vfork_works=no)
   list(APPEND gnutls_conf ac_cv_func_fork=no)
-  list(APPEND gnutls_conf --disable-hardware-acceleration)
 endif()
 
 include(ExternalProject)
@@ -38,5 +37,14 @@ externalproject_add(gnutls
                       --disable-tools
                       --with-pic
                       ${gnutls_conf})
+
+if(CORE_SYSTEM_NAME STREQUAL darwin_embedded)
+  externalproject_add_step(gnutls
+                           RunSedCommand
+                           # Apple CCAS requires stripping ; from comment block # to build successfully
+                           COMMAND echo "Stripping semi-colon from comment blocks for Apple CCAS to build successfully"
+                           COMMAND bash -c "sed -ie 's|\\(^# .*\\)[;]\\(.*\\)|\\1\\2|g' ${CMAKE_CURRENT_SOURCE_DIR}/lib/accelerated/aarch64/macosx/*.s"
+                           DEPENDERS configure)
+endif()
 
 install(CODE "Message(Done)")
