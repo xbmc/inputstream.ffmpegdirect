@@ -123,9 +123,33 @@ DemuxPacket* FFmpegCatchupStream::DemuxRead()
     CSingleLock lock(m_critSection);
     pPacket->pts += m_seekOffset;
     pPacket->dts += m_seekOffset;
+
+    m_currentDemuxTime = static_cast<double>(pPacket->pts) / 1000;
   }
 
   return pPacket;
+}
+
+void FFmpegCatchupStream::DemuxSetSpeed(int speed)
+{
+  Log(LOGLEVEL_DEBUG, "DemuxSetSpeed %d", speed);
+
+  if (IsPaused() && speed != DVD_PLAYSPEED_PAUSE)
+  {
+    // Resume Playback
+    Log(LOGLEVEL_DEBUG, "DemuxSetSpeed - Unpause time: %lld", static_cast<long long>(m_pauseStartTime));
+    double temp = 0;
+    DemuxSeekTime(m_pauseStartTime, false, temp);
+  }
+  else if (!IsPaused() && speed == DVD_PLAYSPEED_PAUSE)
+  {
+    // Pause Playback
+    CSingleLock lock(m_critSection);
+    m_pauseStartTime = m_currentDemuxTime;
+    Log(LOGLEVEL_DEBUG, "DemuxSetSpeed - Pause time: %lld", static_cast<long long>(m_pauseStartTime));
+  }
+
+  FFmpegStream::DemuxSetSpeed(speed);
 }
 
 void FFmpegCatchupStream::GetCapabilities(INPUTSTREAM_CAPABILITIES& caps)
@@ -226,16 +250,6 @@ void FFmpegCatchupStream::UpdateCurrentPTS()
   FFmpegStream::UpdateCurrentPTS();
   if (m_currentPts != DVD_NOPTS_VALUE)
     m_currentPts += m_seekOffset;
-}
-
-bool FFmpegCatchupStream::CanPauseStream()
-{
-  return true;
-}
-
-bool FFmpegCatchupStream::CanSeekStream()
-{
-  return true;
 }
 
 namespace
@@ -355,8 +369,12 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
       catchupUrl = std::regex_replace(catchupUrl, CATCHUP_ID_REGEX, m_programmeCatchupId);
 
     if (!catchupUrl.empty())
+    {
+      Log(LOGLEVEL_DEBUG, "Catchup URL: %s", catchupUrl.c_str());
       return catchupUrl;
+    }
   }
 
+  Log(LOGLEVEL_DEBUG, "Default URL: %s", m_defaultUrl.c_str());
   return m_defaultUrl;
 }

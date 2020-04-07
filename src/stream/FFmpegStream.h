@@ -76,13 +76,10 @@ public:
   virtual int64_t GetChapterPos(int ch) override;
   virtual bool SeekChapter(int ch) override;
 
-  virtual bool CanPauseStream() override;
-  virtual bool CanSeekStream() override;
   virtual int ReadStream(uint8_t* buffer, unsigned int bufferSize) override;
   virtual int64_t SeekStream(int64_t position, int whence = SEEK_SET) override;
   virtual int64_t PositionStream() override;
   virtual int64_t LengthStream() override;
-  virtual void PauseStream(double time) override;
   virtual bool IsRealTimeStream() override; // { return true; }
 
   void Dispose();
@@ -94,6 +91,7 @@ public:
 protected:
   virtual std::string GetStreamCodecName(int iStreamId);
   virtual void UpdateCurrentPTS();
+  bool IsPaused() { return m_speed == DVD_PLAYSPEED_PAUSE; }
 
   int64_t m_demuxerId;
   CCriticalSection m_critSection;

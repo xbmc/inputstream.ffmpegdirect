@@ -75,8 +75,6 @@ public:
   virtual int64_t GetChapterPos(int ch) override;
   virtual bool SeekChapter(int ch) override;
 
-  virtual bool CanPauseStream() override;
-  virtual bool CanSeekStream() override;
   virtual int ReadStream(uint8_t* buffer, unsigned int bufferSize) override;
   virtual int64_t SeekStream(int64_t position, int whence = SEEK_SET) override;
   virtual int64_t PositionStream() override;
