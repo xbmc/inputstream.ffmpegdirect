@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.7.3"
+  version="1.8.0"
   name="Inputstream FFmpeg Direct"
   provider-name="phunkyfish">
   <requires>@ADDON_DEPENDS@</requires>
@@ -23,6 +23,12 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.8.0
+- Added: Support live URL in addition to catchup URL
+- Added: Support resuming from pause and to catchup stream
+- Update: Remove CanSeekStream and CanPauseStream for Inputstream API v2.1.0
+- Update: .gitignore
+
 v1.7.3
 - Update: Remove pthreads library as now w32pthreads is used instead
 - Update: libxml2 disable unused components for common depends and remove unrequired patch
