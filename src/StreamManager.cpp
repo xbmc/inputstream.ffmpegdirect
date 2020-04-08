@@ -261,16 +261,6 @@ bool CInputStreamLibavformat::SeekChapter(int ch)
   return m_stream->SeekChapter(ch);
 }
 
-bool CInputStreamLibavformat::CanPauseStream()
-{
-  return m_stream->CanPauseStream();
-}
-
-bool CInputStreamLibavformat::CanSeekStream()
-{
-  return m_stream->CanSeekStream();
-}
-
 int CInputStreamLibavformat::ReadStream(uint8_t* buf, unsigned int size)
 {
   return m_stream->ReadStream(buf, size);
@@ -293,7 +283,7 @@ int64_t CInputStreamLibavformat::LengthStream()
 
 void CInputStreamLibavformat::PauseStream(double time)
 {
-  return m_stream->PauseStream(time);
+  // Unused when inputsream has it's own demuxer
 }
 
 bool CInputStreamLibavformat::IsRealTimeStream()

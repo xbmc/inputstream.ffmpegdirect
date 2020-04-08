@@ -51,14 +51,10 @@ public:
   virtual int64_t GetChapterPos(int ch) = 0;
   virtual bool SeekChapter(int ch) = 0;
 
-
-  virtual bool CanPauseStream() = 0;
-  virtual bool CanSeekStream() = 0;
   virtual int ReadStream(uint8_t* buffer, unsigned int bufferSize) = 0;
   virtual int64_t SeekStream(int64_t position, int whence = SEEK_SET) = 0;
   virtual int64_t PositionStream() = 0;
   virtual int64_t LengthStream() = 0;
-  virtual void PauseStream(double time) = 0;
   virtual bool IsRealTimeStream() = 0;
 
 protected:

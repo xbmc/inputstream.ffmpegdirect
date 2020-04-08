@@ -31,14 +31,12 @@ public:
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
   virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) override;
   virtual DemuxPacket* DemuxRead() override;
+  virtual void DemuxSetSpeed(int speed) override;
   virtual void GetCapabilities(INPUTSTREAM_CAPABILITIES& caps) override;
 
   virtual int64_t SeekStream(int64_t position, int whence = SEEK_SET) override;
   virtual int64_t LengthStream() override;
   virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
-
-  virtual bool CanPauseStream() override;
-  virtual bool CanSeekStream() override;
 
 protected:
   void UpdateCurrentPTS() override;
@@ -60,4 +58,6 @@ protected:
 
   bool m_bIsOpening;
   double m_seekOffset;
+  double m_pauseStartTime;
+  double m_currentDemuxTime;
 };

@@ -522,19 +522,6 @@ bool FFmpegStream::PosTime(int ms)
   return SeekTime(static_cast<double>(ms) * 0.001f);
 }
 
-/* CHATPER */
-
-
-bool FFmpegStream::CanPauseStream()
-{
-  return false;
-}
-
-bool FFmpegStream::CanSeekStream()
-{
-  return false;
-}
-
 int FFmpegStream::ReadStream(uint8_t* buf, unsigned int size)
 {
   return -1;
@@ -553,12 +540,6 @@ int64_t FFmpegStream::PositionStream()
 int64_t FFmpegStream::LengthStream()
 {
   return -1;
-}
-
-void FFmpegStream::PauseStream(double time)
-{
-  m_paused = !m_paused;
-  //RTMP_Pause(m_session, m_paused);
 }
 
 bool FFmpegStream::IsRealTimeStream()
