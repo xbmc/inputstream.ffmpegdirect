@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.8.0"
+  version="1.8.1"
   name="Inputstream FFmpeg Direct"
   provider-name="phunkyfish">
   <requires>@ADDON_DEPENDS@</requires>
@@ -23,6 +23,9 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.8.1
+- Fixed: Suppress verbose logging on libxml2 on osx that causes travis builds to fail
+
 v1.8.0
 - Added: Support live URL in addition to catchup URL
 - Added: Support resuming from pause and to catchup stream
