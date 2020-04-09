@@ -1,3 +1,6 @@
+v1.8.1
+- Fixed: Suppress verbose logging on libxml2 on osx that causes travis builds to fail
+
 v1.8.0
 - Added: Support live URL in addition to catchup URL
 - Added: Support resuming from pause and to catchup stream

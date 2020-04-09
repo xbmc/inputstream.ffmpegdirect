@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 3.5)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
+if (APPLE)
+  # For some reason libxml2 requires this flag or it will create an insane amout of log output on compile
+  list(APPEND libxml2_conf CFLAGS=-Wno-nullability-completeness)
+endif()
 list(APPEND libxml2_conf CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/include)
 list(APPEND libxml2_conf LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/lib)
 
