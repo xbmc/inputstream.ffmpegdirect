@@ -1,3 +1,7 @@
+v1.8.2
+- Fixed: Ubuntu packaging
+- Added: Updated RTP patch
+
 v1.8.1
 - Fixed: Suppress verbose logging on libxml2 on osx that causes travis builds to fail
 
