@@ -19,15 +19,15 @@
  * This implements a "guard" pattern for a CCriticalSection that
  *  borrows most of it's functionality from boost's unique_lock.
  */
-class CSingleLock :  public XbmcThreads::UniqueLock<CCriticalSection>
+class CSingleLock :  public FFmpegDirectThreads::UniqueLock<CCriticalSection>
 {
 public:
-  inline explicit CSingleLock(CCriticalSection& cs) : XbmcThreads::UniqueLock<CCriticalSection>(cs) {}
+  inline explicit CSingleLock(CCriticalSection& cs) : FFmpegDirectThreads::UniqueLock<CCriticalSection>(cs) {}
 
   inline void Leave() { unlock(); }
   inline void Enter() { lock(); }
 protected:
-  inline CSingleLock(CCriticalSection& cs, bool dicrim) : XbmcThreads::UniqueLock<CCriticalSection>(cs,true) {}
+  inline CSingleLock(CCriticalSection& cs, bool dicrim) : FFmpegDirectThreads::UniqueLock<CCriticalSection>(cs,true) {}
 };
 
 

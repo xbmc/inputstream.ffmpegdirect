@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
   unsigned int SystemClockMillis()
   {

@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
 
   /**

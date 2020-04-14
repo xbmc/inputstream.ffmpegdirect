@@ -16,7 +16,7 @@
 #include <vector>
 
 // forward declare the CEventGroup
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
   class CEventGroup;
 }
@@ -38,21 +38,21 @@ class CEvent
   unsigned int numWaits = 0;
 
   CCriticalSection groupListMutex; // lock for the groups list
-  std::unique_ptr<std::vector<XbmcThreads::CEventGroup*>> groups;
+  std::unique_ptr<std::vector<FFmpegDirectThreads::CEventGroup*>> groups;
 
   /**
    * To satisfy the TightConditionVariable requirements and allow the
    *  predicate being monitored to include both the signaled and interrupted
    *  states.
    */
-  XbmcThreads::ConditionVariable actualCv;
-  XbmcThreads::TightConditionVariable<volatile bool&> condVar;
+  FFmpegDirectThreads::ConditionVariable actualCv;
+  FFmpegDirectThreads::TightConditionVariable<volatile bool&> condVar;
   CCriticalSection mutex;
 
-  friend class XbmcThreads::CEventGroup;
+  friend class FFmpegDirectThreads::CEventGroup;
 
-  void addGroup(XbmcThreads::CEventGroup* group);
-  void removeGroup(XbmcThreads::CEventGroup* group);
+  void addGroup(FFmpegDirectThreads::CEventGroup* group);
+  void removeGroup(FFmpegDirectThreads::CEventGroup* group);
 
   // helper for the two wait methods
   inline bool prepReturn() { bool ret = signaled; if (!manualReset && numWaits == 0) signaled = false; return ret; }
@@ -94,7 +94,7 @@ public:
 
 };
 
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
   /**
    * CEventGroup is a means of grouping CEvents to wait on them together.
@@ -105,8 +105,8 @@ namespace XbmcThreads
   {
     std::vector<CEvent*> events;
     CEvent* signaled{};
-    XbmcThreads::ConditionVariable actualCv;
-    XbmcThreads::TightConditionVariable<CEvent*&> condVar{actualCv, signaled};
+    FFmpegDirectThreads::ConditionVariable actualCv;
+    FFmpegDirectThreads::TightConditionVariable<CEvent*&> condVar{actualCv, signaled};
     CCriticalSection mutex;
 
     unsigned int numWaits{0};

@@ -12,7 +12,7 @@
 
 #if (defined TARGET_POSIX)
 #include <pthread.h>
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
   class CRecursiveMutex
   {
@@ -43,7 +43,7 @@ namespace XbmcThreads
   };
 }
 #elif (defined TARGET_WINDOWS)
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
   typedef std::recursive_mutex CRecursiveMutex;
 }

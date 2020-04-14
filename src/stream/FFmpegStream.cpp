@@ -1209,7 +1209,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
 
   if (m_checkvideo)
   {
-    XbmcThreads::EndTime timer(1000);
+    FFmpegDirectThreads::EndTime timer(1000);
 
     while (!IsVideoReady())
     {
