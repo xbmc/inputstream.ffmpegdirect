@@ -281,11 +281,6 @@ int64_t CInputStreamLibavformat::LengthStream()
   return m_stream->LengthStream();
 }
 
-void CInputStreamLibavformat::PauseStream(double time)
-{
-  // Unused when inputsream has it's own demuxer
-}
-
 bool CInputStreamLibavformat::IsRealTimeStream()
 {
   return m_stream->IsRealTimeStream();
