@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.8.2"
+  version="1.9.0"
   name="Inputstream FFmpeg Direct"
   provider-name="phunkyfish">
   <requires>@ADDON_DEPENDS@</requires>
@@ -23,6 +23,11 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.9.0
+- Added: HTTP Proxy support
+- Update: Remove PauseStream for Inputstream API 2.2.0
+- Fixed: fix changelog.in for debian packaging
+
 v1.8.2
 - Fixed: Ubuntu packaging
 - Added: Updated RTP patch
