@@ -8,9 +8,12 @@
 
 #include "StreamManager.h"
 
+#include "utils/HttpProxy.h"
 #include "utils/Log.h"
 
 #include <p8-platform/util/StringUtils.h>
+
+using namespace ffmpegdirect::utils;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions
@@ -120,8 +123,26 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
 
   m_streamUrl = props.m_strURL;
 
+  HttpProxy httpProxy;
+
+  bool useHttpProxy = kodi::GetSettingBoolean("useHttpProxy"); 
+  if (useHttpProxy)
+  {
+    httpProxy.SetProxyHost(kodi::GetSettingString("httpProxyHost"));
+    kodi::Log(ADDON_LOG_NOTICE, "HttpProxy host set: '%s'", httpProxy.GetProxyHost().c_str());
+
+    httpProxy.SetProxyPort(static_cast<uint16_t>(kodi::GetSettingInt("httpProxyPort")));
+    kodi::Log(ADDON_LOG_NOTICE, "HttpProxy port set: %d", static_cast<int>(httpProxy.GetProxyPort()));
+
+    httpProxy.SetProxyUser(kodi::GetSettingString("httpProxyUser"));
+    kodi::Log(ADDON_LOG_NOTICE, "HttpProxy user set: '%s'", httpProxy.GetProxyUser().c_str());
+
+    httpProxy.SetProxyPassword(kodi::GetSettingString("httpProxyPassword"));
+  }
+
   if (m_streamMode == StreamMode::CATCHUP)
     m_stream = std::make_shared<FFmpegCatchupStream>(static_cast<IManageDemuxPacket*>(this),
+                                                     httpProxy,
                                                      m_defaultUrl,
                                                      m_playbackAsLive,
                                                      m_programmeStartTime,
@@ -135,7 +156,7 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
                                                      m_defaultProgrammeDurationSecs,
                                                      m_programmeCatchupId);
   else
-    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this));
+    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), httpProxy);
 
   m_stream->SetVideoResolution(m_videoWidth, m_videoHeight);
 

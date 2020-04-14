@@ -9,11 +9,13 @@
 #pragma once
 
 #include "FFmpegStream.h"
+#include "../utils/HttpProxy.h"
 
 class FFmpegCatchupStream : public FFmpegStream
 {
 public:
   FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
+                      const ffmpegdirect::utils::HttpProxy& httpProxy,
                       std::string& defaultUrl,
                       bool playbackAsLive,
                       time_t programmeStartTime,

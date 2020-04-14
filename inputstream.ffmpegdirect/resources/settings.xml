@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings version="1">
+  <section id="inputstream.ffmpegdirect">
+    <category id="httpProxy" label="30000" help="30600">
+      <group id="1" label="30000">
+        <setting id="useHttpProxy" type="boolean" label="30001" help="30601">
+          <level>1</level>
+          <default>false</default>
+          <control type="toggle" />
+        </setting>
+        <setting id="httpProxyHost" type="string" parent="useHttpProxy" label="30002" help="30602">
+          <level>1</level>
+          <default></default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <dependencies>
+            <dependency type="enable" setting="useHttpProxy">true</dependency>
+          </dependencies>
+          <control type="edit" format="string" />
+        </setting>
+        <setting id="httpProxyPort" type="integer" parent="useHttpProxy" label="30003" help="30603">
+          <level>1</level>
+          <default>8080</default>
+          <constraints>
+            <minimum>1</minimum>
+            <step>1</step>
+            <maximum>65535</maximum>
+          </constraints>
+          <dependencies>
+            <dependency type="enable" setting="useHttpProxy">true</dependency>
+          </dependencies>
+          <control type="edit" format="integer" />
+        </setting>
+        <setting id="httpProxyUser" type="string" parent="useHttpProxy" label="30004" help="30604">
+          <level>1</level>
+          <default></default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <dependencies>
+            <dependency type="enable" setting="useHttpProxy">true</dependency>
+          </dependencies>
+          <control type="edit" format="string" />
+        </setting>
+        <setting id="httpProxyPassword" type="string" parent="useHttpProxy" label="30005" help="30605">
+          <level>1</level>
+          <default></default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <dependencies>
+            <dependency type="enable" setting="useHttpProxy">true</dependency>
+          </dependencies>
+          <control type="edit" format="string">
+            <hidden>true</hidden>
+          </control>
+        </setting>        
+      </group>
+    </category>
+  </section>
+</settings>

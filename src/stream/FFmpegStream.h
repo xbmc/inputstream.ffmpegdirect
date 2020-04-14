@@ -11,6 +11,7 @@
 #include "threads/CriticalSection.h"
 #include "threads/SystemClock.h"
 
+#include "../utils/HttpProxy.h"
 #include "BaseStream.h"
 #include "DemuxStream.h"
 
@@ -46,7 +47,7 @@ class FFmpegStream
   : public BaseStream
 {
 public:
-  FFmpegStream(IManageDemuxPacket* demuxPacketManager);
+  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const ffmpegdirect::utils::HttpProxy& httpProxy);
   ~FFmpegStream();
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
@@ -170,4 +171,6 @@ private:
   std::string m_programProperty;
   bool m_isRealTimeStream;
   bool m_opened;
+
+  ffmpegdirect::utils::HttpProxy m_httpProxy;
 };

@@ -1,0 +1,84 @@
+# Kodi Media Center language file
+# Addon Name: Inputstream.ffmpegdirect
+# Addon id: inputstream.ffmpegdirect
+# Addon Provider: phunkyfish
+
+msgid ""
+msgstr ""
+
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. settings labels
+
+#. label-category: httpProxy
+#. label-group: HTTP proxy - httpProxt
+msgctxt "#30000"
+msgid "HTTP proxy"
+msgstr ""
+
+#. label: HTTP proxy - useHttpProxy
+msgctxt "#30001"
+msgid "Use HTTP proxy"
+msgstr ""
+
+#. label-option: HTTP proxy - httpProxyHost
+msgctxt "#30002"
+msgid "Server"
+msgstr ""
+
+#. label-option: HTTP proxy - httpProxyPort
+msgctxt "#30003"
+msgid "Port"
+msgstr ""
+
+#. label-option: HTTP proxy - httpProxyUser
+msgctxt "#30004"
+msgid "Username"
+msgstr ""
+
+#. label-option: HTTP proxy - httpProxyPassword
+msgctxt "#30005"
+msgid "Password"
+msgstr ""
+
+#empty strings from id 30007 to 30600
+
+#. ############
+#. help info #
+#. ############
+
+#. help info - HTTP Proxy
+
+#. help-category: httpProxy
+msgctxt "#30600"
+msgid "This categoty contains the settings for how the proxy is configured."
+msgstr ""
+
+#. help: HTTP Proxy - useHttpProxy
+msgctxt "#30601"
+msgid "Whether or not a proxy should be used."
+msgstr ""
+
+#. help: HTTP Proxy - httpProxyHost
+msgctxt "#30602"
+msgid "Configure the proxy server address."
+msgstr ""
+
+#. help: HTTP Proxy - httpProxyPort
+msgctxt "#30603"
+msgid "Configure the proxy server port."
+msgstr ""
+
+#. help: HTTP Proxy - httpProxyUser
+msgctxt "#30604"
+msgid "Configure the proxy server username."
+msgstr ""
+
+#. help: HTTP Proxy - httpProxyPassword
+msgctxt "#30605"
+msgid "Configure the proxy server password."
+msgstr ""
