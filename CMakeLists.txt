@@ -100,11 +100,9 @@ elseif(CORE_SYSTEM_NAME STREQUAL osx OR
   find_library(VIDEOTOOLBOX VideoToolbox)
   find_library(SECURITY Security)
 
-  include_directories(${AVFOUNDATION}
-                      ${COCOA}
+  include_directories(${AUDIOTOOLBOX}
                       ${COREFOUNDATION}
                       ${COREMEDIA}
-                      ${COREMEDIAIO}
                       ${VIDEOTOOLBOX}
                       ${SECURITY})
 
