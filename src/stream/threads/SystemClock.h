@@ -12,7 +12,7 @@
 #include <limits>
 #include <thread>
 
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
   /**
    * This function returns the system clock's number of milliseconds but with

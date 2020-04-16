@@ -14,7 +14,7 @@
 #include <chrono>
 #include <condition_variable>
 
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
 
   /**

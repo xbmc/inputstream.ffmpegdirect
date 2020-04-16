@@ -11,6 +11,8 @@
 #include "threads/SingleLock.h"
 #include "../utils/Log.h"
 
+using namespace ffmpegdirect::utils;
+
 #ifdef TARGET_POSIX
 #include "platform/posix/XTimeUtils.h"
 #endif
@@ -41,6 +43,7 @@ extern "C" {
 ***********************************************************/
 
 FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
+                                         const HttpProxy& httpProxy,
                                          std::string& defaultUrl,
                                          bool playbackAsLive,
                                          time_t programmeStartTime,
@@ -53,7 +56,7 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
                                          int timezoneShift,
                                          int defaultProgrammeDuration,
                                          std::string& programmeCatchupId)
-  : FFmpegStream(demuxPacketManager), m_bIsOpening(false), m_seekOffset(0),
+  : FFmpegStream(demuxPacketManager, httpProxy), m_bIsOpening(false), m_seekOffset(0),
     m_defaultUrl(defaultUrl), m_playbackAsLive(playbackAsLive),
     m_programmeStartTime(programmeStartTime), m_programmeEndTime(programmeEndTime),
     m_catchupUrlFormatString(catchupUrlFormatString),

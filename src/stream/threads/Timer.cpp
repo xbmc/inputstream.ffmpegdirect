@@ -56,7 +56,7 @@ bool CTimer::Stop(bool wait /* = false */)
 void CTimer::RestartAsync(uint32_t timeout)
 {
   m_timeout = timeout;
-  m_endTime = XbmcThreads::SystemClockMillis() + timeout;
+  m_endTime = FFmpegDirectThreads::SystemClockMillis() + timeout;
   m_eventTimeout.Set();
 }
 
@@ -79,20 +79,20 @@ float CTimer::GetElapsedMilliseconds() const
   if (!IsRunning())
     return 0.0f;
 
-  return (float)(XbmcThreads::SystemClockMillis() - (m_endTime - m_timeout));
+  return (float)(FFmpegDirectThreads::SystemClockMillis() - (m_endTime - m_timeout));
 }
 
 void CTimer::Process()
 {
   while (!m_bStop)
   {
-    uint32_t currentTime = XbmcThreads::SystemClockMillis();
+    uint32_t currentTime = FFmpegDirectThreads::SystemClockMillis();
     m_endTime = currentTime + m_timeout;
 
     // wait the necessary time
     if (!m_eventTimeout.WaitMSec(m_endTime - currentTime))
     {
-      currentTime = XbmcThreads::SystemClockMillis();
+      currentTime = FFmpegDirectThreads::SystemClockMillis();
       if (m_endTime <= currentTime)
       {
         // execute OnTimeout() callback

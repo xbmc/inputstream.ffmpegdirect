@@ -49,6 +49,17 @@ Note that the steps in the following section need to be performed before the add
 
 If you would prefer to run the rebuild steps manually instead of using the above helper script check the appendix [here](#manual-steps-to-rebuild-the-addon-on-macosx)
 
+## Settings
+
+### HTTP Proxy
+Settings for configuring the HTTP Proxy
+
+* **Use HTTP proxy**: Whether or not a proxy should be used.
+* **Server**: Configure the proxy server address.
+* **Port**: Configure the proxy server port.
+* **Username**: Configure the proxy server username.
+* **Password**: Configure the proxy server password.
+
 ## Using the addon
 
 The addon can be accessed like any other inputstream in Kodi. The following example will show how to manually choose this addon for playback when using IPTV Simple Client with the following entry in the M3U file (Note that the IPTV Simple Client will in fact automatcially detect a catchup stream and use the addon based on configured settings).

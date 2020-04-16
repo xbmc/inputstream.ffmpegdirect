@@ -74,7 +74,7 @@ void CThread::Create(bool bAutoDelete)
       exit(1);
     }
   }
-  m_iLastTime = XbmcThreads::SystemClockMillis() * 10000ULL;
+  m_iLastTime = FFmpegDirectThreads::SystemClockMillis() * 10000ULL;
   m_iLastUsage = 0;
   m_fLastUsage = 0.0f;
   m_bAutoDelete = bAutoDelete;
@@ -299,7 +299,7 @@ void CThread::Action()
 
 float CThread::GetRelativeUsage()
 {
-  unsigned int iTime = XbmcThreads::SystemClockMillis();
+  unsigned int iTime = FFmpegDirectThreads::SystemClockMillis();
   iTime *= 10000; // convert into 100ns tics
 
   // only update every 1 second

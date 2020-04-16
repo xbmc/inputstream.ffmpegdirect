@@ -52,6 +52,7 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/threads/Timer.h
                     src/stream/threads/TimeUtils.h
                     src/stream/threads/platform/ThreadImpl.h
+                    src/utils/HttpProxy.h
                     src/utils/Log.h
                     src/stream/url/URL.h
                     src/stream/url/UrlOptions.h

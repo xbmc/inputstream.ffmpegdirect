@@ -11,16 +11,16 @@
 #include <algorithm>
 #include <limits>
 
-void CEvent::addGroup(XbmcThreads::CEventGroup* group)
+void CEvent::addGroup(FFmpegDirectThreads::CEventGroup* group)
 {
   CSingleLock lock(groupListMutex);
   if (!groups)
-    groups.reset(new std::vector<XbmcThreads::CEventGroup*>);
+    groups.reset(new std::vector<FFmpegDirectThreads::CEventGroup*>);
 
   groups->push_back(group);
 }
 
-void CEvent::removeGroup(XbmcThreads::CEventGroup* group)
+void CEvent::removeGroup(FFmpegDirectThreads::CEventGroup* group)
 {
   CSingleLock lock(groupListMutex);
   if (groups)
@@ -57,7 +57,7 @@ void CEvent::Set()
   }
 }
 
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
   /**
    * This will block until any one of the CEvents in the group are

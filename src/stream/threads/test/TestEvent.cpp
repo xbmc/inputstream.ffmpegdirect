@@ -13,7 +13,7 @@
 #include <memory>
 #include <stdio.h>
 
-using namespace XbmcThreads;
+using namespace FFmpegDirectThreads;
 
 //=============================================================================
 // Helper classes

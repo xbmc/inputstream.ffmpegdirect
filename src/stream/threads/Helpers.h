@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
   /**
    * This will create a new predicate from an old predicate P with

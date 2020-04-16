@@ -22,7 +22,7 @@
 #include <signal.h>
 #include "../../../../utils/Log.h"
 
-namespace XbmcThreads
+namespace FFmpegDirectThreads
 {
 // ==========================================================
 static pthread_mutexattr_t recursiveAttr;

@@ -79,7 +79,6 @@ public:
   virtual int64_t SeekStream(int64_t position, int whence = SEEK_SET) override;
   virtual int64_t PositionStream() override;
   virtual int64_t LengthStream() override;
-  virtual void PauseStream(double time) override;
   virtual bool IsRealTimeStream() override; // { return true; }
 
   DemuxPacket* AllocateDemuxPacketFromInputStreamAPI(int dataSize) override;
