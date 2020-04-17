@@ -110,7 +110,7 @@ if(NOT WIN32)
       list(APPEND EXTRA_CONF --cpu=cortex-a8)
     else()
       list(APPEND EXTRA_CONF "--as=${CMAKE_INSTALL_PREFIX}/bin/gas-preprocessor.pl -arch aarch64 -- ${CMAKE_C_COMPILER}")
-      list(APPEND --arch=aarch64)
+      list(APPEND EXTRA_CONF --arch=aarch64)
     endif()
     list(APPEND EXTRA_CONF --disable-decoder=mpeg_xvmc --disable-crystalhd --enable-videotoolbox
                            --target-os=darwin)
