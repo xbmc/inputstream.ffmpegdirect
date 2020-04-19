@@ -31,12 +31,12 @@ public:
   ~FFmpegCatchupStream();
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
-  virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) override;
+  virtual bool DemuxSeekTime(double timeMs, bool backwards, double& startpts) override;
   virtual DemuxPacket* DemuxRead() override;
   virtual void DemuxSetSpeed(int speed) override;
   virtual void GetCapabilities(INPUTSTREAM_CAPABILITIES& caps) override;
 
-  virtual int64_t SeekStream(int64_t position, int whence = SEEK_SET) override;
+  int64_t SeekCatchupStream(double timeMs, int whence);
   virtual int64_t LengthStream() override;
   virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
 
@@ -58,7 +58,7 @@ protected:
   int m_defaultProgrammeDuration = 0;
   std::string m_programmeCatchupId;
 
-  bool m_bIsOpening;
+  bool m_isOpeningStream;
   double m_seekOffset;
   double m_pauseStartTime;
   double m_currentDemuxTime;

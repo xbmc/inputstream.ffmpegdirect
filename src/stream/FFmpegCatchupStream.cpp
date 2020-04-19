@@ -56,7 +56,7 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
                                          int timezoneShift,
                                          int defaultProgrammeDuration,
                                          std::string& programmeCatchupId)
-  : FFmpegStream(demuxPacketManager, httpProxy), m_bIsOpening(false), m_seekOffset(0),
+  : FFmpegStream(demuxPacketManager, httpProxy), m_isOpeningStream(false), m_seekOffset(0),
     m_defaultUrl(defaultUrl), m_playbackAsLive(playbackAsLive),
     m_programmeStartTime(programmeStartTime), m_programmeEndTime(programmeEndTime),
     m_catchupUrlFormatString(catchupUrlFormatString),
@@ -74,7 +74,7 @@ FFmpegCatchupStream::~FFmpegCatchupStream()
 
 bool FFmpegCatchupStream::Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty)
 {
-  m_bIsOpening = true;
+  m_isOpeningStream = true;
   bool ret = FFmpegStream::Open(streamUrl, mimeType, isRealTimeStream, programProperty);
 
   // We need to make an initial seek to the correct time otherwise the stream
@@ -83,17 +83,16 @@ bool FFmpegCatchupStream::Open(const std::string& streamUrl, const std::string& 
   double temp = 0;
   DemuxSeekTime(0, false, temp);
 
-  m_bIsOpening = false;
+  m_isOpeningStream = false;
   return ret;
 }
 
-bool FFmpegCatchupStream::DemuxSeekTime(double time, bool backwards, double& startpts)
+bool FFmpegCatchupStream::DemuxSeekTime(double timeMs, bool backwards, double& startpts)
 {
-  if (/*!m_pInput ||*/ time < 0)
+  if (/*!m_pInput ||*/ timeMs < 0)
     return false;
 
-  int whence = m_bIsOpening ? SEEK_CUR : SEEK_SET;
-  int64_t seekResult = SeekStream(static_cast<int64_t>(time), whence);
+  int64_t seekResult = SeekCatchupStream(timeMs, m_isOpeningStream ? SEEK_CUR : SEEK_SET);
   if (seekResult >= 0)
   {
     {
@@ -102,9 +101,9 @@ bool FFmpegCatchupStream::DemuxSeekTime(double time, bool backwards, double& sta
     }
 
     Log(LOGLEVEL_DEBUG, "Seek successful. m_seekOffset = %f, m_currentPts = %f, time = %f, backwards = %d, startptr = %f",
-      m_seekOffset, m_currentPts, time, backwards, startpts);
+      m_seekOffset, m_currentPts, timeMs, backwards, startpts);
 
-    if (!m_bIsOpening)
+    if (!m_isOpeningStream)
     {
       DemuxReset();
       return m_demuxResetOpenSuccess;
@@ -114,7 +113,7 @@ bool FFmpegCatchupStream::DemuxSeekTime(double time, bool backwards, double& sta
   }
 
   Log(LOGLEVEL_DEBUG, "Seek failed. m_currentPts = %f, time = %f, backwards = %d, startptr = %f",
-    m_currentPts, time, backwards, startpts);
+    m_currentPts, timeMs, backwards, startpts);
   return false;
 }
 
@@ -167,18 +166,19 @@ void FFmpegCatchupStream::GetCapabilities(INPUTSTREAM_CAPABILITIES& caps)
     INPUTSTREAM_CAPABILITIES::SUPPORTS_ICHAPTER;
 }
 
-int64_t FFmpegCatchupStream::SeekStream(int64_t position, int whence /* SEEK_SET */)
+int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, int whence)
 {
   int64_t ret = -1;
   if (m_catchupBufferStartTime > 0)
   {
-    Log(LOGLEVEL_DEBUG, "SeekLiveStream - iPosition = %lld, iWhence = %d", position, whence);
+    int64_t position = static_cast<int64_t>(timeMs);
+    Log(LOGLEVEL_DEBUG, "SeekCatchupStream - iPosition = %lld, iWhence = %d", position, whence);
     const time_t timeNow = time(0);
     switch (whence)
     {
       case SEEK_SET:
       {
-        Log(LOGLEVEL_DEBUG, "SeekLiveStream - SeekSet: %lld", static_cast<long long>(position));
+        Log(LOGLEVEL_DEBUG, "SeekCatchupStream - SeekSet: %lld", static_cast<long long>(position));
         position += 500;
         position /= 1000;
         if (m_catchupBufferStartTime + position < timeNow - 10)
@@ -199,12 +199,12 @@ int64_t FFmpegCatchupStream::SeekStream(int64_t position, int whence /* SEEK_SET
       case SEEK_CUR:
       {
         int64_t offset = m_catchupBufferOffset;
-        //Log(LOGLEVEL_DEBUG, "SeekLiveStream - timeNow = %d, startTime = %d, iTvgShift = %d, offset = %d", timeNow, m_catchupStartTime, m_programmeChannelTvgShift, offset);
+        //Log(LOGLEVEL_DEBUG, "SeekCatchupStream - timeNow = %d, startTime = %d, iTvgShift = %d, offset = %d", timeNow, m_catchupStartTime, m_programmeChannelTvgShift, offset);
         ret = offset * DVD_TIME_BASE;
       }
       break;
       default:
-        Log(LOGLEVEL_DEBUG, "SeekLiveStream - Unsupported SEEK command (%d)", whence);
+        Log(LOGLEVEL_DEBUG, "SeekCatchupStream - Unsupported SEEK command (%d)", whence);
       break;
     }
   }

@@ -527,11 +527,13 @@ bool FFmpegStream::PosTime(int ms)
 
 int FFmpegStream::ReadStream(uint8_t* buf, unsigned int size)
 {
+  // Not called when using Demuxer
   return -1;
 }
 
 int64_t FFmpegStream::SeekStream(int64_t position, int whence /* SEEK_SET */)
 {
+  // Not called when using Demuxer
   return -1;
 }
 
