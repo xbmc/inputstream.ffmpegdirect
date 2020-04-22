@@ -6,17 +6,18 @@ Build-Depends: debhelper (>= 9.0.0), cmake, kodi-addon-dev,
                libbz2-dev, libp8-platform-dev, libssl-dev, libz3-dev, pkg-config, yasm, zlib1g-dev
 Standards-Version: 3.9.8
 Section: libs
+Homepage: <https://kodi.tv>
 
 Package: kodi-inputstream-ffmpegdirect
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: FFmpeg Direct inputstream addon for Kodi
- This is the FFmpeg Direct inputstream addon for Kodi for streams opened by libavformat
+Description: FFmpegDirect inputstream addon for Kodi
+ This is the FFmpegDirect inputstream addon for Kodi for streams opened by libavformat
 
 Package: kodi-inputstream-ffmpegdirect-dbg
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: debug symbols for FFmpeg Direct inputstream addon for Kodi
- debug symbols for FFmpeg Direct inputstream addon for Kodi
+Description: debug symbols for FFmpegDirect inputstream addon for Kodi
+ debug symbols for FFmpegDirect inputstream addon for Kodi
