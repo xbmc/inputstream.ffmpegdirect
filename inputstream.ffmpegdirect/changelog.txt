@@ -1,3 +1,6 @@
+v1.9.1
+- Update: Inpustream API 2.3.0
+
 v1.9.0
 - Added: HTTP Proxy support
 - Update: Remove PauseStream for Inputstream API 2.2.0
