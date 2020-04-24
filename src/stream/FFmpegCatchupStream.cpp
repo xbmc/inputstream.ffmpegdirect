@@ -104,8 +104,8 @@ bool FFmpegCatchupStream::DemuxSeekTime(double timeMs, bool backwards, double& s
       m_seekOffset = seekResult;
     }
 
-    Log(LOGLEVEL_DEBUG, "Seek successful. m_seekOffset = %f, m_currentPts = %f, time = %f, backwards = %d, startptr = %f",
-      m_seekOffset, m_currentPts, timeMs, backwards, startpts);
+    Log(LOGLEVEL_DEBUG, "%s - Seek successful. m_seekOffset = %f, m_currentPts = %f, time = %f, backwards = %d, startpts = %f",
+      __FUNCTION__, m_seekOffset, m_currentPts, timeMs, backwards, startpts);
 
     if (!m_isOpeningStream)
     {
@@ -116,8 +116,8 @@ bool FFmpegCatchupStream::DemuxSeekTime(double timeMs, bool backwards, double& s
     return true;
   }
 
-  Log(LOGLEVEL_DEBUG, "Seek failed. m_currentPts = %f, time = %f, backwards = %d, startptr = %f",
-    m_currentPts, timeMs, backwards, startpts);
+  Log(LOGLEVEL_DEBUG, "%s - Seek failed. m_currentPts = %f, time = %f, backwards = %d, startpts = %f",
+    __FUNCTION__, m_currentPts, timeMs, backwards, startpts);
   return false;
 }
 
@@ -170,22 +170,21 @@ bool FFmpegCatchupStream::CheckReturnEmptryOnPacketResult(int result)
 
 void FFmpegCatchupStream::DemuxSetSpeed(int speed)
 {
-  Log(LOGLEVEL_DEBUG, "DemuxSetSpeed %d", speed);
+  Log(LOGLEVEL_DEBUG, "%s - DemuxSetSpeed %d", __FUNCTION__, speed);
 
   if (IsPaused() && speed != DVD_PLAYSPEED_PAUSE)
   {
     // Resume Playback
-    Log(LOGLEVEL_DEBUG, "DemuxSetSpeed - Unpause time: %lld", static_cast<long long>(m_pauseStartTime));
-    double temp = 0;
+    Log(LOGLEVEL_DEBUG, "%s - DemuxSetSpeed - Unpause time: %lld", __FUNCTION__, static_cast<long long>(m_pauseStartTime));
     m_lastSeekWasLive = false;
-    DemuxSeekTime(m_pauseStartTime, false, temp);
+    DemuxSeekTime(m_pauseStartTime);
   }
   else if (!IsPaused() && speed == DVD_PLAYSPEED_PAUSE)
   {
     // Pause Playback
     CSingleLock lock(m_critSection);
     m_pauseStartTime = m_currentDemuxTime;
-    Log(LOGLEVEL_DEBUG, "DemuxSetSpeed - Pause time: %lld", static_cast<long long>(m_pauseStartTime));
+    Log(LOGLEVEL_DEBUG, "%s - DemuxSetSpeed - Pause time: %lld", __FUNCTION__, static_cast<long long>(m_pauseStartTime));
   }
 
   FFmpegStream::DemuxSetSpeed(speed);
@@ -193,7 +192,7 @@ void FFmpegCatchupStream::DemuxSetSpeed(int speed)
 
 void FFmpegCatchupStream::GetCapabilities(INPUTSTREAM_CAPABILITIES& caps)
 {
-  Log(LOGLEVEL_DEBUG, "GetCapabilities()");
+  Log(LOGLEVEL_DEBUG, "%s - Called", __FUNCTION__);
   caps.m_mask = INPUTSTREAM_CAPABILITIES::SUPPORTS_IDEMUX |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_IDISPLAYTIME |
     INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME |
@@ -240,13 +239,13 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, int whence)
   if (m_catchupBufferStartTime > 0)
   {
     int64_t position = static_cast<int64_t>(timeMs);
-    Log(LOGLEVEL_DEBUG, "SeekCatchupStream - iPosition = %lld, iWhence = %d", position, whence);
-    const time_t timeNow = time(0);
+    Log(LOGLEVEL_DEBUG, "%s - iPosition = %lld, iWhence = %d", __FUNCTION__, position, whence);
+    time_t timeNow = std::time(nullptr);
     switch (whence)
     {
       case SEEK_SET:
       {
-        Log(LOGLEVEL_DEBUG, "SeekCatchupStream - SeekSet: %lld", static_cast<long long>(position));
+        Log(LOGLEVEL_DEBUG, "%s - SeekSet: %lld", __FUNCTION__, static_cast<long long>(position));
         position += 500;
         position /= 1000;
 
@@ -298,7 +297,7 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, int whence)
       }
       break;
       default:
-        Log(LOGLEVEL_DEBUG, "SeekCatchupStream - Unsupported SEEK command (%d)", whence);
+        Log(LOGLEVEL_DEBUG, "%s - Unsupported SEEK command (%d)", __FUNCTION__, whence);
       break;
     }
   }
@@ -315,7 +314,7 @@ int64_t FFmpegCatchupStream::LengthStream()
       length = static_cast<int64_t>(times.ptsEnd - times.ptsBegin);
   }
 
-  Log(LOGLEVEL_DEBUG, "LengthLiveStream: %lld", static_cast<long long>(length));
+  Log(LOGLEVEL_DEBUG, "%s: %lld", __FUNCTION__, static_cast<long long>(length));
 
   return length;
 }
@@ -336,7 +335,7 @@ bool FFmpegCatchupStream::GetTimes(INPUTSTREAM_TIMES& times)
 
   // Log(LOGLEVEL_DEBUG, "GetStreamTimes - Ch = %u \tTitle = \"%s\" \tepgTag->startTime = %ld \tepgTag->endTime = %ld",
   //           m_programmeUniqueChannelId, m_programmeTitle.c_str(), m_catchupBufferStartTime, m_catchupBufferEndTime);
-  Log(LOGLEVEL_DEBUG, "GetStreamTimes - startTime = %ld \tptsStart = %lld \tptsBegin = %lld \tptsEnd = %lld",
+  Log(LOGLEVEL_DEBUG, "%s - startTime = %ld \tptsStart = %lld \tptsBegin = %lld \tptsEnd = %lld", __FUNCTION__,
             times.startTime, static_cast<long long>(times.ptsStart), static_cast<long long>(times.ptsBegin), static_cast<long long>(times.ptsEnd));
 
   return true;
@@ -427,7 +426,7 @@ std::string FormatDateTime(time_t dateTimeEpg, time_t duration, const std::strin
   FormatUtc("${offset}", dateTimeNow - dateTimeEpg, formattedUrl);
   FormatUnits(dateTimeNow - dateTimeEpg, "offset", formattedUrl);
 
-  Log(LOGLEVEL_DEBUG, "CArchiveConfig::FormatDateTime - \"%s\"", formattedUrl.c_str());
+  Log(LOGLEVEL_DEBUG, "%s - \"%s\"", __FUNCTION__, formattedUrl.c_str());
 
   return formattedUrl;
 }
@@ -457,7 +456,7 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
     if (offset > (timeNow - m_defaultProgrammeDuration) && !m_catchupUrlNearLiveFormatString.empty())
       urlFormatString = m_catchupUrlNearLiveFormatString;
 
-    Log(LOGLEVEL_DEBUG, "Offset Time - \"%lld\" - %s", static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
+    Log(LOGLEVEL_DEBUG, "%s - Offset Time - \"%lld\" - %s", __FUNCTION__, static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
 
     std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, urlFormatString);
 
@@ -467,11 +466,11 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
 
     if (!catchupUrl.empty())
     {
-      Log(LOGLEVEL_DEBUG, "Catchup URL: %s", catchupUrl.c_str());
+      Log(LOGLEVEL_DEBUG, "%s - Catchup URL: %s", __FUNCTION__, catchupUrl.c_str());
       return catchupUrl;
     }
   }
 
-  Log(LOGLEVEL_DEBUG, "Default URL: %s", m_defaultUrl.c_str());
+  Log(LOGLEVEL_DEBUG, "%s - Default URL: %s", __FUNCTION__, m_defaultUrl.c_str());
   return m_defaultUrl;
 }
