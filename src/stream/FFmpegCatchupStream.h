@@ -54,6 +54,7 @@ protected:
   bool CheckReturnEmptryOnPacketResult(int result) override;
 
   long long GetCurrentLiveOffset() { return std::time(nullptr) - m_catchupBufferStartTime; }
+  bool SeekDistanceSupported(int64_t seekBufferOffset);
 
   std::string GetUpdatedCatchupUrl() const;
 
@@ -68,6 +69,7 @@ protected:
   long long m_catchupBufferOffset = 0;
   bool m_catchupTerminates = false;
   int m_catchupGranularity = 1;
+  int m_catchupGranularityLowWaterMark = 1;
   int m_timezoneShift = 0;
   int m_defaultProgrammeDuration = 0;
   std::string m_programmeCatchupId;

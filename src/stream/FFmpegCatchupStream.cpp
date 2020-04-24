@@ -68,6 +68,7 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
     m_catchupGranularity(catchupGranularity), m_timezoneShift(timezoneShift),
     m_defaultProgrammeDuration(defaultProgrammeDuration), m_programmeCatchupId(programmeCatchupId)
 {
+  m_catchupGranularityLowWaterMark = m_catchupGranularity - (m_catchupGranularity / 4);
 }
 
 FFmpegCatchupStream::~FFmpegCatchupStream()
@@ -220,7 +221,7 @@ int GetGranularityCorrectionFromLive(long long bufferStartTimeSecs, long long bu
     if (bufferOffset + granularitySecs > currentLiveOffset)
       correction = (bufferOffset + granularitySecs) - currentLiveOffset + 1;
 
-    Log(LOGLEVEL_INFO, "%s - correction of %d seconds for live, granularity %d seconds", __FUNCTION__, correction, granularitySecs);
+    Log(LOGLEVEL_INFO, "%s - correction of %d seconds for live, granularity %d seconds, %d seconds from live", __FUNCTION__, correction, granularitySecs, currentLiveOffset - bufferOffset);
   }
 
   return correction;
@@ -251,8 +252,11 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, int whence)
 
         long long liveBufferOffset = GetCurrentLiveOffset();
 
-        if (m_catchupGranularity > 1)
-          position -= GetGranularityCorrectionFromLive(m_catchupBufferStartTime, m_previousLiveBufferOffset, m_catchupGranularity);
+        if (!SeekDistanceSupported(position))
+          return -1;
+
+        if (m_catchupGranularity > 1 && (m_lastSeekWasLive || m_seekCorrectsEOF))
+          position -= GetGranularityCorrectionFromLive(m_catchupBufferStartTime, position, m_catchupGranularity);
 
         if (m_catchupBufferStartTime + position < timeNow - VIDEO_PLAYER_BUFFER_SECONDS)
         {
@@ -302,6 +306,32 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, int whence)
     }
   }
   return ret;
+}
+
+bool FFmpegCatchupStream::SeekDistanceSupported(int64_t seekBufferOffset)
+{
+  if (!m_seekCorrectsEOF)
+  {
+    long long currentDemuxSecs = static_cast<long long>(m_currentDemuxTime) / 1000;
+    int seekDistanceActualSecs = std::llabs(seekBufferOffset - currentDemuxSecs);
+    int seekDistanceSecs;
+    if (seekBufferOffset < currentDemuxSecs) // adjust slightly for backward
+      seekDistanceSecs = seekDistanceActualSecs - VIDEO_PLAYER_BUFFER_SECONDS;
+    else // don't appear to need the adjustment for seeking forward
+      seekDistanceSecs = seekDistanceActualSecs;
+    
+    if (m_lastSeekWasLive && 
+        ((seekDistanceSecs < VIDEO_PLAYER_BUFFER_SECONDS) ||
+         (m_catchupGranularity > 1 && seekDistanceSecs < m_catchupGranularityLowWaterMark)))
+    {
+      Log(LOGLEVEL_INFO, "%s - seekDistanceSecs (skipping): %d, actual: %d", __FUNCTION__, seekDistanceSecs, seekDistanceActualSecs);
+      return false;    
+    }
+
+    Log(LOGLEVEL_INFO, "%s - seekDistanceSecs: %d, actual: %d", __FUNCTION__, seekDistanceSecs, seekDistanceActualSecs);
+  }
+
+  return true;
 }
 
 int64_t FFmpegCatchupStream::LengthStream()
