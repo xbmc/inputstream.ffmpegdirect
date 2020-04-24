@@ -93,12 +93,14 @@ protected:
   virtual std::string GetStreamCodecName(int iStreamId);
   virtual void UpdateCurrentPTS();
   bool IsPaused() { return m_speed == DVD_PLAYSPEED_PAUSE; }
+  virtual bool CheckReturnEmptryOnPacketResult(int result);
 
   int64_t m_demuxerId;
   CCriticalSection m_critSection;
   double m_currentPts; // used for stream length estimation
   bool m_demuxResetOpenSuccess = false;
   std::string m_streamUrl;
+  int m_lastPacketResult;
 
 private:
   bool Open(bool streaminfo = true, bool fileinfo = false);

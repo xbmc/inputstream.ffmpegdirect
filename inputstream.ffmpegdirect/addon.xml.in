@@ -10,7 +10,7 @@
     name="ffmpegdirect"
     extension=""
     tags="true"
-    listitemprops="program_number|stream_mode|default_url|is_realtime_stream|playback_as_live|programme_start_time|programme_end_time|catchup_url_format_string|catchup_url_near_live_format_string|catchup_buffer_start_time|catchup_buffer_end_time|catchup_buffer_offset|timezone_shift|default_programme_duration|programme_catchup_id"
+    listitemprops="program_number|stream_mode|default_url|is_realtime_stream|playback_as_live|programme_start_time|programme_end_time|catchup_url_format_string|catchup_url_near_live_format_string|catchup_buffer_start_time|catchup_buffer_end_time|catchup_buffer_offset|catchup_terminates|catchup_granularity|timezone_shift|default_programme_duration|programme_catchup_id"
     library_@PLATFORM@="@LIBRARY_FILENAME@" />
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">InputStream Client for FFmpeg streams (libavformat)</summary>

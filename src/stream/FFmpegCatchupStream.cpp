@@ -53,6 +53,8 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
                                          time_t catchupBufferStartTime,
                                          time_t catchupBufferEndTime,
                                          long long catchupBufferOffset,
+                                         bool catchupTerminates,
+                                         int catchupGranularity,
                                          int timezoneShift,
                                          int defaultProgrammeDuration,
                                          std::string& programmeCatchupId)
@@ -62,7 +64,8 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
     m_catchupUrlFormatString(catchupUrlFormatString),
     m_catchupUrlNearLiveFormatString(catchupUrlNearLiveFormatString),
     m_catchupBufferStartTime(catchupBufferStartTime), m_catchupBufferEndTime(catchupBufferEndTime),
-    m_catchupBufferOffset(catchupBufferOffset), m_timezoneShift(timezoneShift),
+    m_catchupBufferOffset(catchupBufferOffset), m_catchupTerminates(catchupTerminates),
+    m_catchupGranularity(catchupGranularity), m_timezoneShift(timezoneShift),
     m_defaultProgrammeDuration(defaultProgrammeDuration), m_programmeCatchupId(programmeCatchupId)
 {
 }
@@ -77,11 +80,12 @@ bool FFmpegCatchupStream::Open(const std::string& streamUrl, const std::string& 
   m_isOpeningStream = true;
   bool ret = FFmpegStream::Open(streamUrl, mimeType, isRealTimeStream, programProperty);
 
+  m_lastPacketWasAvoidedEOF = false;
+
   // We need to make an initial seek to the correct time otherwise the stream
   // will always start at the beginning instead of at the offset.
   // The value of time is irrelevant here we will want to seek to SEEK_CUR
-  double temp = 0;
-  DemuxSeekTime(0, false, temp);
+  DemuxSeekTime(0);
 
   m_isOpeningStream = false;
   return ret;
@@ -126,10 +130,42 @@ DemuxPacket* FFmpegCatchupStream::DemuxRead()
     pPacket->pts += m_seekOffset;
     pPacket->dts += m_seekOffset;
 
+    if (m_lastPacketResult == AVERROR_EOF && m_catchupTerminates && !m_isOpeningStream && !m_lastSeekWasLive)
+    {
+      if (!m_lastPacketWasAvoidedEOF)
+      {
+        Log(LOGLEVEL_INFO, "%s - EOF detected on terminiating catchup stream, starting continuing stream at offset: %lld, ending offset approx %lld", __FUNCTION__, m_previousLiveBufferOffset, GetCurrentLiveOffset() );
+
+        m_seekCorrectsEOF = true;
+        DemuxSeekTime(m_previousLiveBufferOffset * 1000);
+        m_seekCorrectsEOF = false;
+      }
+      m_lastPacketWasAvoidedEOF = true;
+    }
+    else
+    {
+      m_lastPacketWasAvoidedEOF = false;
+    }
+    
+
     m_currentDemuxTime = static_cast<double>(pPacket->pts) / 1000;
   }
 
   return pPacket;
+}
+
+bool FFmpegCatchupStream::CheckReturnEmptryOnPacketResult(int result)
+{
+  // If the server returns EOF then for a terminating stream we should should keep playing
+  // sending an empty packet instead will allow VideoPlayer to continue as we swap to an
+  // updated stream running from current end time to now
+  // This will only happen if we are within the default programme duration of live
+
+  if (result == AVERROR_EOF && m_catchupTerminates && !m_isOpeningStream && !m_lastSeekWasLive && 
+      m_previousLiveBufferOffset + m_defaultProgrammeDuration > static_cast<long long>(m_currentDemuxTime) / 1000)
+    return true;
+
+  return false;
 }
 
 void FFmpegCatchupStream::DemuxSetSpeed(int speed)
@@ -141,6 +177,7 @@ void FFmpegCatchupStream::DemuxSetSpeed(int speed)
     // Resume Playback
     Log(LOGLEVEL_DEBUG, "DemuxSetSpeed - Unpause time: %lld", static_cast<long long>(m_pauseStartTime));
     double temp = 0;
+    m_lastSeekWasLive = false;
     DemuxSeekTime(m_pauseStartTime, false, temp);
   }
   else if (!IsPaused() && speed == DVD_PLAYSPEED_PAUSE)
@@ -166,8 +203,39 @@ void FFmpegCatchupStream::GetCapabilities(INPUTSTREAM_CAPABILITIES& caps)
     INPUTSTREAM_CAPABILITIES::SUPPORTS_ICHAPTER;
 }
 
+namespace
+{
+
+int GetGranularityCorrectionFromLive(long long bufferStartTimeSecs, long long bufferOffset, int granularitySecs)
+{
+  // We need to make sure we don't seek to a time within granularity seconds of live
+  // as that will not be supported
+  // Note: only valid for sources with a granularity more than 1 second (usually 60)
+
+  int correction = 0;
+
+  if (granularitySecs > 1)
+  {
+    const time_t timeNow = std::time(0);
+    long long currentLiveOffset = timeNow - bufferStartTimeSecs;
+    if (bufferOffset + granularitySecs > currentLiveOffset)
+      correction = (bufferOffset + granularitySecs) - currentLiveOffset + 1;
+
+    Log(LOGLEVEL_INFO, "%s - correction of %d seconds for live, granularity %d seconds", __FUNCTION__, correction, granularitySecs);
+  }
+
+  return correction;
+}
+
+} // unnamed namespace
+
 int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, int whence)
 {
+  // The argument timeMs that is supplied will not be in the same units as our m_catchupBufferOffset
+  // So we need to divide by 1000 to convert to seconds.
+  //
+  // When we return the value we need to convert our seconds to microseconds so multiply by DVD_TIME_BASE
+
   int64_t ret = -1;
   if (m_catchupBufferStartTime > 0)
   {
@@ -181,16 +249,34 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, int whence)
         Log(LOGLEVEL_DEBUG, "SeekCatchupStream - SeekSet: %lld", static_cast<long long>(position));
         position += 500;
         position /= 1000;
-        if (m_catchupBufferStartTime + position < timeNow - 10)
+
+        long long liveBufferOffset = GetCurrentLiveOffset();
+
+        if (m_catchupGranularity > 1)
+          position -= GetGranularityCorrectionFromLive(m_catchupBufferStartTime, m_previousLiveBufferOffset, m_catchupGranularity);
+
+        if (m_catchupBufferStartTime + position < timeNow - VIDEO_PLAYER_BUFFER_SECONDS)
         {
           ret = position;
           m_catchupBufferOffset = position;
+          m_lastSeekWasLive = false;
+
+          if (m_seekCorrectsEOF)
+            Log(LOGLEVEL_INFO, "%s - continuing stream %lld seconds from live at offset: %lld, live offset: %lld", __FUNCTION__, liveBufferOffset - position, position, liveBufferOffset);
         }
         else
         {
           ret = timeNow - m_catchupBufferStartTime;
           m_catchupBufferOffset = ret;
+          m_lastSeekWasLive = true;
+
+          if (m_seekCorrectsEOF)
+            Log(LOGLEVEL_INFO, "%s - Resetting continuing stream to live as within %lld seconds - crossed threshold of %d seconds", __FUNCTION__, liveBufferOffset - position, VIDEO_PLAYER_BUFFER_SECONDS);
         }
+
+        if (m_catchupTerminates)
+          m_previousLiveBufferOffset = liveBufferOffset;
+  
         ret *= DVD_TIME_BASE;
 
         m_streamUrl = GetUpdatedCatchupUrl();
@@ -198,8 +284,16 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, int whence)
       break;
       case SEEK_CUR:
       {
+        time_t myOffset = m_catchupBufferStartTime + m_catchupBufferOffset;
+        if (m_catchupBufferStartTime > 0 && myOffset < (timeNow - 5))
+          m_lastSeekWasLive = false;
+        else
+          m_lastSeekWasLive = true;
+
+        if (m_catchupTerminates)
+          m_previousLiveBufferOffset = timeNow - m_catchupBufferStartTime;
+
         int64_t offset = m_catchupBufferOffset;
-        //Log(LOGLEVEL_DEBUG, "SeekCatchupStream - timeNow = %d, startTime = %d, iTvgShift = %d, offset = %d", timeNow, m_catchupStartTime, m_programmeChannelTvgShift, offset);
         ret = offset * DVD_TIME_BASE;
       }
       break;

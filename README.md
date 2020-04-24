@@ -65,7 +65,7 @@ Settings for configuring the HTTP Proxy
 The addon can be accessed like any other inputstream in Kodi. The following example will show how to manually choose this addon for playback when using IPTV Simple Client with the following entry in the M3U file (Note that the IPTV Simple Client will in fact automatcially detect a catchup stream and use the addon based on configured settings).
 
 ```
-#KODIPROP:inputstreamclass=inputstream.ffmpegdirect
+#KODIPROP:inputstream=inputstream.ffmpegdirect
 #KODIPROP:inputstream.ffmpegdirect.mime_type=video/mp2t
 #KODIPROP:inputstream.ffmpegdirect.program_number=2154
 #KODIPROP:inputstream.ffmpegdirect.is_realtime_stream=true
@@ -83,7 +83,7 @@ The field `program_number` can be used to indicate the Program ID to use for TS 
 If enabling archive/catchup support there are a number of other properties that needs to be set as shown in this example.
 
 ```
-#KODIPROP:inputstreamclass=inputstream.ffmpegdirect
+#KODIPROP:inputstream=inputstream.ffmpegdirect
 #KODIPROP:inputstream.ffmpegdirect.mime_type=application/x-mpegURL
 #KODIPROP:inputstream.ffmpegdirect.is_realtime_stream=true
 #KODIPROP:inputstream.ffmpegdirect.is_catchup_stream=catchup
@@ -110,6 +110,8 @@ http://127.0.0.1:3002/mystream.m3u8
 - `catchup_buffer_start_time`: The unix time in seconds of the start of catchup window.
 - `catchup_buffer_end_time`: The unix time in seconds of the end of catchup window.
 - `catchup_buffer_offset`: The offset from the catchup buffer start time where playback should begin.
+- `catchup_terminates`: Indicates with a value of `true` or `false` if a catchup stream will specify an end time and will stop eventually. Essentially means that the provider does not support delayed live streams. Value used by the addon to try and restart with a new end time near the end of the stream.
+- `catchup_granularity`: The granularity the catchup source can seek to in seconds. Generally a value of 1 or 60 is used.
 - `timezone_shift`: The value in seconds to shift the catchup times by for your timezone. Valid values range from -43200 to 50400 (from -12 hours to +14 hours).
 - `default_programme_duration`: If the programme duration is unknown use this default value in seconds instead. If this value is not provided 4 hours (14,400 secs) will be used  will be used.
 - `programme_catchup_id`: For providers that require a programme specifc id the following value can be used in the url format string.

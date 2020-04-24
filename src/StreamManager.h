@@ -29,6 +29,8 @@ static const std::string CATCHUP_URL_NEAR_LIVE_FORMAT_STRING = "inputstream.ffmp
 static const std::string CATCHUP_BUFFER_START_TIME = "inputstream.ffmpegdirect.catchup_buffer_start_time";
 static const std::string CATCHUP_BUFFER_END_TIME = "inputstream.ffmpegdirect.catchup_buffer_end_time";
 static const std::string CATCHUP_BUFFER_OFFSET = "inputstream.ffmpegdirect.catchup_buffer_offset";
+static const std::string CATCHUP_TERMINATES = "inputstream.ffmpegdirect.catchup_terminates";
+static const std::string CATCHUP_GRANULARITY = "inputstream.ffmpegdirect.catchup_granularity";
 static const std::string TIMEZONE_SHIFT = "inputstream.ffmpegdirect.timezone_shift";
 static const std::string DEFAULT_PROGRAMME_DURATION = "inputstream.ffmpegdirect.default_programme_duration";
 static const std::string PROGRAMME_CATCHUP_ID = "inputstream.ffmpegdirect.programme_catchup_id";
@@ -104,6 +106,8 @@ private:
   time_t m_catchupBufferStartTime = 0;
   time_t m_catchupBufferEndTime = 0;
   long long m_catchupBufferOffset = 0;
+  bool m_catchupTerminates = false;
+  int m_catchupGranularity = 1;
   int m_timezoneShiftSecs = 0;
   int m_defaultProgrammeDurationSecs = 4 * 60 * 60; //Four hours
   std::string m_programmeCatchupId;

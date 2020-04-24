@@ -101,6 +101,15 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
       tempString = props.m_ListItemProperties[i].m_strValue;
       m_catchupBufferOffset = std::stoll(tempString);
     }
+    else if (CATCHUP_TERMINATES == props.m_ListItemProperties[i].m_strKey)
+    {
+      m_catchupTerminates = StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "true");
+    }    
+    else if (CATCHUP_GRANULARITY == props.m_ListItemProperties[i].m_strKey)
+    {
+      tempString = props.m_ListItemProperties[i].m_strValue;
+      m_catchupGranularity = std::stoi(tempString);
+    }    
     else if (TIMEZONE_SHIFT == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
@@ -151,6 +160,8 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
                                                      m_catchupBufferStartTime,
                                                      m_catchupBufferEndTime,
                                                      m_catchupBufferOffset,
+                                                     m_catchupTerminates,
+                                                     m_catchupGranularity,
                                                      m_timezoneShiftSecs,
                                                      m_defaultProgrammeDurationSecs,
                                                      m_programmeCatchupId);

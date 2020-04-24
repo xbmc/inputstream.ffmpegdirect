@@ -11,6 +11,8 @@
 #include "FFmpegStream.h"
 #include "../utils/HttpProxy.h"
 
+static const int VIDEO_PLAYER_BUFFER_SECONDS = 10;
+
 class FFmpegCatchupStream : public FFmpegStream
 {
 public:
@@ -25,6 +27,8 @@ public:
                       time_t catchupBufferStartTime,
                       time_t catchupBufferEndTime,
                       long long catchupBufferOffset,
+                      bool catchupTerminates,
+                      int catchupGranularity,
                       int timezoneShift,
                       int defaultProgrammeDuration,
                       std::string& m_programmeCatchupId);
@@ -35,6 +39,11 @@ public:
   virtual DemuxPacket* DemuxRead() override;
   virtual void DemuxSetSpeed(int speed) override;
   virtual void GetCapabilities(INPUTSTREAM_CAPABILITIES& caps) override;
+  bool DemuxSeekTime(double timeMs)
+  {
+    double temp = 0;
+    return DemuxSeekTime(timeMs, false, temp);
+  }
 
   int64_t SeekCatchupStream(double timeMs, int whence);
   virtual int64_t LengthStream() override;
@@ -42,6 +51,9 @@ public:
 
 protected:
   void UpdateCurrentPTS() override;
+  bool CheckReturnEmptryOnPacketResult(int result) override;
+
+  long long GetCurrentLiveOffset() { return std::time(nullptr) - m_catchupBufferStartTime; }
 
   std::string GetUpdatedCatchupUrl() const;
 
@@ -54,6 +66,8 @@ protected:
   time_t m_catchupBufferStartTime = 0;
   time_t m_catchupBufferEndTime = 0;
   long long m_catchupBufferOffset = 0;
+  bool m_catchupTerminates = false;
+  int m_catchupGranularity = 1;
   int m_timezoneShift = 0;
   int m_defaultProgrammeDuration = 0;
   std::string m_programmeCatchupId;
@@ -62,4 +76,9 @@ protected:
   double m_seekOffset;
   double m_pauseStartTime;
   double m_currentDemuxTime;
+
+  long long m_previousLiveBufferOffset = 0;
+  bool m_lastSeekWasLive = false;
+  bool m_lastPacketWasAvoidedEOF = false;
+  bool m_seekCorrectsEOF = false;
 };

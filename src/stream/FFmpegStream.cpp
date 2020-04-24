@@ -273,9 +273,15 @@ DemuxPacket* FFmpegStream::DemuxRead()
       m_timeout.SetInfinite();
     }
 
+    m_lastPacketResult = m_pkt.result;
+
     if (m_pkt.result == AVERROR(EINTR) || m_pkt.result == AVERROR(EAGAIN))
     {
       // timeout, probably no real error, return empty packet
+      bReturnEmpty = true;
+    }
+    else if (CheckReturnEmptryOnPacketResult(m_pkt.result))  
+    {
       bReturnEmpty = true;
     }
     else if (m_pkt.result == AVERROR_EOF)
@@ -2124,4 +2130,9 @@ bool FFmpegStream::SeekChapter(int chapter)
   AVChapter* ch = m_pFormatContext->chapters[chapter - 1];
   double dts = ConvertTimestamp(ch->start, ch->time_base.den, ch->time_base.num);
   return SeekTime(DVD_TIME_TO_MSEC(dts), true);
+}
+
+bool FFmpegStream::CheckReturnEmptryOnPacketResult(int result)
+{
+  return false;
 }
