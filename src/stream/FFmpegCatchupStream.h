@@ -45,7 +45,7 @@ public:
     return DemuxSeekTime(timeMs, false, temp);
   }
 
-  int64_t SeekCatchupStream(double timeMs, int whence);
+  int64_t SeekCatchupStream(double timeMs, bool backwards);
   virtual int64_t LengthStream() override;
   virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
 
@@ -55,7 +55,14 @@ protected:
 
   long long GetCurrentLiveOffset() { return std::time(nullptr) - m_catchupBufferStartTime; }
   bool SeekDistanceSupported(int64_t seekBufferOffset);
+  const std::string GetDateTime(time_t time) 
+  {
+    std::tm timeStruct = *localtime(&time);
+    char buffer[32];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d.%X", &timeStruct);
 
+    return buffer;
+  }
   std::string GetUpdatedCatchupUrl() const;
 
   bool m_playbackAsLive = false;
