@@ -138,7 +138,7 @@ DemuxPacket* FFmpegCatchupStream::DemuxRead()
     {
       if (!m_lastPacketWasAvoidedEOF)
       {
-        Log(LOGLEVEL_INFO, "%s - EOF detected on terminiating catchup stream, starting continuing stream at offset: %lld, ending offset approx %lld", __FUNCTION__, m_previousLiveBufferOffset, static_cast<long long>(std::time(nullptr) - m_catchupBufferStartTime));
+        Log(LOGLEVEL_INFO, "%s - EOF detected on terminating catchup stream, starting continuing stream at offset: %lld, ending offset approx %lld", __FUNCTION__, m_previousLiveBufferOffset, static_cast<long long>(std::time(nullptr) - m_catchupBufferStartTime));
 
         m_seekCorrectsEOF = true;
         DemuxSeekTime(m_previousLiveBufferOffset * 1000);
@@ -164,6 +164,10 @@ bool FFmpegCatchupStream::CheckReturnEmptryOnPacketResult(int result)
   // sending an empty packet instead will allow VideoPlayer to continue as we swap to an
   // updated stream running from current end time to now
   // This will only happen if we are within the default programme duration of live
+
+  if (result == AVERROR_EOF)
+    Log(LOGLEVEL_DEBUG, "%s - isEOF: %d, terminates: %d, isOpening: %d, lastSeekWasLive: %d, lastLiveOffset+duration: %lld > currentDemuxTime: %lld", 
+        __FUNCTION__, result == AVERROR_EOF, m_catchupTerminates, m_isOpeningStream, m_lastSeekWasLive, m_previousLiveBufferOffset + m_defaultProgrammeDuration, static_cast<long long>(m_currentDemuxTime) / 1000);
 
   if (result == AVERROR_EOF && m_catchupTerminates && !m_isOpeningStream && !m_lastSeekWasLive && 
       m_previousLiveBufferOffset + m_defaultProgrammeDuration > static_cast<long long>(m_currentDemuxTime) / 1000)
@@ -262,8 +266,13 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, bool backwards)
       if (m_catchupGranularity > 1 && (m_lastSeekWasLive || m_seekCorrectsEOF))
         seekBufferOffset -= GetGranularityCorrectionFromLive(m_catchupBufferStartTime, seekBufferOffset, m_catchupGranularity);
 
+      Log(LOGLEVEL_DEBUG, "%s - seekBufferOffset %lld < liveBufferOffset %lld -10", __FUNCTION__, static_cast<long long>(seekBufferOffset), liveBufferOffset);
+
       if (seekBufferOffset < liveBufferOffset - VIDEO_PLAYER_BUFFER_SECONDS) // (-10 seconds)
       {
+        if (!TargetDistanceFromLiveSupported(liveBufferOffset - seekBufferOffset)) // terminating streams only
+          return -1;
+
         Log(LOGLEVEL_INFO, "%s - Seek to catchup", __FUNCTION__);
         m_catchupBufferOffset = seekBufferOffset;
         m_lastSeekWasLive = false;
@@ -298,22 +307,36 @@ bool FFmpegCatchupStream::SeekDistanceSupported(int64_t seekBufferOffset)
   if (!m_seekCorrectsEOF)
   {
     long long currentDemuxSecs = static_cast<long long>(m_currentDemuxTime) / 1000;
-    int seekDistanceActualSecs = std::llabs(seekBufferOffset - currentDemuxSecs);
-    int seekDistanceSecs;
-    if (seekBufferOffset < currentDemuxSecs) // adjust slightly for backward
-      seekDistanceSecs = seekDistanceActualSecs - VIDEO_PLAYER_BUFFER_SECONDS;
-    else // don't appear to need the adjustment for seeking forward
-      seekDistanceSecs = seekDistanceActualSecs;
+    int seekDistanceSecs = std::llabs(seekBufferOffset - currentDemuxSecs);
     
     if (m_lastSeekWasLive && 
         ((seekDistanceSecs < VIDEO_PLAYER_BUFFER_SECONDS) ||
-         (m_catchupGranularity > 1 && seekDistanceSecs < m_catchupGranularityLowWaterMark)))
+         (m_catchupTerminates && m_catchupGranularity == 1 && seekDistanceSecs < (TERMINATING_SECOND_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)) || 
+         (m_catchupTerminates && m_catchupGranularity > 1 && seekDistanceSecs < (TERMINATING_MINUTE_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)) ||
+         (!m_catchupTerminates && m_catchupGranularity > 1 && seekDistanceSecs < m_catchupGranularityLowWaterMark)))
     {
-      Log(LOGLEVEL_INFO, "%s - seekDistanceSecs (skipping): %d, actual: %d", __FUNCTION__, seekDistanceSecs, seekDistanceActualSecs);
+      Log(LOGLEVEL_INFO, "%s - skipping as seek distance of %d seconds is too short", __FUNCTION__, seekDistanceSecs);
       return false;    
     }
 
-    Log(LOGLEVEL_INFO, "%s - seekDistanceSecs: %d, actual: %d", __FUNCTION__, seekDistanceSecs, seekDistanceActualSecs);
+    Log(LOGLEVEL_INFO, "%s - seek distance of %d seconds is ok", __FUNCTION__, seekDistanceSecs);
+  }
+
+  return true;
+}
+
+bool FFmpegCatchupStream::TargetDistanceFromLiveSupported(long long secondsFromLive)//, bool backwards)
+{
+  if (m_catchupTerminates && !m_seekCorrectsEOF)
+  {
+    if ((m_catchupGranularity == 1 && secondsFromLive < (TERMINATING_SECOND_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)) ||
+        (m_catchupGranularity > 1 && secondsFromLive < (TERMINATING_MINUTE_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)))
+    {
+      Log(LOGLEVEL_INFO, "%s - skipping as %d seconds from live is too close", __FUNCTION__, secondsFromLive);
+      return false;    
+    }
+
+    Log(LOGLEVEL_INFO, "%s - %d seconds from live is ok", __FUNCTION__, secondsFromLive, secondsFromLive);
   }
 
   return true;

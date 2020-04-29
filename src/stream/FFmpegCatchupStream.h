@@ -12,6 +12,8 @@
 #include "../utils/HttpProxy.h"
 
 static const int VIDEO_PLAYER_BUFFER_SECONDS = 10;
+static const int TERMINATING_SECOND_STREAM_MIN_SEEK_FROM_LIVE_TIME = 60;
+static const int TERMINATING_MINUTE_STREAM_MIN_SEEK_FROM_LIVE_TIME = 120;
 
 class FFmpegCatchupStream : public FFmpegStream
 {
@@ -56,6 +58,7 @@ protected:
 
   long long GetCurrentLiveOffset() { return std::time(nullptr) - m_catchupBufferStartTime; }
   bool SeekDistanceSupported(int64_t seekBufferOffset);
+  bool TargetDistanceFromLiveSupported(long long secondsFromLive);
   const std::string GetDateTime(time_t time) 
   {
     std::tm timeStruct = *localtime(&time);

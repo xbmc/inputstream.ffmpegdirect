@@ -121,7 +121,10 @@ http://127.0.0.1:3002/mystream.m3u8
 - `default_programme_duration`: If the programme duration is unknown use this default value in seconds instead. If this value is not provided 4 hours (14,400 secs) will be used  will be used.
 - `programme_catchup_id`: For providers that require a programme specifc id the following value can be used in the url format string.
 
-Note: setting `playback_as_live` to `true` only makes sense when the catchup start and end times are set to the size of the catchup windows (e.g. 3 days). If the catchup start and end times are set to the programme times then `playback_as_live` will have little effect.
+**Notes:**
+- Setting `playback_as_live` to `true` only makes sense when the catchup start and end times are set to the size of the catchup windows (e.g. 3 days). If the catchup start and end times are set to the programme times then `playback_as_live` will have little effect.
+- For catchup streams that terminate there is a minimum distance from live a stream can seek to/from. For streams with a 1 second granularity it's 1 minute, and for stream with a 60 second granularity it's 2 minutes. The reason for this window on terminating streams is to allow the restart functionality to work.
+- For all catchup streams any seek to within 10 seconds of live would be considered live and will switch to the default URL. For this reason seeking from live to less than 10 seconds has no effect.
 
 ## Appendix
 
