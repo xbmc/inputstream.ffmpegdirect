@@ -8,9 +8,6 @@
 
 #pragma once
 
-#include "threads/CriticalSection.h"
-#include "threads/SystemClock.h"
-
 #include <iostream>
 #include <map>
 #include <string>

@@ -8,7 +8,6 @@
 
 #include "DemuxStream.h"
 
-#include "threads/SingleLock.h"
 #include "../utils/Log.h"
 #include "url/URL.h"
 #include "FFmpegLog.h"
@@ -31,8 +30,6 @@ extern "C" {
 #include <libavutil/dict.h>
 #include <libavutil/opt.h>
 }
-
-//#include "platform/posix/XTimeUtils.h"
 
 #include <p8-platform/util/StringUtils.h>
 
