@@ -19,14 +19,34 @@ using namespace ffmpegdirect::utils;
 * InputSteam Client AddOn specific public library functions
 ***********************************************************/
 
-void Log(const LogLevel loglevel, const char* format, ...)
+void Log(const LogLevel logLevel, const char* format, ...)
 {
+  AddonLog addonLevel;
+
+  switch (logLevel)
+  {
+    case LogLevel::LOGLEVEL_FATAL:
+      addonLevel = AddonLog::ADDON_LOG_FATAL;
+      break;
+    case LogLevel::LOGLEVEL_ERROR:
+      addonLevel = AddonLog::ADDON_LOG_ERROR;
+      break;
+    case LogLevel::LOGLEVEL_WARNING:
+      addonLevel = AddonLog::ADDON_LOG_WARNING;
+      break;
+    case LogLevel::LOGLEVEL_INFO:
+      addonLevel = AddonLog::ADDON_LOG_INFO;
+      break;
+    default:
+      addonLevel = AddonLog::ADDON_LOG_DEBUG;
+  }
+
   char buffer[16384];
   va_list args;
   va_start(args, format);
   vsprintf(buffer, format, args);
   va_end(args);
-  ::kodi::addon::CAddonBase::m_interface->toKodi->addon_log_msg(::kodi::addon::CAddonBase::m_interface->toKodi->kodiBase, loglevel, buffer);
+  ::kodi::addon::CAddonBase::m_interface->toKodi->addon_log_msg(::kodi::addon::CAddonBase::m_interface->toKodi->kodiBase, addonLevel, buffer);
 }
 
 CInputStreamLibavformat::CInputStreamLibavformat(KODI_HANDLE instance)
@@ -40,12 +60,12 @@ CInputStreamLibavformat::~CInputStreamLibavformat()
 
 bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
 {
-  Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect: OpenStream() - Num Props: %d", props.m_nCountInfoValues);
+  Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect: OpenStream() - Num Props: %d", props.m_nCountInfoValues);
   std::string tempString;
 
   for (size_t i = 0; i < props.m_nCountInfoValues; ++i)
   {
-    Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect property: %s = %s", props.m_ListItemProperties[i].m_strKey, props.m_ListItemProperties[i].m_strValue);
+    Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: %s = %s", props.m_ListItemProperties[i].m_strKey, props.m_ListItemProperties[i].m_strValue);
 
     if (PROGRAM_NUMBER == props.m_ListItemProperties[i].m_strKey)
     {
@@ -129,7 +149,7 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
   m_streamUrl = props.m_strURL;
   m_mimeType = props.m_mimeType;
 
-  Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect property: mimetype = %s", m_mimeType.c_str());
+  Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: mimetype = %s", m_mimeType.c_str());
 
   HttpProxy httpProxy;
 
@@ -137,13 +157,13 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
   if (useHttpProxy)
   {
     httpProxy.SetProxyHost(kodi::GetSettingString("httpProxyHost"));
-    kodi::Log(ADDON_LOG_NOTICE, "HttpProxy host set: '%s'", httpProxy.GetProxyHost().c_str());
+    kodi::Log(ADDON_LOG_INFO, "HttpProxy host set: '%s'", httpProxy.GetProxyHost().c_str());
 
     httpProxy.SetProxyPort(static_cast<uint16_t>(kodi::GetSettingInt("httpProxyPort")));
-    kodi::Log(ADDON_LOG_NOTICE, "HttpProxy port set: %d", static_cast<int>(httpProxy.GetProxyPort()));
+    kodi::Log(ADDON_LOG_INFO, "HttpProxy port set: %d", static_cast<int>(httpProxy.GetProxyPort()));
 
     httpProxy.SetProxyUser(kodi::GetSettingString("httpProxyUser"));
-    kodi::Log(ADDON_LOG_NOTICE, "HttpProxy user set: '%s'", httpProxy.GetProxyUser().c_str());
+    kodi::Log(ADDON_LOG_INFO, "HttpProxy user set: '%s'", httpProxy.GetProxyUser().c_str());
 
     httpProxy.SetProxyPassword(kodi::GetSettingString("httpProxyPassword"));
   }
