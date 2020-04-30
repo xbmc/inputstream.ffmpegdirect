@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.9.2"
+  version="1.10.0"
   name="Inputstream FFmpeg Direct"
-  provider-name="phunkyfish">
+  provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
   <extension
     point="kodi.inputstream"
@@ -23,6 +23,20 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.10.0
+- Added: Continued playback of catchtup streams which don't support delayed live streams
+- Added: Skip unsupported seeks like ones too close to live or those less one minute for streams that only allow a 1 minute granulaity
+- Added: Limit seeking for terminating 1 second streams to within 1 minute of live and for 60 streams 2 minutes
+- Update: Debian control file
+- Update: gas-preprocessor to latest version and remove patch that is no longer required
+- Update: .gitignore
+- Fixed: Fix arch typo ffmpeg darwin_embedded
+- Fixed: Cleanup apple frameworks usage in cmakelists
+- Added: Change logging implementation and deprecate use of NOTICE level
+- Added: Allow streams to be opened using cURL in addition to FFmpeg
+- Update: Fix TS Streams by disallowing streaminfo for realtime streams
+- Update: MKV Attachment and IsTransportStreamReady() updates from kodi
+
 v1.9.2
 - Update: Use generic mimetype from stream and remove old mime_type property
 
