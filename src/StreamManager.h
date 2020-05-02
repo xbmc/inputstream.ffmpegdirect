@@ -17,7 +17,6 @@
 
 #include <kodi/addon-instance/Inputstream.h>
 
-static const std::string MIME_TYPE = "inputstream.ffmpegdirect.mime_type";
 static const std::string PROGRAM_NUMBER = "inputstream.ffmpegdirect.program_number";
 static const std::string IS_REALTIME_STREAM = "inputstream.ffmpegdirect.is_realtime_stream";
 static const std::string STREAM_MODE = "inputstream.ffmpegdirect.stream_mode";

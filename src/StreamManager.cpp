@@ -47,11 +47,7 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
   {
     Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect property: %s = %s", props.m_ListItemProperties[i].m_strKey, props.m_ListItemProperties[i].m_strValue);
 
-    if (MIME_TYPE == props.m_ListItemProperties[i].m_strKey)
-    {
-      m_mimeType = props.m_ListItemProperties[i].m_strValue;
-    }
-    else if (PROGRAM_NUMBER == props.m_ListItemProperties[i].m_strKey)
+    if (PROGRAM_NUMBER == props.m_ListItemProperties[i].m_strKey)
     {
       m_programProperty = props.m_ListItemProperties[i].m_strValue;
     }
@@ -122,6 +118,9 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
   }
 
   m_streamUrl = props.m_strURL;
+  m_mimeType = props.m_mimeType;
+
+  Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect property: mimetype = %s", m_mimeType.c_str());
 
   HttpProxy httpProxy;
 
