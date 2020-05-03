@@ -1,3 +1,6 @@
+v1.9.2
+- Update: Use generic mimetype from stream and remove old mime_type property
+
 v1.9.1
 - Update: Inpustream API 2.3.0
 
