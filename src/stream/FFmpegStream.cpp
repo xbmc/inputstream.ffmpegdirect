@@ -123,15 +123,7 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
   m_isRealTimeStream = isRealTimeStream;
   m_programProperty = programProperty;
 
-  // we never want to check stream info as we want fast switching
-  bool checkStreamInfo = false;
-
-  // if (mimeType == "video/mp2t")
-  // {
-  //   checkStreamInfo = false;
-  // }
-
-  m_opened = Open(checkStreamInfo);
+  m_opened = Open(false);
 
   return m_opened;
 }
@@ -222,7 +214,7 @@ void FFmpegStream::DemuxReset()
   m_demuxResetOpenSuccess = false;
   Dispose();
   m_opened = false;
-  m_demuxResetOpenSuccess = Open(m_streaminfo);
+  m_demuxResetOpenSuccess = Open(false);
 }
 
 void FFmpegStream::DemuxAbort()
@@ -612,11 +604,11 @@ bool FFmpegStream::Aborted()
   return false;
 }
 
-bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
+bool FFmpegStream::Open(bool fileinfo)
 {
   AVInputFormat* iformat = NULL;
   std::string strFile;
-  m_streaminfo = streaminfo;
+  m_streaminfo = !m_isRealTimeStream && !m_reopen;;
   m_currentPts = DVD_NOPTS_VALUE;
   m_speed = DVD_PLAYSPEED_NORMAL;
   m_program = UINT_MAX;
@@ -808,6 +800,7 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
   {
     int64_t duration = m_pFormatContext->duration;
     Dispose();
+    m_reopen = true;
     if (!Open(false))
       return false;
     m_pFormatContext->duration = duration;

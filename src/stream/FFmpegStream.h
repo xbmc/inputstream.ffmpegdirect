@@ -110,7 +110,7 @@ protected:
   int m_lastPacketResult;
 
 private:
-  bool Open(bool streaminfo = true, bool fileinfo = false);
+  bool Open(bool fileinfo);
   bool OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptCB& int_cb);
   AVDictionary* GetFFMpegOptionsFromInput();
   void ResetVideoStreams();
@@ -172,6 +172,7 @@ private:
   }m_pkt;
 
   bool m_streaminfo;
+  bool m_reopen = false;
   bool m_checkTransportStream;
   int m_displayTime = 0;
   double m_dtsAtDisplayTime;
