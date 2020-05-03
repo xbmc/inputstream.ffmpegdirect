@@ -17,6 +17,7 @@ class FFmpegCatchupStream : public FFmpegStream
 {
 public:
   FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
+                      const OpenMode& openMode,
                       const ffmpegdirect::utils::HttpProxy& httpProxy,
                       std::string& defaultUrl,
                       bool playbackAsLive,

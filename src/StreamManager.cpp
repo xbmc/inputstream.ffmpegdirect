@@ -80,6 +80,17 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
       if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "catchup"))
         m_streamMode = StreamMode::CATCHUP;
     }
+    else if (OPEN_MODE == props.m_ListItemProperties[i].m_strKey)
+    {
+      if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "ffmpeg"))
+        m_openMode = OpenMode::FFMPEG;
+      else if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "curl"))
+        m_openMode = OpenMode::CURL;
+    }
+    else if (MANIFEST_TYPE == props.m_ListItemProperties[i].m_strKey)
+    {
+      m_manifestType = props.m_ListItemProperties[i].m_strValue;
+    }
     else if (DEFAULT_URL == props.m_ListItemProperties[i].m_strKey)
     {
       m_defaultUrl = props.m_ListItemProperties[i].m_strValue;
@@ -151,6 +162,19 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
 
   Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: mimetype = %s", m_mimeType.c_str());
 
+  if (m_openMode == OpenMode::DEFAULT)
+  {
+    if (m_mimeType == "application/x-mpegURL" || // HLS
+        m_mimeType == "application/vnd.apple.mpegurl" || //HLS
+        m_mimeType == "application/xml+dash" ||
+        m_manifestType == "hls" || // HLS
+        m_manifestType == "mpd" || // DASH
+        m_manifestType == "ism") //Smooth Streaming
+      m_openMode = OpenMode::FFMPEG;
+    else
+      m_openMode = OpenMode::CURL;
+  }
+
   HttpProxy httpProxy;
 
   bool useHttpProxy = kodi::GetSettingBoolean("useHttpProxy"); 
@@ -170,6 +194,7 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
 
   if (m_streamMode == StreamMode::CATCHUP)
     m_stream = std::make_shared<FFmpegCatchupStream>(static_cast<IManageDemuxPacket*>(this),
+                                                     m_openMode,
                                                      httpProxy,
                                                      m_defaultUrl,
                                                      m_playbackAsLive,
@@ -186,7 +211,7 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
                                                      m_defaultProgrammeDurationSecs,
                                                      m_programmeCatchupId);
   else
-    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), httpProxy);
+    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), m_openMode, httpProxy);
 
   m_stream->SetVideoResolution(m_videoWidth, m_videoHeight);
 

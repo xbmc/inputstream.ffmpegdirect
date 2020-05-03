@@ -14,9 +14,11 @@
 #include "../utils/HttpProxy.h"
 #include "BaseStream.h"
 #include "DemuxStream.h"
+#include "CurlInput.h"
 
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 #include <sstream>
 
@@ -50,11 +52,20 @@ enum class TRANSPORT_STREAM_STATE
   NOTREADY,
 };
 
+enum class OpenMode
+  : int // same type as addon settings
+{
+  DEFAULT = 0,
+  FFMPEG,
+  CURL
+};
+
 class FFmpegStream
   : public BaseStream
 {
 public:
-  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const ffmpegdirect::utils::HttpProxy& httpProxy);
+  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, const ffmpegdirect::utils::HttpProxy& httpProxy);
+  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, std::shared_ptr<CurlInput> curlInput, const ffmpegdirect::utils::HttpProxy& httpProxy);
   ~FFmpegStream();
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
@@ -95,6 +106,7 @@ public:
   bool Aborted();
 
   AVFormatContext* m_pFormatContext;
+  std::shared_ptr<CurlInput> m_curlInput;
 
 protected:
   virtual std::string GetStreamCodecName(int iStreamId);
@@ -111,7 +123,8 @@ protected:
 
 private:
   bool Open(bool fileinfo);
-  bool OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptCB& int_cb);
+  bool OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB& int_cb);
+  bool OpenWithCURL(AVInputFormat* iformat);
   AVDictionary* GetFFMpegOptionsFromInput();
   void ResetVideoStreams();
   double ConvertTimestamp(int64_t pts, int den, int num);
@@ -124,6 +137,7 @@ private:
   void CreateStreams(unsigned int program);
   void AddStream(int streamIdx, DemuxStream* stream);
   DemuxStream* AddStream(int streamIdx);
+  void GetL16Parameters(int& channels, int& samplerate);
   double SelectAspect(AVStream* st, bool& forced);
   std::string GetStereoModeFromMetadata(AVDictionary* pMetadata);
   std::string ConvertCodecToInternalStereoMode(const std::string &mode, const StereoModeConversionMap* conversionMap);
@@ -185,4 +199,5 @@ private:
   bool m_opened;
 
   ffmpegdirect::utils::HttpProxy m_httpProxy;
+  OpenMode m_openMode;
 };

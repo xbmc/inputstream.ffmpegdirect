@@ -20,6 +20,8 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/FFmpegCatchupStream.cpp
                     src/stream/FFmpegLog.cpp
                     src/stream/FFmpegStream.cpp
+                    src/stream/CurlCatchupInput.cpp
+                    src/stream/CurlInput.cpp
                     src/stream/commons/Exception.cpp
                     src/stream/threads/Atomics.cpp
                     src/stream/threads/Event.cpp
@@ -38,6 +40,8 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/FFmpegCatchupStream.h
                     src/stream/FFmpegLog.h
                     src/stream/FFmpegStream.h
+                    src/stream/CurlCatchupInput.h
+                    src/stream/CurlInput.h
                     src/stream/IManageDemuxPacket.h
                     src/stream/commons/Exception.h
                     src/stream/threads/Atomics.h

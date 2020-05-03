@@ -8,6 +8,7 @@
 
 #include "FFmpegCatchupStream.h"
 
+#include "CurlCatchupInput.h"
 #include "threads/SingleLock.h"
 #include "../utils/Log.h"
 
@@ -43,6 +44,7 @@ extern "C" {
 ***********************************************************/
 
 FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
+                                         const OpenMode& openMode,
                                          const HttpProxy& httpProxy,
                                          std::string& defaultUrl,
                                          bool playbackAsLive,
@@ -58,7 +60,8 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
                                          int timezoneShift,
                                          int defaultProgrammeDuration,
                                          std::string& programmeCatchupId)
-  : FFmpegStream(demuxPacketManager, httpProxy), m_isOpeningStream(false), m_seekOffset(0),
+  : FFmpegStream(demuxPacketManager, openMode, std::make_shared<CurlCatchupInput>(), httpProxy),
+    m_isOpeningStream(false), m_seekOffset(0),
     m_defaultUrl(defaultUrl), m_playbackAsLive(playbackAsLive),
     m_programmeStartTime(programmeStartTime), m_programmeEndTime(programmeEndTime),
     m_catchupUrlFormatString(catchupUrlFormatString),

@@ -5,7 +5,7 @@
 
 # inputstream.ffmpegdirect addon for Kodi
 
-This is a [Kodi](http://kodi.tv) input stream addon for streams that can be opened by FFmpeg's libavformat, such as plain TS, HLS and DASH streams. Note that the only DASH streams supported are those without DRM.
+This is a [Kodi](https://kodi.tv) input stream addon for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH are supported as well as many others. Note that the only DASH streams supported are those without DRM.
 
 The addon also has support for Archive/Catchup services where there is a replay window (usually in days) and can timeshift across that span.
 
@@ -51,10 +51,10 @@ If you would prefer to run the rebuild steps manually instead of using the above
 
 ## Settings
 
-### HTTP Proxy
-Settings for configuring the HTTP Proxy
+### FFmpeg HTTP Proxy
+Contains the settings for how the proxy is configured when opening with FFmpeg. Note that the setting has no effect when opening using Kodi's cURL. In that case it will use the proxy configured in Kodi.
 
-* **Use HTTP proxy**: Whether or not a proxy should be used.
+* **Use HTTP proxy when opening with FFmpeg**: Whether or not a proxy should be used when opening with FFmpeg.
 * **Server**: Configure the proxy server address.
 * **Port**: Configure the proxy server port.
 * **Username**: Configure the proxy server username.
@@ -66,7 +66,7 @@ The addon can be accessed like any other inputstream in Kodi. The following exam
 
 ```
 #KODIPROP:inputstream=inputstream.ffmpegdirect
-#KODIPROP:inputstream.ffmpegdirect.mime_type=video/mp2t
+#KODIPROP:mimetype=video/mp2t
 #KODIPROP:inputstream.ffmpegdirect.program_number=2154
 #KODIPROP:inputstream.ffmpegdirect.is_realtime_stream=true
 #EXTINF:-1,MyChannel
@@ -84,9 +84,11 @@ If enabling archive/catchup support there are a number of other properties that 
 
 ```
 #KODIPROP:inputstream=inputstream.ffmpegdirect
-#KODIPROP:inputstream.ffmpegdirect.mime_type=application/x-mpegURL
+#KODIPROP:mimetype=application/x-mpegURL
 #KODIPROP:inputstream.ffmpegdirect.is_realtime_stream=true
-#KODIPROP:inputstream.ffmpegdirect.is_catchup_stream=catchup
+#KODIPROP:inputstream.ffmpegdirect.stream_mode=catchup
+#KODIPROP:inputstream.ffmpegdirect.open_mode=ffmpeg
+#KODIPROP:inputstream.ffmpegdirect.manifest_type=hls
 #KODIPROP:inputstream.ffmpegdirect.default_url=http://mysite.com/streamX
 #KODIPROP:inputstream.ffmpegdirect.playback_as_live=true
 #KODIPROP:inputstream.ffmpegdirect.programme_start_time=1111111
@@ -101,6 +103,9 @@ If enabling archive/catchup support there are a number of other properties that 
 http://127.0.0.1:3002/mystream.m3u8
 ```
 
+- `stream_mode`: If the value `catchup` is supplied the inputstream will start in catchup mode. Any other value or if omitted will open as a regular stream.
+- `open_mode`: If the value `ffmpeg` is supplied the inputstream will be opened with AVFormat. If the value `curl` is supplied the inputstream will be opened with cURL. If neither value is supplied the default is to open HLS, Dash and Smooth Streaming with AVFormat and anything else as a kodi file. Note that a `mimetype` or `manifest_type` property is required to be able to tell if a stream is HLS or Dash. If using Smooth streaming only a `manifest_type` property will work as Smooth Streaming does not have a mimetype.
+- `manifest_type`: Allowed values are `hls` for HLS, `mpd` for Dash and `ism` for Smooth Streaming. 
 - `default_url`: The URL to use if a catchup URL cannot be generated for any reason.
 - `playback_as_live`: Should the playback be considerd as live tv, allowing skipping from one programme to the next over the entire catchup window, if so set to `true`. Otherwise set to `false` to treat all programmes as videos.
 - `programme_start_time`: The unix time in seconds of the start of the programme being streamed - optional.
