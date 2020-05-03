@@ -43,6 +43,13 @@ extern "C"
 
 struct StereoModeConversionMap;
 
+enum class TRANSPORT_STREAM_STATE
+{
+  NONE,
+  READY,
+  NOTREADY,
+};
+
 class FFmpegStream
   : public BaseStream
 {
@@ -120,9 +127,11 @@ private:
   double SelectAspect(AVStream* st, bool& forced);
   std::string GetStereoModeFromMetadata(AVDictionary* pMetadata);
   std::string ConvertCodecToInternalStereoMode(const std::string &mode, const StereoModeConversionMap* conversionMap);
-  bool IsVideoReady();
   bool SeekTime(double time, bool backwards = false, double* startpts = nullptr);
   void ParsePacket(AVPacket* pkt);
+  TRANSPORT_STREAM_STATE TransportStreamAudioState();
+  TRANSPORT_STREAM_STATE TransportStreamVideoState();
+  bool IsTransportStreamReady();  
   bool IsProgramChange();
   void StoreSideData(DemuxPacket *pkt, AVPacket *src);
 
@@ -163,7 +172,7 @@ private:
   }m_pkt;
 
   bool m_streaminfo;
-  bool m_checkvideo;
+  bool m_checkTransportStream;
   int m_displayTime = 0;
   double m_dtsAtDisplayTime;
   bool m_seekToKeyFrame = false;

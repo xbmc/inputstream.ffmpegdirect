@@ -18,6 +18,7 @@
 #include "threads/SingleLock.h"
 #include "url/URL.h"
 #include "FFmpegLog.h"
+#include "../utils/FilenameUtils.h"
 #include "../utils/Log.h"
 
 #include "IManageDemuxPacket.h"
@@ -47,6 +48,7 @@ extern "C" {
 
 //#include "platform/posix/XTimeUtils.h"
 
+#include <kodi/Filesystem.h>
 #include <p8-platform/util/StringUtils.h>
 
 /***********************************************************
@@ -99,7 +101,7 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const HttpPro
   m_pkt.result = -1;
   memset(&m_pkt.pkt, 0, sizeof(AVPacket));
   m_streaminfo = true; /* set to true if we want to look for streams before playback */
-  m_checkvideo = false;
+  m_checkTransportStream = false;
   m_dtsAtDisplayTime = DVD_NOPTS_VALUE;
 
   CFFmpegLog::SetLogLevel(-100);
@@ -329,7 +331,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
 
       AVStream* stream = m_pFormatContext->streams[m_pkt.pkt.stream_index];
 
-      if (IsVideoReady())
+      if (IsTransportStreamReady())
       {
         if (m_program != UINT_MAX)
         {
@@ -659,15 +661,15 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
   //     m_pFormatContext->fps_probe_size = 0;
 
   // analyse very short to speed up mjpeg playback start
-  // if (iformat && (strcmp(iformat->name, "mjpeg") == 0) && m_ioContext->seekable == 0)
-  //   av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
+  if (iformat && (strcmp(iformat->name, "mjpeg") == 0) && m_ioContext->seekable == 0)
+    av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
 
   bool skipCreateStreams = false;
   bool isBluray = false;//pInput->IsStreamType(DVDSTREAM_TYPE_BLURAY);
   if (iformat && (strcmp(iformat->name, "mpegts") == 0) && !fileinfo && !isBluray)
   {
     av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
-    m_checkvideo = true;
+    m_checkTransportStream = true;
     skipCreateStreams = true;
   }
   else if (!iformat || (strcmp(iformat->name, "mpegts") != 0))
@@ -701,7 +703,7 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
       Log(LOGLEVEL_WARNING,"could not find codec parameters for %s", CURL::GetRedacted(strFile).c_str());
       if ((m_pFormatContext->nb_streams == 1 &&
            m_pFormatContext->streams[0]->codecpar->codec_id == AV_CODEC_ID_AC3) ||
-          m_checkvideo)
+          m_checkTransportStream)
       {
         // special case, our codecs can still handle it.
       }
@@ -716,7 +718,7 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
     // print some extra information
     av_dump_format(m_pFormatContext, 0, CURL::GetRedacted(strFile).c_str(), 0);
 
-    if (m_checkvideo)
+    if (m_checkTransportStream)
     {
       // make sure we start video with an i-frame
       ResetVideoStreams();
@@ -725,7 +727,7 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
   else
   {
     m_program = 0;
-    m_checkvideo = true;
+    m_checkTransportStream = true;
     skipCreateStreams = true;
   }
 
@@ -802,7 +804,7 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
   m_startTime = 0;
   m_seekStream = -1;
 
-  if (m_checkvideo && m_streaminfo)
+  if (m_checkTransportStream && m_streaminfo)
   {
     int64_t duration = m_pFormatContext->duration;
     Dispose();
@@ -948,12 +950,12 @@ double FFmpegStream::ConvertTimestamp(int64_t pts, int den, int num)
   if (m_pFormatContext->start_time != (int64_t)AV_NOPTS_VALUE)
     starttime = (double)m_pFormatContext->start_time / AV_TIME_BASE;
 
-  if (m_checkvideo)
+  if (m_checkTransportStream)
     starttime = m_startTime;
 
   if (!m_bSup)
   {
-    if (timestamp > starttime || m_checkvideo)
+    if (timestamp > starttime || m_checkTransportStream)
       timestamp -= starttime;
     // allow for largest possible difference in pts and dts for a single packet
     else if (timestamp + 0.5f > starttime)
@@ -1095,7 +1097,7 @@ std::vector<DemuxStream*> FFmpegStream::GetDemuxStreams() const
 
 int FFmpegStream::GetNrOfStreams() const
 {
-  return m_streams.size();
+  return static_cast<int>(m_streams.size());
 }
 
 int FFmpegStream::GetNrOfStreams(INPUTSTREAM_INFO::STREAM_TYPE streamType)
@@ -1109,6 +1111,8 @@ int FFmpegStream::GetNrOfStreams(INPUTSTREAM_INFO::STREAM_TYPE streamType)
 
   return iCounter;
 }
+
+
 
 int FFmpegStream::GetNrOfSubtitleStreams()
 {
@@ -1218,11 +1222,11 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
   int64_t seek_pts = (int64_t)time * (AV_TIME_BASE / 1000);
   bool ismp3 = m_pFormatContext->iformat && (strcmp(m_pFormatContext->iformat->name, "mp3") == 0);
 
-  if (m_checkvideo)
+  if (m_checkTransportStream)
   {
     FFmpegDirectThreads::EndTime timer(1000);
 
-    while (!IsVideoReady())
+    while (!IsTransportStreamReady())
     {
       DemuxPacket* pkt = DemuxRead();
       if (pkt)
@@ -1240,7 +1244,8 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     }
 
     AVStream* st = m_pFormatContext->streams[m_seekStream];
-    seek_pts = av_rescale(m_startTime + time / 1000, st->time_base.den, st->time_base.num);
+    seek_pts = av_rescale(static_cast<int64_t>(m_startTime + time / 1000), st->time_base.den,
+                          st->time_base.num);
   }
   else if (m_pFormatContext->start_time != (int64_t)AV_NOPTS_VALUE && !ismp3 && !m_bSup)
     seek_pts += m_pFormatContext->start_time;
@@ -1253,10 +1258,11 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     if (ret < 0)
     {
       int64_t starttime = m_pFormatContext->start_time;
-      if (m_checkvideo)
+      if (m_checkTransportStream)
       {
         AVStream* st = m_pFormatContext->streams[m_seekStream];
-        starttime = av_rescale(m_startTime, st->time_base.num, st->time_base.den);
+        starttime =
+            av_rescale(static_cast<int64_t>(m_startTime), st->time_base.num, st->time_base.den);
       }
 
       // demuxer can return failure, if seeking behind eof
@@ -1378,16 +1384,63 @@ void FFmpegStream::ParsePacket(AVPacket* pkt)
   }
 }
 
-bool FFmpegStream::IsVideoReady()
+TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamAudioState()
 {
-  AVStream* st;
+  AVStream* st = nullptr;
+  bool hasAudio = false;
+
+  if (m_program != UINT_MAX)
+  {
+    for (unsigned int i = 0; i < m_pFormatContext->programs[m_program]->nb_stream_indexes; i++)
+    {
+      int idx = m_pFormatContext->programs[m_program]->stream_index[i];
+      st = m_pFormatContext->streams[idx];
+      if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+      {
+        if (st->start_time != AV_NOPTS_VALUE)
+        {
+          if (!m_startTime)
+          {
+            m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
+            m_seekStream = i;
+          }
+          return TRANSPORT_STREAM_STATE::READY;
+        }
+        hasAudio = true;
+      }
+    }
+  }
+  else
+  {
+    for (unsigned int i = 0; i < m_pFormatContext->nb_streams; i++)
+    {
+      st = m_pFormatContext->streams[i];
+      if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+      {
+        if (st->start_time != AV_NOPTS_VALUE)
+        {
+          if (!m_startTime)
+          {
+            m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
+            m_seekStream = i;
+          }
+          return TRANSPORT_STREAM_STATE::READY;
+        }
+        hasAudio = true;
+      }
+    }
+  }
+
+  return (hasAudio) ? TRANSPORT_STREAM_STATE::NOTREADY : TRANSPORT_STREAM_STATE::NONE;
+}
+
+TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamVideoState()
+{
+  AVStream* st = nullptr;
   bool hasVideo = false;
 
-  if (!m_checkvideo)
-    return true;
-
   if (m_program == 0 && !m_pFormatContext->nb_programs)
-    return false;
+    return TRANSPORT_STREAM_STATE::NONE;
 
   if (m_program != UINT_MAX)
   {
@@ -1404,25 +1457,9 @@ bool FFmpegStream::IsVideoReady()
             m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
             m_seekStream = i;
           }
-          return true;
+          return TRANSPORT_STREAM_STATE::READY;
         }
         hasVideo = true;
-      }
-    }
-    // Workaround for live audio-only MPEG-TS streams: If there are no elementary video streams
-    // present attempt to set the start time from the first available elementary audio stream instead
-    if (!hasVideo && !m_startTime)
-    {
-      for (unsigned int i = 0; i < m_pFormatContext->programs[m_program]->nb_stream_indexes; i++)
-      {
-        int idx = m_pFormatContext->programs[m_program]->stream_index[i];
-        st = m_pFormatContext->streams[idx];
-        if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
-        {
-          m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
-          m_seekStream = i;
-          break;
-        }
       }
     }
   }
@@ -1440,28 +1477,29 @@ bool FFmpegStream::IsVideoReady()
             m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
             m_seekStream = i;
           }
-          return true;
+          return TRANSPORT_STREAM_STATE::READY;
         }
         hasVideo = true;
       }
     }
-    // Workaround for live audio-only MPEG-TS streams: If there are no elementary video streams
-    // present attempt to set the start time from the first available elementary audio stream instead
-    if (!hasVideo && !m_startTime)
-    {
-      for (unsigned int i = 0; i < m_pFormatContext->nb_streams; i++)
-      {
-        st = m_pFormatContext->streams[i];
-        if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
-        {
-          m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
-          m_seekStream = i;
-          break;
-        }
-      }
-    }
   }
-  return !hasVideo;
+
+  return (hasVideo) ? TRANSPORT_STREAM_STATE::NOTREADY : TRANSPORT_STREAM_STATE::NONE;
+}
+
+bool FFmpegStream::IsTransportStreamReady()
+{
+  if (!m_checkTransportStream)
+    return true;
+
+  if (m_program == 0 && !m_pFormatContext->nb_programs)
+    return false;
+
+  TRANSPORT_STREAM_STATE state = TransportStreamVideoState();
+  if (state == TRANSPORT_STREAM_STATE::NONE)
+    state = TransportStreamAudioState();
+
+  return state == TRANSPORT_STREAM_STATE::READY;
 }
 
 void FFmpegStream::CreateStreams(unsigned int program)
@@ -1670,42 +1708,42 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
           break;
         }
       }
-      // case AVMEDIA_TYPE_ATTACHMENT:
-      // { //mkv attachments. Only bothering with fonts for now.
-        // if (pStream->codecpar->codec_id == AV_CODEC_ID_TTF ||
-        //     pStream->codecpar->codec_id == AV_CODEC_ID_OTF)
-        // {
-        //   std::string fileName = "special://temp/fonts/";
-        //   XFILE::CDirectory::Create(fileName);
-        //   AVDictionaryEntry* nameTag = av_dict_get(pStream->metadata, "filename", NULL, 0);
-        //   if (!nameTag)
-        //   {
-        //     Log(LOGLEVEL_ERROR, "%s: TTF attachment has no name", __FUNCTION__);
-        //   }
-        //   else
-        //   {
-        //     fileName += nameTag->value;
-        //     XFILE::CFile file;
-        //     if (pStream->codecpar->extradata && file.OpenForWrite(fileName))
-        //     {
-        //       if (file.Write(pStream->codecpar->extradata, pStream->codecpar->extradata_size) !=
-        //           pStream->codecpar->extradata_size)
-        //       {
-        //         file.Close();
-        //         XFILE::CFile::Delete(fileName);
-        //         Log(LOGLEVEL_DEBUG, "%s: Error saving font file \"%s\"", __FUNCTION__, fileName.c_str());
-        //       }
-        //     }
-        //   }
-        // }
-        // stream = new DemuxStream();
-        // stream->type = STREAM_NONE;
-      //   break;
-      // }
+      case AVMEDIA_TYPE_ATTACHMENT:
+      { //mkv attachments. Only bothering with fonts for now.
+        if (pStream->codecpar->codec_id == AV_CODEC_ID_TTF ||
+            pStream->codecpar->codec_id == AV_CODEC_ID_OTF)
+        {
+          std::string fileName = "special://temp/fonts/";
+          kodi::vfs::CreateDirectory(fileName);
+          AVDictionaryEntry* nameTag = av_dict_get(pStream->metadata, "filename", NULL, 0);
+          if (!nameTag)
+          {
+            Log(LOGLEVEL_ERROR, "%s: TTF attachment has no name", __FUNCTION__);
+          }
+          else
+          {
+            fileName += FilenameUtils::MakeLegalFileName(nameTag->value, LEGAL_WIN32_COMPAT);
+            kodi::vfs::CFile file;
+            if (pStream->codecpar->extradata && file.OpenFileForWrite(fileName))
+            {
+              if (file.Write(pStream->codecpar->extradata, pStream->codecpar->extradata_size) !=
+                  pStream->codecpar->extradata_size)
+              {
+                file.Close();
+                kodi::vfs::DeleteFile(fileName);
+                Log(LOGLEVEL_DEBUG, "%s: Error saving font file \"%s\"", __FUNCTION__, fileName.c_str());
+              }
+            }
+          }
+        }
+        stream = new DemuxStream();
+        stream->type = INPUTSTREAM_INFO::STREAM_TYPE::TYPE_NONE;
+        break;
+      }
       default:
       {
         // if analyzing streams is skipped, unknown streams may become valid later
-        if (m_streaminfo && IsVideoReady())
+        if (m_streaminfo && IsTransportStreamReady())
         {
           Log(LOGLEVEL_DEBUG, "CDVDDemuxFFmpeg::AddStream - discarding unknown stream with id: %d", pStream->index);
           pStream->discard = AVDISCARD_ALL;
@@ -1762,6 +1800,15 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
 // #ifdef HAVE_LIBBLURAY
 //     if (m_pInput->IsStreamType(DVDSTREAM_TYPE_BLURAY))
 //     {
+//       // UHD BD have a secondary video stream called by Dolby as enhancement layer.
+//       // This is not used by streaming services and devices (ATV, Nvidia Shield, XONE).
+//       if (pStream->id == 0x1015)
+//       {
+//         CLog::Log(LOGDEBUG, "CDVDDemuxFFmpeg::AddStream - discarding Dolby Vision stream");
+//         pStream->discard = AVDISCARD_ALL;
+//         delete stream;
+//         return nullptr;
+//       }  
 //       stream->dvdNavId = pStream->id;
 
 //       auto it = std::find_if(m_streams.begin(), m_streams.end(),

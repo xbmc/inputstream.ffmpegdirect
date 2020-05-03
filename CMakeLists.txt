@@ -29,7 +29,8 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/threads/SystemClock.cpp
                     src/stream/url/URL.cpp
                     src/stream/url/UrlOptions.cpp
-                    src/stream/url/Variant.cpp)
+                    src/stream/url/Variant.cpp
+                    src/utils/FilenameUtils.cpp)
 
 set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/BaseStream.h
@@ -53,6 +54,7 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/threads/TimeUtils.h
                     src/stream/threads/platform/ThreadImpl.h
                     src/utils/HttpProxy.h
+                    src/utils/FilenameUtils.h
                     src/utils/Log.h
                     src/stream/url/URL.h
                     src/stream/url/UrlOptions.h
