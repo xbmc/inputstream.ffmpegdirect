@@ -14,9 +14,11 @@
 #include "../utils/HttpProxy.h"
 #include "BaseStream.h"
 #include "DemuxStream.h"
+#include "CurlInput.h"
 
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 #include <sstream>
 
@@ -43,11 +45,27 @@ extern "C"
 
 struct StereoModeConversionMap;
 
+enum class TRANSPORT_STREAM_STATE
+{
+  NONE,
+  READY,
+  NOTREADY,
+};
+
+enum class OpenMode
+  : int // same type as addon settings
+{
+  DEFAULT = 0,
+  FFMPEG,
+  CURL
+};
+
 class FFmpegStream
   : public BaseStream
 {
 public:
-  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const ffmpegdirect::utils::HttpProxy& httpProxy);
+  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, const ffmpegdirect::utils::HttpProxy& httpProxy);
+  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, std::shared_ptr<CurlInput> curlInput, const ffmpegdirect::utils::HttpProxy& httpProxy);
   ~FFmpegStream();
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
@@ -88,21 +106,25 @@ public:
   bool Aborted();
 
   AVFormatContext* m_pFormatContext;
+  std::shared_ptr<CurlInput> m_curlInput;
 
 protected:
   virtual std::string GetStreamCodecName(int iStreamId);
   virtual void UpdateCurrentPTS();
   bool IsPaused() { return m_speed == DVD_PLAYSPEED_PAUSE; }
+  virtual bool CheckReturnEmptryOnPacketResult(int result);
 
   int64_t m_demuxerId;
   CCriticalSection m_critSection;
   double m_currentPts; // used for stream length estimation
   bool m_demuxResetOpenSuccess = false;
   std::string m_streamUrl;
+  int m_lastPacketResult;
 
 private:
-  bool Open(bool streaminfo = true, bool fileinfo = false);
-  bool OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptCB& int_cb);
+  bool Open(bool fileinfo);
+  bool OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB& int_cb);
+  bool OpenWithCURL(AVInputFormat* iformat);
   AVDictionary* GetFFMpegOptionsFromInput();
   void ResetVideoStreams();
   double ConvertTimestamp(int64_t pts, int den, int num);
@@ -115,12 +137,15 @@ private:
   void CreateStreams(unsigned int program);
   void AddStream(int streamIdx, DemuxStream* stream);
   DemuxStream* AddStream(int streamIdx);
+  void GetL16Parameters(int& channels, int& samplerate);
   double SelectAspect(AVStream* st, bool& forced);
   std::string GetStereoModeFromMetadata(AVDictionary* pMetadata);
   std::string ConvertCodecToInternalStereoMode(const std::string &mode, const StereoModeConversionMap* conversionMap);
-  bool IsVideoReady();
   bool SeekTime(double time, bool backwards = false, double* startpts = nullptr);
   void ParsePacket(AVPacket* pkt);
+  TRANSPORT_STREAM_STATE TransportStreamAudioState();
+  TRANSPORT_STREAM_STATE TransportStreamVideoState();
+  bool IsTransportStreamReady();  
   bool IsProgramChange();
   void StoreSideData(DemuxPacket *pkt, AVPacket *src);
 
@@ -161,7 +186,8 @@ private:
   }m_pkt;
 
   bool m_streaminfo;
-  bool m_checkvideo;
+  bool m_reopen = false;
+  bool m_checkTransportStream;
   int m_displayTime = 0;
   double m_dtsAtDisplayTime;
   bool m_seekToKeyFrame = false;
@@ -173,4 +199,5 @@ private:
   bool m_opened;
 
   ffmpegdirect::utils::HttpProxy m_httpProxy;
+  OpenMode m_openMode;
 };

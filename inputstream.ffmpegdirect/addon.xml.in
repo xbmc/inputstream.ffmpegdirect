@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.9.2"
+  version="1.10.0"
   name="Inputstream FFmpeg Direct"
-  provider-name="phunkyfish">
+  provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
   <extension
     point="kodi.inputstream"
     name="ffmpegdirect"
     extension=""
     tags="true"
-    listitemprops="program_number|stream_mode|default_url|is_realtime_stream|playback_as_live|programme_start_time|programme_end_time|catchup_url_format_string|catchup_url_near_live_format_string|catchup_buffer_start_time|catchup_buffer_end_time|catchup_buffer_offset|timezone_shift|default_programme_duration|programme_catchup_id"
+    listitemprops="program_number|stream_mode|open_mode|manifest_type|default_url|is_realtime_stream|playback_as_live|programme_start_time|programme_end_time|catchup_url_format_string|catchup_url_near_live_format_string|catchup_buffer_start_time|catchup_buffer_end_time|catchup_buffer_offset|catchup_terminates|catchup_granularity|timezone_shift|default_programme_duration|programme_catchup_id"
     library_@PLATFORM@="@LIBRARY_FILENAME@" />
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">InputStream Client for FFmpeg streams (libavformat)</summary>
-    <description lang="en_GB">InputStream Client for streams that can be opened by FFmpeg's libavformat such as plain TS, HLS and DASH (without DRM) streams.&#10;    &#10;The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.&#10;    &#10;For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md&#10;    </description>
+    <description lang="en_GB">InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.&#10;    &#10;The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.&#10;    &#10;For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md&#10;    </description>
     <platform>@PLATFORM@</platform>
 	  <license>GPL-2.0-or-later</license>
     <source>https://github.com/xbmc/inputstream.ffmpegdirect</source>
@@ -23,6 +23,20 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.10.0
+- Added: Continued playback of catchtup streams which don't support delayed live streams
+- Added: Skip unsupported seeks like ones too close to live or those less one minute for streams that only allow a 1 minute granulaity
+- Added: Limit seeking for terminating 1 second streams to within 1 minute of live and for 60 streams 2 minutes
+- Update: Debian control file
+- Update: gas-preprocessor to latest version and remove patch that is no longer required
+- Update: .gitignore
+- Fixed: Fix arch typo ffmpeg darwin_embedded
+- Fixed: Cleanup apple frameworks usage in cmakelists
+- Added: Change logging implementation and deprecate use of NOTICE level
+- Added: Allow streams to be opened using cURL in addition to FFmpeg
+- Update: Fix TS Streams by disallowing streaminfo for realtime streams
+- Update: MKV Attachment and IsTransportStreamReady() updates from kodi
+
 v1.9.2
 - Update: Use generic mimetype from stream and remove old mime_type property
 

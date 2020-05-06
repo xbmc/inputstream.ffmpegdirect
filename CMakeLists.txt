@@ -20,6 +20,8 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/FFmpegCatchupStream.cpp
                     src/stream/FFmpegLog.cpp
                     src/stream/FFmpegStream.cpp
+                    src/stream/CurlCatchupInput.cpp
+                    src/stream/CurlInput.cpp
                     src/stream/commons/Exception.cpp
                     src/stream/threads/Atomics.cpp
                     src/stream/threads/Event.cpp
@@ -29,7 +31,8 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/threads/SystemClock.cpp
                     src/stream/url/URL.cpp
                     src/stream/url/UrlOptions.cpp
-                    src/stream/url/Variant.cpp)
+                    src/stream/url/Variant.cpp
+                    src/utils/FilenameUtils.cpp)
 
 set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/BaseStream.h
@@ -37,6 +40,8 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/FFmpegCatchupStream.h
                     src/stream/FFmpegLog.h
                     src/stream/FFmpegStream.h
+                    src/stream/CurlCatchupInput.h
+                    src/stream/CurlInput.h
                     src/stream/IManageDemuxPacket.h
                     src/stream/commons/Exception.h
                     src/stream/threads/Atomics.h
@@ -53,6 +58,7 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/threads/TimeUtils.h
                     src/stream/threads/platform/ThreadImpl.h
                     src/utils/HttpProxy.h
+                    src/utils/FilenameUtils.h
                     src/utils/Log.h
                     src/stream/url/URL.h
                     src/stream/url/UrlOptions.h
@@ -100,11 +106,9 @@ elseif(CORE_SYSTEM_NAME STREQUAL osx OR
   find_library(VIDEOTOOLBOX VideoToolbox)
   find_library(SECURITY Security)
 
-  include_directories(${AVFOUNDATION}
-                      ${COCOA}
+  include_directories(${AUDIOTOOLBOX}
                       ${COREFOUNDATION}
                       ${COREMEDIA}
-                      ${COREMEDIAIO}
                       ${VIDEOTOOLBOX}
                       ${SECURITY})
 

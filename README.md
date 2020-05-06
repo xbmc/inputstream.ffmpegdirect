@@ -5,7 +5,7 @@
 
 # inputstream.ffmpegdirect addon for Kodi
 
-This is a [Kodi](http://kodi.tv) input stream addon for streams that can be opened by FFmpeg's libavformat, such as plain TS, HLS and DASH streams. Note that the only DASH streams supported are those without DRM.
+This is a [Kodi](https://kodi.tv) input stream addon for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH are supported as well as many others. Note that the only DASH streams supported are those without DRM.
 
 The addon also has support for Archive/Catchup services where there is a replay window (usually in days) and can timeshift across that span.
 
@@ -51,10 +51,10 @@ If you would prefer to run the rebuild steps manually instead of using the above
 
 ## Settings
 
-### HTTP Proxy
-Settings for configuring the HTTP Proxy
+### FFmpeg HTTP Proxy
+Contains the settings for how the proxy is configured when opening with FFmpeg. Note that the setting has no effect when opening using Kodi's cURL. In that case it will use the proxy configured in Kodi.
 
-* **Use HTTP proxy**: Whether or not a proxy should be used.
+* **Use HTTP proxy when opening with FFmpeg**: Whether or not a proxy should be used when opening with FFmpeg.
 * **Server**: Configure the proxy server address.
 * **Port**: Configure the proxy server port.
 * **Username**: Configure the proxy server username.
@@ -65,8 +65,8 @@ Settings for configuring the HTTP Proxy
 The addon can be accessed like any other inputstream in Kodi. The following example will show how to manually choose this addon for playback when using IPTV Simple Client with the following entry in the M3U file (Note that the IPTV Simple Client will in fact automatcially detect a catchup stream and use the addon based on configured settings).
 
 ```
-#KODIPROP:inputstreamclass=inputstream.ffmpegdirect
-#KODIPROP:inputstream.ffmpegdirect.mime_type=video/mp2t
+#KODIPROP:inputstream=inputstream.ffmpegdirect
+#KODIPROP:mimetype=video/mp2t
 #KODIPROP:inputstream.ffmpegdirect.program_number=2154
 #KODIPROP:inputstream.ffmpegdirect.is_realtime_stream=true
 #EXTINF:-1,MyChannel
@@ -83,10 +83,12 @@ The field `program_number` can be used to indicate the Program ID to use for TS 
 If enabling archive/catchup support there are a number of other properties that needs to be set as shown in this example.
 
 ```
-#KODIPROP:inputstreamclass=inputstream.ffmpegdirect
-#KODIPROP:inputstream.ffmpegdirect.mime_type=application/x-mpegURL
+#KODIPROP:inputstream=inputstream.ffmpegdirect
+#KODIPROP:mimetype=application/x-mpegURL
 #KODIPROP:inputstream.ffmpegdirect.is_realtime_stream=true
-#KODIPROP:inputstream.ffmpegdirect.is_catchup_stream=catchup
+#KODIPROP:inputstream.ffmpegdirect.stream_mode=catchup
+#KODIPROP:inputstream.ffmpegdirect.open_mode=ffmpeg
+#KODIPROP:inputstream.ffmpegdirect.manifest_type=hls
 #KODIPROP:inputstream.ffmpegdirect.default_url=http://mysite.com/streamX
 #KODIPROP:inputstream.ffmpegdirect.playback_as_live=true
 #KODIPROP:inputstream.ffmpegdirect.programme_start_time=1111111
@@ -101,6 +103,9 @@ If enabling archive/catchup support there are a number of other properties that 
 http://127.0.0.1:3002/mystream.m3u8
 ```
 
+- `stream_mode`: If the value `catchup` is supplied the inputstream will start in catchup mode. Any other value or if omitted will open as a regular stream.
+- `open_mode`: If the value `ffmpeg` is supplied the inputstream will be opened with AVFormat. If the value `curl` is supplied the inputstream will be opened with cURL. If neither value is supplied the default is to open HLS, Dash and Smooth Streaming with AVFormat and anything else as a kodi file. Note that a `mimetype` or `manifest_type` property is required to be able to tell if a stream is HLS or Dash. If using Smooth streaming only a `manifest_type` property will work as Smooth Streaming does not have a mimetype.
+- `manifest_type`: Allowed values are `hls` for HLS, `mpd` for Dash and `ism` for Smooth Streaming. 
 - `default_url`: The URL to use if a catchup URL cannot be generated for any reason.
 - `playback_as_live`: Should the playback be considerd as live tv, allowing skipping from one programme to the next over the entire catchup window, if so set to `true`. Otherwise set to `false` to treat all programmes as videos.
 - `programme_start_time`: The unix time in seconds of the start of the programme being streamed - optional.
@@ -110,11 +115,16 @@ http://127.0.0.1:3002/mystream.m3u8
 - `catchup_buffer_start_time`: The unix time in seconds of the start of catchup window.
 - `catchup_buffer_end_time`: The unix time in seconds of the end of catchup window.
 - `catchup_buffer_offset`: The offset from the catchup buffer start time where playback should begin.
+- `catchup_terminates`: Indicates with a value of `true` or `false` if a catchup stream will specify an end time and will stop eventually. Essentially means that the provider does not support delayed live streams. Value used by the addon to try and restart with a new end time near the end of the stream.
+- `catchup_granularity`: The granularity the catchup source can seek to in seconds. Generally a value of 1 or 60 is used.
 - `timezone_shift`: The value in seconds to shift the catchup times by for your timezone. Valid values range from -43200 to 50400 (from -12 hours to +14 hours).
 - `default_programme_duration`: If the programme duration is unknown use this default value in seconds instead. If this value is not provided 4 hours (14,400 secs) will be used  will be used.
 - `programme_catchup_id`: For providers that require a programme specifc id the following value can be used in the url format string.
 
-Note: setting `playback_as_live` to `true` only makes sense when the catchup start and end times are set to the size of the catchup windows (e.g. 3 days). If the catchup start and end times are set to the programme times then `playback_as_live` will have little effect.
+**Notes:**
+- Setting `playback_as_live` to `true` only makes sense when the catchup start and end times are set to the size of the catchup windows (e.g. 3 days). If the catchup start and end times are set to the programme times then `playback_as_live` will have little effect.
+- For catchup streams that terminate there is a minimum distance from live a stream can seek to/from. For streams with a 1 second granularity it's 1 minute, and for stream with a 60 second granularity it's 2 minutes. The reason for this window on terminating streams is to allow the restart functionality to work.
+- For all catchup streams any seek to within 10 seconds of live would be considered live and will switch to the default URL. For this reason seeking from live to less than 10 seconds has no effect.
 
 ## Appendix
 

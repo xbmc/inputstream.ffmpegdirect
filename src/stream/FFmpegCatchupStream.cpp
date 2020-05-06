@@ -8,6 +8,7 @@
 
 #include "FFmpegCatchupStream.h"
 
+#include "CurlCatchupInput.h"
 #include "threads/SingleLock.h"
 #include "../utils/Log.h"
 
@@ -43,6 +44,7 @@ extern "C" {
 ***********************************************************/
 
 FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
+                                         const OpenMode& openMode,
                                          const HttpProxy& httpProxy,
                                          std::string& defaultUrl,
                                          bool playbackAsLive,
@@ -53,18 +55,23 @@ FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
                                          time_t catchupBufferStartTime,
                                          time_t catchupBufferEndTime,
                                          long long catchupBufferOffset,
+                                         bool catchupTerminates,
+                                         int catchupGranularity,
                                          int timezoneShift,
                                          int defaultProgrammeDuration,
                                          std::string& programmeCatchupId)
-  : FFmpegStream(demuxPacketManager, httpProxy), m_bIsOpening(false), m_seekOffset(0),
+  : FFmpegStream(demuxPacketManager, openMode, std::make_shared<CurlCatchupInput>(), httpProxy),
+    m_isOpeningStream(false), m_seekOffset(0),
     m_defaultUrl(defaultUrl), m_playbackAsLive(playbackAsLive),
     m_programmeStartTime(programmeStartTime), m_programmeEndTime(programmeEndTime),
     m_catchupUrlFormatString(catchupUrlFormatString),
     m_catchupUrlNearLiveFormatString(catchupUrlNearLiveFormatString),
     m_catchupBufferStartTime(catchupBufferStartTime), m_catchupBufferEndTime(catchupBufferEndTime),
-    m_catchupBufferOffset(catchupBufferOffset), m_timezoneShift(timezoneShift),
+    m_catchupBufferOffset(catchupBufferOffset), m_catchupTerminates(catchupTerminates),
+    m_catchupGranularity(catchupGranularity), m_timezoneShift(timezoneShift),
     m_defaultProgrammeDuration(defaultProgrammeDuration), m_programmeCatchupId(programmeCatchupId)
 {
+  m_catchupGranularityLowWaterMark = m_catchupGranularity - (m_catchupGranularity / 4);
 }
 
 FFmpegCatchupStream::~FFmpegCatchupStream()
@@ -74,26 +81,26 @@ FFmpegCatchupStream::~FFmpegCatchupStream()
 
 bool FFmpegCatchupStream::Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty)
 {
-  m_bIsOpening = true;
+  m_isOpeningStream = true;
   bool ret = FFmpegStream::Open(streamUrl, mimeType, isRealTimeStream, programProperty);
+
+  m_lastPacketWasAvoidedEOF = false;
 
   // We need to make an initial seek to the correct time otherwise the stream
   // will always start at the beginning instead of at the offset.
   // The value of time is irrelevant here we will want to seek to SEEK_CUR
-  double temp = 0;
-  DemuxSeekTime(0, false, temp);
+  DemuxSeekTime(0);
 
-  m_bIsOpening = false;
+  m_isOpeningStream = false;
   return ret;
 }
 
-bool FFmpegCatchupStream::DemuxSeekTime(double time, bool backwards, double& startpts)
+bool FFmpegCatchupStream::DemuxSeekTime(double timeMs, bool backwards, double& startpts)
 {
-  if (/*!m_pInput ||*/ time < 0)
+  if (/*!m_pInput ||*/ timeMs < 0)
     return false;
 
-  int whence = m_bIsOpening ? SEEK_CUR : SEEK_SET;
-  int64_t seekResult = SeekStream(static_cast<int64_t>(time), whence);
+  int64_t seekResult = SeekCatchupStream(timeMs, backwards);
   if (seekResult >= 0)
   {
     {
@@ -101,10 +108,10 @@ bool FFmpegCatchupStream::DemuxSeekTime(double time, bool backwards, double& sta
       m_seekOffset = seekResult;
     }
 
-    Log(LOGLEVEL_DEBUG, "Seek successful. m_seekOffset = %f, m_currentPts = %f, time = %f, backwards = %d, startptr = %f",
-      m_seekOffset, m_currentPts, time, backwards, startpts);
+    Log(LOGLEVEL_DEBUG, "%s - Seek successful. m_seekOffset = %f, m_currentPts = %f, time = %f, backwards = %d, startpts = %f",
+      __FUNCTION__, m_seekOffset, m_currentPts, timeMs, backwards, startpts);
 
-    if (!m_bIsOpening)
+    if (!m_isOpeningStream)
     {
       DemuxReset();
       return m_demuxResetOpenSuccess;
@@ -113,8 +120,8 @@ bool FFmpegCatchupStream::DemuxSeekTime(double time, bool backwards, double& sta
     return true;
   }
 
-  Log(LOGLEVEL_DEBUG, "Seek failed. m_currentPts = %f, time = %f, backwards = %d, startptr = %f",
-    m_currentPts, time, backwards, startpts);
+  Log(LOGLEVEL_DEBUG, "%s - Seek failed. m_currentPts = %f, time = %f, backwards = %d, startpts = %f",
+    __FUNCTION__, m_currentPts, timeMs, backwards, startpts);
   return false;
 }
 
@@ -127,29 +134,65 @@ DemuxPacket* FFmpegCatchupStream::DemuxRead()
     pPacket->pts += m_seekOffset;
     pPacket->dts += m_seekOffset;
 
+    if (m_lastPacketResult == AVERROR_EOF && m_catchupTerminates && !m_isOpeningStream && !m_lastSeekWasLive)
+    {
+      if (!m_lastPacketWasAvoidedEOF)
+      {
+        Log(LOGLEVEL_INFO, "%s - EOF detected on terminating catchup stream, starting continuing stream at offset: %lld, ending offset approx %lld", __FUNCTION__, m_previousLiveBufferOffset, static_cast<long long>(std::time(nullptr) - m_catchupBufferStartTime));
+
+        m_seekCorrectsEOF = true;
+        DemuxSeekTime(m_previousLiveBufferOffset * 1000);
+        m_seekCorrectsEOF = false;
+      }
+      m_lastPacketWasAvoidedEOF = true;
+    }
+    else
+    {
+      m_lastPacketWasAvoidedEOF = false;
+    }
+    
+
     m_currentDemuxTime = static_cast<double>(pPacket->pts) / 1000;
   }
 
   return pPacket;
 }
 
+bool FFmpegCatchupStream::CheckReturnEmptryOnPacketResult(int result)
+{
+  // If the server returns EOF then for a terminating stream we should should keep playing
+  // sending an empty packet instead will allow VideoPlayer to continue as we swap to an
+  // updated stream running from current end time to now
+  // This will only happen if we are within the default programme duration of live
+
+  if (result == AVERROR_EOF)
+    Log(LOGLEVEL_DEBUG, "%s - isEOF: %d, terminates: %d, isOpening: %d, lastSeekWasLive: %d, lastLiveOffset+duration: %lld > currentDemuxTime: %lld", 
+        __FUNCTION__, result == AVERROR_EOF, m_catchupTerminates, m_isOpeningStream, m_lastSeekWasLive, m_previousLiveBufferOffset + m_defaultProgrammeDuration, static_cast<long long>(m_currentDemuxTime) / 1000);
+
+  if (result == AVERROR_EOF && m_catchupTerminates && !m_isOpeningStream && !m_lastSeekWasLive && 
+      m_previousLiveBufferOffset + m_defaultProgrammeDuration > static_cast<long long>(m_currentDemuxTime) / 1000)
+    return true;
+
+  return false;
+}
+
 void FFmpegCatchupStream::DemuxSetSpeed(int speed)
 {
-  Log(LOGLEVEL_DEBUG, "DemuxSetSpeed %d", speed);
+  Log(LOGLEVEL_INFO, "%s - DemuxSetSpeed %d", __FUNCTION__, speed);
 
   if (IsPaused() && speed != DVD_PLAYSPEED_PAUSE)
   {
     // Resume Playback
-    Log(LOGLEVEL_DEBUG, "DemuxSetSpeed - Unpause time: %lld", static_cast<long long>(m_pauseStartTime));
-    double temp = 0;
-    DemuxSeekTime(m_pauseStartTime, false, temp);
+    Log(LOGLEVEL_DEBUG, "%s - DemuxSetSpeed - Unpause time: %lld", __FUNCTION__, static_cast<long long>(m_pauseStartTime));
+    m_lastSeekWasLive = false;
+    DemuxSeekTime(m_pauseStartTime);
   }
   else if (!IsPaused() && speed == DVD_PLAYSPEED_PAUSE)
   {
     // Pause Playback
     CSingleLock lock(m_critSection);
     m_pauseStartTime = m_currentDemuxTime;
-    Log(LOGLEVEL_DEBUG, "DemuxSetSpeed - Pause time: %lld", static_cast<long long>(m_pauseStartTime));
+    Log(LOGLEVEL_DEBUG, "%s - DemuxSetSpeed - Pause time: %lld", __FUNCTION__, static_cast<long long>(m_pauseStartTime));
   }
 
   FFmpegStream::DemuxSetSpeed(speed);
@@ -157,7 +200,7 @@ void FFmpegCatchupStream::DemuxSetSpeed(int speed)
 
 void FFmpegCatchupStream::GetCapabilities(INPUTSTREAM_CAPABILITIES& caps)
 {
-  Log(LOGLEVEL_DEBUG, "GetCapabilities()");
+  Log(LOGLEVEL_DEBUG, "%s - Called", __FUNCTION__);
   caps.m_mask = INPUTSTREAM_CAPABILITIES::SUPPORTS_IDEMUX |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_IDISPLAYTIME |
     INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME |
@@ -167,48 +210,136 @@ void FFmpegCatchupStream::GetCapabilities(INPUTSTREAM_CAPABILITIES& caps)
     INPUTSTREAM_CAPABILITIES::SUPPORTS_ICHAPTER;
 }
 
-int64_t FFmpegCatchupStream::SeekStream(int64_t position, int whence /* SEEK_SET */)
+namespace
 {
-  int64_t ret = -1;
+
+int GetGranularityCorrectionFromLive(long long bufferStartTimeSecs, long long bufferOffset, int granularitySecs)
+{
+  // We need to make sure we don't seek to a time within granularity seconds of live
+  // as that will not be supported
+  // Note: only valid for sources with a granularity more than 1 second (usually 60)
+
+  int correction = 0;
+
+  if (granularitySecs > 1)
+  {
+    const time_t timeNow = std::time(0);
+    long long currentLiveOffset = timeNow - bufferStartTimeSecs;
+    if (bufferOffset + granularitySecs > currentLiveOffset)
+      correction = (bufferOffset + granularitySecs) - currentLiveOffset + 1;
+
+    Log(LOGLEVEL_INFO, "%s - correction of %d seconds for live, granularity %d seconds, %lld seconds from live", __FUNCTION__, correction, granularitySecs, currentLiveOffset - bufferOffset);
+  }
+
+  return correction;
+}
+
+} // unnamed namespace
+
+int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, bool backwards)
+{
+  // The argument timeMs that is supplied will not be in the same units as our m_catchupBufferOffset
+  // So we need to divide by 1000 to convert to seconds.
+  // When we return the value we need to convert our seconds to microseconds so multiply by DVD_TIME_BASE
+
   if (m_catchupBufferStartTime > 0)
   {
-    Log(LOGLEVEL_DEBUG, "SeekLiveStream - iPosition = %lld, iWhence = %d", position, whence);
-    const time_t timeNow = time(0);
-    switch (whence)
-    {
-      case SEEK_SET:
-      {
-        Log(LOGLEVEL_DEBUG, "SeekLiveStream - SeekSet: %lld", static_cast<long long>(position));
-        position += 500;
-        position /= 1000;
-        if (m_catchupBufferStartTime + position < timeNow - 10)
-        {
-          ret = position;
-          m_catchupBufferOffset = position;
-        }
-        else
-        {
-          ret = timeNow - m_catchupBufferStartTime;
-          m_catchupBufferOffset = ret;
-        }
-        ret *= DVD_TIME_BASE;
+    long long liveBufferOffset = GetCurrentLiveOffset();
 
-        m_streamUrl = GetUpdatedCatchupUrl();
-      }
-      break;
-      case SEEK_CUR:
-      {
-        int64_t offset = m_catchupBufferOffset;
-        //Log(LOGLEVEL_DEBUG, "SeekLiveStream - timeNow = %d, startTime = %d, iTvgShift = %d, offset = %d", timeNow, m_catchupStartTime, m_programmeChannelTvgShift, offset);
-        ret = offset * DVD_TIME_BASE;
-      }
-      break;
-      default:
-        Log(LOGLEVEL_DEBUG, "SeekLiveStream - Unsupported SEEK command (%d)", whence);
-      break;
+    if (m_isOpeningStream)
+    {
+      m_lastSeekWasLive = m_catchupBufferOffset >= liveBufferOffset - (VIDEO_PLAYER_BUFFER_SECONDS / 2); // (-5 seconds)
+
+      if (m_catchupTerminates)
+        m_previousLiveBufferOffset = liveBufferOffset;
     }
+    else
+    {
+      int64_t seekBufferOffset = static_cast<int64_t>(timeMs);
+      seekBufferOffset += 500;
+      seekBufferOffset /= 1000;
+      Log(LOGLEVEL_INFO, "%s - Seek offset: %lld - time: %s", __FUNCTION__, static_cast<long long>(seekBufferOffset), GetDateTime(m_catchupBufferStartTime + seekBufferOffset).c_str());
+
+      if (!SeekDistanceSupported(seekBufferOffset))
+        return -1;
+
+      if (m_catchupGranularity > 1 && (m_lastSeekWasLive || m_seekCorrectsEOF))
+        seekBufferOffset -= GetGranularityCorrectionFromLive(m_catchupBufferStartTime, seekBufferOffset, m_catchupGranularity);
+
+      Log(LOGLEVEL_DEBUG, "%s - seekBufferOffset %lld < liveBufferOffset %lld -10", __FUNCTION__, static_cast<long long>(seekBufferOffset), liveBufferOffset);
+
+      if (seekBufferOffset < liveBufferOffset - VIDEO_PLAYER_BUFFER_SECONDS) // (-10 seconds)
+      {
+        if (!TargetDistanceFromLiveSupported(liveBufferOffset - seekBufferOffset)) // terminating streams only
+          return -1;
+
+        Log(LOGLEVEL_INFO, "%s - Seek to catchup", __FUNCTION__);
+        m_catchupBufferOffset = seekBufferOffset;
+        m_lastSeekWasLive = false;
+
+        if (m_seekCorrectsEOF)
+          Log(LOGLEVEL_INFO, "%s - continuing stream %lld seconds from live at offset: %lld, live offset: %lld", __FUNCTION__, static_cast<long long>(liveBufferOffset - seekBufferOffset), static_cast<long long>(seekBufferOffset), static_cast<long long>(liveBufferOffset));
+      }
+      else
+      {
+        Log(LOGLEVEL_INFO, "%s - Seek to live", __FUNCTION__);
+        m_catchupBufferOffset = liveBufferOffset;
+        m_lastSeekWasLive = true;
+
+        if (m_seekCorrectsEOF)
+          Log(LOGLEVEL_INFO, "%s - Resetting continuing stream to live as within %lld seconds - crossed threshold of %d seconds", __FUNCTION__, static_cast<long long>(liveBufferOffset - seekBufferOffset), VIDEO_PLAYER_BUFFER_SECONDS);
+      }
+
+      if (m_catchupTerminates)
+        m_previousLiveBufferOffset = liveBufferOffset;
+
+      m_streamUrl = GetUpdatedCatchupUrl();
+    }
+
+    return static_cast<int64_t>(m_catchupBufferOffset) * DVD_TIME_BASE;   
   }
-  return ret;
+
+  return -1;
+}
+
+bool FFmpegCatchupStream::SeekDistanceSupported(int64_t seekBufferOffset)
+{
+  if (!m_seekCorrectsEOF)
+  {
+    long long currentDemuxSecs = static_cast<long long>(m_currentDemuxTime) / 1000;
+    int seekDistanceSecs = std::llabs(seekBufferOffset - currentDemuxSecs);
+    
+    if (m_lastSeekWasLive && 
+        ((seekDistanceSecs < VIDEO_PLAYER_BUFFER_SECONDS) ||
+         (m_catchupTerminates && m_catchupGranularity == 1 && seekDistanceSecs < (TERMINATING_SECOND_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)) || 
+         (m_catchupTerminates && m_catchupGranularity > 1 && seekDistanceSecs < (TERMINATING_MINUTE_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)) ||
+         (!m_catchupTerminates && m_catchupGranularity > 1 && seekDistanceSecs < m_catchupGranularityLowWaterMark)))
+    {
+      Log(LOGLEVEL_INFO, "%s - skipping as seek distance of %d seconds is too short", __FUNCTION__, seekDistanceSecs);
+      return false;    
+    }
+
+    Log(LOGLEVEL_INFO, "%s - seek distance of %d seconds is ok", __FUNCTION__, seekDistanceSecs);
+  }
+
+  return true;
+}
+
+bool FFmpegCatchupStream::TargetDistanceFromLiveSupported(long long secondsFromLive)//, bool backwards)
+{
+  if (m_catchupTerminates && !m_seekCorrectsEOF)
+  {
+    if ((m_catchupGranularity == 1 && secondsFromLive < (TERMINATING_SECOND_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)) ||
+        (m_catchupGranularity > 1 && secondsFromLive < (TERMINATING_MINUTE_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)))
+    {
+      Log(LOGLEVEL_INFO, "%s - skipping as %d seconds from live is too close", __FUNCTION__, secondsFromLive);
+      return false;    
+    }
+
+    Log(LOGLEVEL_INFO, "%s - %d seconds from live is ok", __FUNCTION__, secondsFromLive, secondsFromLive);
+  }
+
+  return true;
 }
 
 int64_t FFmpegCatchupStream::LengthStream()
@@ -221,7 +352,7 @@ int64_t FFmpegCatchupStream::LengthStream()
       length = static_cast<int64_t>(times.ptsEnd - times.ptsBegin);
   }
 
-  Log(LOGLEVEL_DEBUG, "LengthLiveStream: %lld", static_cast<long long>(length));
+  Log(LOGLEVEL_DEBUG, "%s: %lld", __FUNCTION__, static_cast<long long>(length));
 
   return length;
 }
@@ -240,9 +371,7 @@ bool FFmpegCatchupStream::GetTimes(INPUTSTREAM_TIMES& times)
   else // it's like a video
     times.ptsEnd = static_cast<double>(std::min(dateTimeNow, m_catchupBufferEndTime) - times.startTime) * DVD_TIME_BASE;
 
-  // Log(LOGLEVEL_DEBUG, "GetStreamTimes - Ch = %u \tTitle = \"%s\" \tepgTag->startTime = %ld \tepgTag->endTime = %ld",
-  //           m_programmeUniqueChannelId, m_programmeTitle.c_str(), m_catchupBufferStartTime, m_catchupBufferEndTime);
-  Log(LOGLEVEL_DEBUG, "GetStreamTimes - startTime = %ld \tptsStart = %lld \tptsBegin = %lld \tptsEnd = %lld",
+  Log(LOGLEVEL_DEBUG, "%s - startTime = %ld \tptsStart = %lld \tptsBegin = %lld \tptsEnd = %lld", __FUNCTION__,
             times.startTime, static_cast<long long>(times.ptsStart), static_cast<long long>(times.ptsBegin), static_cast<long long>(times.ptsEnd));
 
   return true;
@@ -333,7 +462,7 @@ std::string FormatDateTime(time_t dateTimeEpg, time_t duration, const std::strin
   FormatUtc("${offset}", dateTimeNow - dateTimeEpg, formattedUrl);
   FormatUnits(dateTimeNow - dateTimeEpg, "offset", formattedUrl);
 
-  Log(LOGLEVEL_DEBUG, "CArchiveConfig::FormatDateTime - \"%s\"", formattedUrl.c_str());
+  Log(LOGLEVEL_DEBUG, "%s - \"%s\"", __FUNCTION__, formattedUrl.c_str());
 
   return formattedUrl;
 }
@@ -363,7 +492,7 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
     if (offset > (timeNow - m_defaultProgrammeDuration) && !m_catchupUrlNearLiveFormatString.empty())
       urlFormatString = m_catchupUrlNearLiveFormatString;
 
-    Log(LOGLEVEL_DEBUG, "Offset Time - \"%lld\" - %s", static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
+    Log(LOGLEVEL_DEBUG, "%s - Offset Time - \"%lld\" - %s", __FUNCTION__, static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
 
     std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, urlFormatString);
 
@@ -373,11 +502,11 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
 
     if (!catchupUrl.empty())
     {
-      Log(LOGLEVEL_DEBUG, "Catchup URL: %s", catchupUrl.c_str());
+      Log(LOGLEVEL_DEBUG, "%s - Catchup URL: %s", __FUNCTION__, catchupUrl.c_str());
       return catchupUrl;
     }
   }
 
-  Log(LOGLEVEL_DEBUG, "Default URL: %s", m_defaultUrl.c_str());
+  Log(LOGLEVEL_DEBUG, "%s - Default URL: %s", __FUNCTION__, m_defaultUrl.c_str());
   return m_defaultUrl;
 }

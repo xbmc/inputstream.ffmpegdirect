@@ -20,6 +20,8 @@
 static const std::string PROGRAM_NUMBER = "inputstream.ffmpegdirect.program_number";
 static const std::string IS_REALTIME_STREAM = "inputstream.ffmpegdirect.is_realtime_stream";
 static const std::string STREAM_MODE = "inputstream.ffmpegdirect.stream_mode";
+static const std::string OPEN_MODE = "inputstream.ffmpegdirect.open_mode";
+static const std::string MANIFEST_TYPE = "inputstream.ffmpegdirect.manifest_type";
 static const std::string DEFAULT_URL = "inputstream.ffmpegdirect.default_url";
 static const std::string PLAYBACK_AS_LIVE = "inputstream.ffmpegdirect.playback_as_live";
 static const std::string PROGRAMME_START_TIME = "inputstream.ffmpegdirect.programme_start_time";
@@ -29,6 +31,8 @@ static const std::string CATCHUP_URL_NEAR_LIVE_FORMAT_STRING = "inputstream.ffmp
 static const std::string CATCHUP_BUFFER_START_TIME = "inputstream.ffmpegdirect.catchup_buffer_start_time";
 static const std::string CATCHUP_BUFFER_END_TIME = "inputstream.ffmpegdirect.catchup_buffer_end_time";
 static const std::string CATCHUP_BUFFER_OFFSET = "inputstream.ffmpegdirect.catchup_buffer_offset";
+static const std::string CATCHUP_TERMINATES = "inputstream.ffmpegdirect.catchup_terminates";
+static const std::string CATCHUP_GRANULARITY = "inputstream.ffmpegdirect.catchup_granularity";
 static const std::string TIMEZONE_SHIFT = "inputstream.ffmpegdirect.timezone_shift";
 static const std::string DEFAULT_PROGRAMME_DURATION = "inputstream.ffmpegdirect.default_programme_duration";
 static const std::string PROGRAMME_CATCHUP_ID = "inputstream.ffmpegdirect.programme_catchup_id";
@@ -94,6 +98,8 @@ private:
   std::string m_programProperty;
   bool m_isRealTimeStream;
   StreamMode m_streamMode = StreamMode::NONE;
+  OpenMode m_openMode = OpenMode::DEFAULT;
+  std::string m_manifestType;
   std::string m_defaultUrl;
 
   bool m_playbackAsLive = false;
@@ -104,6 +110,8 @@ private:
   time_t m_catchupBufferStartTime = 0;
   time_t m_catchupBufferEndTime = 0;
   long long m_catchupBufferOffset = 0;
+  bool m_catchupTerminates = false;
+  int m_catchupGranularity = 1;
   int m_timezoneShiftSecs = 0;
   int m_defaultProgrammeDurationSecs = 4 * 60 * 60; //Four hours
   std::string m_programmeCatchupId;

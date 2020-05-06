@@ -17,12 +17,12 @@ msgstr ""
 #. label-category: httpProxy
 #. label-group: HTTP proxy - httpProxt
 msgctxt "#30000"
-msgid "HTTP proxy"
+msgid "FFmpeg HTTP proxy"
 msgstr ""
 
 #. label: HTTP proxy - useHttpProxy
 msgctxt "#30001"
-msgid "Use HTTP proxy"
+msgid "Use HTTP proxy when opening with FFmpeg"
 msgstr ""
 
 #. label-option: HTTP proxy - httpProxyHost
@@ -45,7 +45,7 @@ msgctxt "#30005"
 msgid "Password"
 msgstr ""
 
-#empty strings from id 30007 to 30600
+#empty strings from id 30006 to 30599
 
 #. ############
 #. help info #
@@ -55,12 +55,12 @@ msgstr ""
 
 #. help-category: httpProxy
 msgctxt "#30600"
-msgid "This categoty contains the settings for how the proxy is configured."
+msgid "This category contains the settings for how the proxy is configured when opening with FFmpeg. Note that the setting has no effect when opening using Kodi's cURL. In that case it will use the proxy configured in Kodi."
 msgstr ""
 
 #. help: HTTP Proxy - useHttpProxy
 msgctxt "#30601"
-msgid "Whether or not a proxy should be used."
+msgid "Whether or not a proxy should be used when opening with FFmpeg."
 msgstr ""
 
 #. help: HTTP Proxy - httpProxyHost

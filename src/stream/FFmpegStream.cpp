@@ -18,6 +18,7 @@
 #include "threads/SingleLock.h"
 #include "url/URL.h"
 #include "FFmpegLog.h"
+#include "../utils/FilenameUtils.h"
 #include "../utils/Log.h"
 
 #include "IManageDemuxPacket.h"
@@ -47,6 +48,7 @@ extern "C" {
 
 //#include "platform/posix/XTimeUtils.h"
 
+#include <kodi/Filesystem.h>
 #include <p8-platform/util/StringUtils.h>
 
 /***********************************************************
@@ -81,8 +83,40 @@ static int interrupt_cb(void* ctx)
   return 0;
 }
 
-FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const HttpProxy& httpProxy)
+static int dvd_file_read(void* h, uint8_t* buf, int size)
+{
+  if (interrupt_cb(h))
+    return AVERROR_EXIT;
+
+  std::shared_ptr<CurlInput>& curlInput = static_cast<FFmpegStream*>(h)->m_curlInput;
+  int len = curlInput->Read(buf, size);
+  if (len == 0)
+    return AVERROR_EOF;
+  else
+    return len;
+}
+
+static int64_t dvd_file_seek(void* h, int64_t pos, int whence)
+{
+  if (interrupt_cb(h))
+    return AVERROR_EXIT;
+
+  std::shared_ptr<CurlInput>& curlInput = static_cast<FFmpegStream*>(h)->m_curlInput;
+  if (whence == AVSEEK_SIZE)
+    return curlInput->GetLength();
+  else
+    return curlInput->Seek(pos, whence & ~AVSEEK_FORCE);
+}
+
+FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, const HttpProxy& httpProxy)
+  : FFmpegStream(demuxPacketManager, openMode, std::make_shared<CurlInput>(), httpProxy)
+{
+}
+
+FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, std::shared_ptr<CurlInput> curlInput, const HttpProxy& httpProxy)
   : BaseStream(demuxPacketManager),
+    m_openMode(openMode),
+    m_curlInput(curlInput),
     m_httpProxy(httpProxy),
 //    m_session(nullptr),
     m_paused(false)
@@ -99,7 +133,7 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const HttpPro
   m_pkt.result = -1;
   memset(&m_pkt.pkt, 0, sizeof(AVPacket));
   m_streaminfo = true; /* set to true if we want to look for streams before playback */
-  m_checkvideo = false;
+  m_checkTransportStream = false;
   m_dtsAtDisplayTime = DVD_NOPTS_VALUE;
 
   CFFmpegLog::SetLogLevel(-100);
@@ -121,15 +155,12 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
   m_isRealTimeStream = isRealTimeStream;
   m_programProperty = programProperty;
 
-  // we never want to check stream info as we want fast switching
-  bool checkStreamInfo = false;
+  if (m_openMode == OpenMode::CURL)
+    m_curlInput->Open(m_streamUrl, m_mimeType, READ_TRUNCATED |
+                                               READ_BITRATE |
+                                               READ_CHUNKED);
 
-  // if (mimeType == "video/mp2t")
-  // {
-  //   checkStreamInfo = false;
-  // }
-
-  m_opened = Open(checkStreamInfo);
+  m_opened = Open(false);
 
   return m_opened;
 }
@@ -144,6 +175,8 @@ void FFmpegStream::Close()
   // m_session = nullptr;
   m_paused = false;
   m_opened = false;
+
+  m_curlInput->Close();
 }
 
 void FFmpegStream::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
@@ -219,8 +252,12 @@ void FFmpegStream::DemuxReset()
 {
   m_demuxResetOpenSuccess = false;
   Dispose();
+  // Here we update the filename and call reset in case the 
+  // implementation needs to restart the stream
+  m_curlInput->SetFilename(m_streamUrl);
+  m_curlInput->Reset();
   m_opened = false;
-  m_demuxResetOpenSuccess = Open(m_streaminfo);
+  m_demuxResetOpenSuccess = Open(false);
 }
 
 void FFmpegStream::DemuxAbort()
@@ -273,9 +310,15 @@ DemuxPacket* FFmpegStream::DemuxRead()
       m_timeout.SetInfinite();
     }
 
+    m_lastPacketResult = m_pkt.result;
+
     if (m_pkt.result == AVERROR(EINTR) || m_pkt.result == AVERROR(EAGAIN))
     {
       // timeout, probably no real error, return empty packet
+      bReturnEmpty = true;
+    }
+    else if (CheckReturnEmptryOnPacketResult(m_pkt.result))  
+    {
       bReturnEmpty = true;
     }
     else if (m_pkt.result == AVERROR_EOF)
@@ -323,7 +366,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
 
       AVStream* stream = m_pFormatContext->streams[m_pkt.pkt.stream_index];
 
-      if (IsVideoReady())
+      if (IsTransportStreamReady())
       {
         if (m_program != UINT_MAX)
         {
@@ -527,11 +570,13 @@ bool FFmpegStream::PosTime(int ms)
 
 int FFmpegStream::ReadStream(uint8_t* buf, unsigned int size)
 {
+  // Not called when using Demuxer
   return -1;
 }
 
 int64_t FFmpegStream::SeekStream(int64_t position, int whence /* SEEK_SET */)
 {
+  // Not called when using Demuxer
   return -1;
 }
 
@@ -602,11 +647,11 @@ bool FFmpegStream::Aborted()
   return false;
 }
 
-bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
+bool FFmpegStream::Open(bool fileinfo)
 {
   AVInputFormat* iformat = NULL;
   std::string strFile;
-  m_streaminfo = streaminfo;
+  m_streaminfo = !m_isRealTimeStream && !m_reopen;;
   m_currentPts = DVD_NOPTS_VALUE;
   m_speed = DVD_PLAYSPEED_NORMAL;
   m_program = UINT_MAX;
@@ -643,23 +688,31 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
   // try to abort after 30 seconds
   m_timeout.Set(30000);
 
-  if (!OpenWithAVFormat(iformat, int_cb))
-    return false;
+  if (m_openMode == OpenMode::FFMPEG)
+  {
+    if (!OpenWithFFmpeg(iformat, int_cb))
+      return false;
+  }
+  else // m_openMode == OpenMode::CURL
+  {
+    if (!OpenWithCURL(iformat))
+      return false;
+  }
 
   // Avoid detecting framerate if advancedsettings.xml says so
   // if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoFpsDetect == 0)
   //     m_pFormatContext->fps_probe_size = 0;
 
   // analyse very short to speed up mjpeg playback start
-  // if (iformat && (strcmp(iformat->name, "mjpeg") == 0) && m_ioContext->seekable == 0)
-  //   av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
+  if (iformat && (strcmp(iformat->name, "mjpeg") == 0) && m_ioContext->seekable == 0)
+    av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
 
   bool skipCreateStreams = false;
   bool isBluray = false;//pInput->IsStreamType(DVDSTREAM_TYPE_BLURAY);
   if (iformat && (strcmp(iformat->name, "mpegts") == 0) && !fileinfo && !isBluray)
   {
     av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
-    m_checkvideo = true;
+    m_checkTransportStream = true;
     skipCreateStreams = true;
   }
   else if (!iformat || (strcmp(iformat->name, "mpegts") != 0))
@@ -693,7 +746,7 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
       Log(LOGLEVEL_WARNING,"could not find codec parameters for %s", CURL::GetRedacted(strFile).c_str());
       if ((m_pFormatContext->nb_streams == 1 &&
            m_pFormatContext->streams[0]->codecpar->codec_id == AV_CODEC_ID_AC3) ||
-          m_checkvideo)
+          m_checkTransportStream)
       {
         // special case, our codecs can still handle it.
       }
@@ -708,7 +761,7 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
     // print some extra information
     av_dump_format(m_pFormatContext, 0, CURL::GetRedacted(strFile).c_str(), 0);
 
-    if (m_checkvideo)
+    if (m_checkTransportStream)
     {
       // make sure we start video with an i-frame
       ResetVideoStreams();
@@ -717,7 +770,7 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
   else
   {
     m_program = 0;
-    m_checkvideo = true;
+    m_checkTransportStream = true;
     skipCreateStreams = true;
   }
 
@@ -794,10 +847,11 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
   m_startTime = 0;
   m_seekStream = -1;
 
-  if (m_checkvideo && m_streaminfo)
+  if (m_checkTransportStream && m_streaminfo)
   {
     int64_t duration = m_pFormatContext->duration;
     Dispose();
+    m_reopen = true;
     if (!Open(false))
       return false;
     m_pFormatContext->duration = duration;
@@ -813,8 +867,10 @@ bool FFmpegStream::Open(bool streaminfo /* true */, bool fileinfo /* false */)
   return true;
 }
 
-bool FFmpegStream::OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptCB& int_cb)
+bool FFmpegStream::OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB& int_cb)
 {
+  Log(LOGLEVEL_INFO, "%s - IO handled by FFmpeg's AVFormat", __FUNCTION__);
+
   // special stream type that makes avformat handle file opening
   // allows internal ffmpeg protocols to be used
   AVDictionary* options = GetFFMpegOptionsFromInput();
@@ -895,6 +951,172 @@ bool FFmpegStream::OpenWithAVFormat(AVInputFormat* iformat, const AVIOInterruptC
   return true;
 }
 
+bool FFmpegStream::OpenWithCURL(AVInputFormat* iformat)
+{
+  Log(LOGLEVEL_INFO, "%s - IO handled by Kodi's cURL", __FUNCTION__);
+
+  CURL url;
+  url.Parse(m_streamUrl);
+  url.SetProtocolOptions("");
+  std::string strFile = url.Get();
+
+  bool seekable = true;
+  if (m_curlInput->Seek(0, SEEK_POSSIBLE) == 0)
+  {
+    seekable = false;
+  }
+  int bufferSize = 4096;
+  int blockSize = m_curlInput->GetBlockSize();
+
+  if (blockSize > 1 && seekable) // non seekable input streams are not supposed to set block size
+    bufferSize = blockSize;
+
+  unsigned char* buffer = (unsigned char*)av_malloc(bufferSize);
+  m_ioContext = avio_alloc_context(buffer, bufferSize, 0, this, dvd_file_read, NULL, dvd_file_seek);
+
+  if (blockSize > 1 && seekable)
+    m_ioContext->max_packet_size = bufferSize;
+
+  if (!seekable)
+    m_ioContext->seekable = 0;
+
+  std::string content = m_curlInput->GetContent();
+  StringUtils::ToLower(content);
+  if (StringUtils::StartsWith(content, "audio/l16"))
+    iformat = av_find_input_format("s16be");
+
+  if (iformat == nullptr)
+  {
+    // let ffmpeg decide which demuxer we have to open
+    bool trySPDIFonly = (m_curlInput->GetContent() == "audio/x-spdif-compressed");
+
+    if (!trySPDIFonly)
+      av_probe_input_buffer(m_ioContext, &iformat, strFile.c_str(), NULL, 0, 0);
+
+    // Use the more low-level code in case we have been built against an old
+    // FFmpeg without the above av_probe_input_buffer(), or in case we only
+    // want to probe for spdif (DTS or IEC 61937) compressed audio
+    // specifically, or in case the file is a wav which may contain DTS or
+    // IEC 61937 (e.g. ac3-in-wav) and we want to check for those formats.
+    if (trySPDIFonly || (iformat && strcmp(iformat->name, "wav") == 0))
+    {
+      AVProbeData pd;
+      int probeBufferSize = 32768;
+      std::unique_ptr<uint8_t[]> probe_buffer (new uint8_t[probeBufferSize + AVPROBE_PADDING_SIZE]);
+
+      // init probe data
+      pd.buf = probe_buffer.get();
+      pd.filename = strFile.c_str();
+
+      // read data using avformat's buffers
+      pd.buf_size = avio_read(m_ioContext, pd.buf, probeBufferSize);
+      if (pd.buf_size <= 0)
+      {
+        Log(LOGLEVEL_ERROR, "%s - error reading from input stream, %s", __FUNCTION__, CURL::GetRedacted(strFile).c_str());
+        return false;
+      }
+      memset(pd.buf + pd.buf_size, 0, AVPROBE_PADDING_SIZE);
+
+      // restore position again
+      avio_seek(m_ioContext , 0, SEEK_SET);
+
+      // the advancedsetting is for allowing the user to force outputting the
+      // 44.1 kHz DTS wav file as PCM, so that an A/V receiver can decode
+      // it (this is temporary until we handle 44.1 kHz passthrough properly)
+      if (trySPDIFonly || (iformat && strcmp(iformat->name, "wav") == 0)) // && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_VideoPlayerIgnoreDTSinWAV))
+      {
+        // check for spdif and dts
+        // This is used with wav files and audio CDs that may contain
+        // a DTS or AC3 track padded for S/PDIF playback. If neither of those
+        // is present, we assume it is PCM audio.
+        // AC3 is always wrapped in iec61937 (ffmpeg "spdif"), while DTS
+        // may be just padded.
+        AVInputFormat* iformat2;
+        iformat2 = av_find_input_format("spdif");
+
+        if (iformat2 && iformat2->read_probe(&pd) > AVPROBE_SCORE_MAX / 4)
+        {
+          iformat = iformat2;
+        }
+        else
+        {
+          // not spdif or no spdif demuxer, try dts
+          iformat2 = av_find_input_format("dts");
+
+          if (iformat2 && iformat2->read_probe(&pd) > AVPROBE_SCORE_MAX / 4)
+          {
+            iformat = iformat2;
+          }
+          else if (trySPDIFonly)
+          {
+            // not dts either, return false in case we were explicitly
+            // requested to only check for S/PDIF padded compressed audio
+            Log(LOGLEVEL_DEBUG, "%s - not spdif or dts file, falling back", __FUNCTION__);
+            return false;
+          }
+        }
+      }
+    }
+
+    if (!iformat)
+    {
+      std::string content = m_curlInput->GetContent();
+
+      /* check if we can get a hint from content */
+      if (content.compare("audio/aacp") == 0)
+        iformat = av_find_input_format("aac");
+      else if (content.compare("audio/aac") == 0)
+        iformat = av_find_input_format("aac");
+      else if (content.compare("video/flv") == 0)
+        iformat = av_find_input_format("flv");
+      else if (content.compare("video/x-flv") == 0)
+        iformat = av_find_input_format("flv");
+    }
+
+    if (!iformat)
+    {
+      Log(LOGLEVEL_ERROR, "%s - error probing input format, %s", __FUNCTION__, CURL::GetRedacted(strFile).c_str());
+      return false;
+    }
+    else
+    {
+      if (iformat->name)
+        Log(LOGLEVEL_DEBUG, "%s - probing detected format [%s]", __FUNCTION__, iformat->name);
+      else
+        Log(LOGLEVEL_DEBUG, "%s - probing detected unnamed format", __FUNCTION__);
+    }
+  }
+
+  m_pFormatContext->pb = m_ioContext;
+
+  AVDictionary* options = NULL;
+  if (iformat->name && (strcmp(iformat->name, "mp3") == 0 || strcmp(iformat->name, "mp2") == 0))
+  {
+    Log(LOGLEVEL_DEBUG, "%s - setting usetoc to 0 for accurate VBR MP3 seek", __FUNCTION__);
+    av_dict_set(&options, "usetoc", "0", 0);
+  }
+
+  if (StringUtils::StartsWith(content, "audio/l16"))
+  {
+    int channels = 2;
+    int samplerate = 44100;
+    GetL16Parameters(channels, samplerate);
+    av_dict_set_int(&options, "channels", channels, 0);
+    av_dict_set_int(&options, "sample_rate", samplerate, 0);
+  }
+
+  if (avformat_open_input(&m_pFormatContext, strFile.c_str(), iformat, &options) < 0)
+  {
+    Log(LOGLEVEL_ERROR, "%s - Error, could not open file %s", __FUNCTION__, CURL::GetRedacted(strFile).c_str());
+    Dispose();
+    av_dict_free(&options);
+    return false;
+  }
+  av_dict_free(&options);  
+
+  return true;
+}
+
 void FFmpegStream::ResetVideoStreams()
 {
   AVStream* st;
@@ -940,12 +1162,12 @@ double FFmpegStream::ConvertTimestamp(int64_t pts, int den, int num)
   if (m_pFormatContext->start_time != (int64_t)AV_NOPTS_VALUE)
     starttime = (double)m_pFormatContext->start_time / AV_TIME_BASE;
 
-  if (m_checkvideo)
+  if (m_checkTransportStream)
     starttime = m_startTime;
 
   if (!m_bSup)
   {
-    if (timestamp > starttime || m_checkvideo)
+    if (timestamp > starttime || m_checkTransportStream)
       timestamp -= starttime;
     // allow for largest possible difference in pts and dts for a single packet
     else if (timestamp + 0.5f > starttime)
@@ -1087,7 +1309,7 @@ std::vector<DemuxStream*> FFmpegStream::GetDemuxStreams() const
 
 int FFmpegStream::GetNrOfStreams() const
 {
-  return m_streams.size();
+  return static_cast<int>(m_streams.size());
 }
 
 int FFmpegStream::GetNrOfStreams(INPUTSTREAM_INFO::STREAM_TYPE streamType)
@@ -1101,6 +1323,8 @@ int FFmpegStream::GetNrOfStreams(INPUTSTREAM_INFO::STREAM_TYPE streamType)
 
   return iCounter;
 }
+
+
 
 int FFmpegStream::GetNrOfSubtitleStreams()
 {
@@ -1210,11 +1434,11 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
   int64_t seek_pts = (int64_t)time * (AV_TIME_BASE / 1000);
   bool ismp3 = m_pFormatContext->iformat && (strcmp(m_pFormatContext->iformat->name, "mp3") == 0);
 
-  if (m_checkvideo)
+  if (m_checkTransportStream)
   {
     FFmpegDirectThreads::EndTime timer(1000);
 
-    while (!IsVideoReady())
+    while (!IsTransportStreamReady())
     {
       DemuxPacket* pkt = DemuxRead();
       if (pkt)
@@ -1232,7 +1456,8 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     }
 
     AVStream* st = m_pFormatContext->streams[m_seekStream];
-    seek_pts = av_rescale(m_startTime + time / 1000, st->time_base.den, st->time_base.num);
+    seek_pts = av_rescale(static_cast<int64_t>(m_startTime + time / 1000), st->time_base.den,
+                          st->time_base.num);
   }
   else if (m_pFormatContext->start_time != (int64_t)AV_NOPTS_VALUE && !ismp3 && !m_bSup)
     seek_pts += m_pFormatContext->start_time;
@@ -1245,10 +1470,11 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     if (ret < 0)
     {
       int64_t starttime = m_pFormatContext->start_time;
-      if (m_checkvideo)
+      if (m_checkTransportStream)
       {
         AVStream* st = m_pFormatContext->streams[m_seekStream];
-        starttime = av_rescale(m_startTime, st->time_base.num, st->time_base.den);
+        starttime =
+            av_rescale(static_cast<int64_t>(m_startTime), st->time_base.num, st->time_base.den);
       }
 
       // demuxer can return failure, if seeking behind eof
@@ -1370,16 +1596,63 @@ void FFmpegStream::ParsePacket(AVPacket* pkt)
   }
 }
 
-bool FFmpegStream::IsVideoReady()
+TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamAudioState()
 {
-  AVStream* st;
+  AVStream* st = nullptr;
+  bool hasAudio = false;
+
+  if (m_program != UINT_MAX)
+  {
+    for (unsigned int i = 0; i < m_pFormatContext->programs[m_program]->nb_stream_indexes; i++)
+    {
+      int idx = m_pFormatContext->programs[m_program]->stream_index[i];
+      st = m_pFormatContext->streams[idx];
+      if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+      {
+        if (st->start_time != AV_NOPTS_VALUE)
+        {
+          if (!m_startTime)
+          {
+            m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
+            m_seekStream = i;
+          }
+          return TRANSPORT_STREAM_STATE::READY;
+        }
+        hasAudio = true;
+      }
+    }
+  }
+  else
+  {
+    for (unsigned int i = 0; i < m_pFormatContext->nb_streams; i++)
+    {
+      st = m_pFormatContext->streams[i];
+      if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+      {
+        if (st->start_time != AV_NOPTS_VALUE)
+        {
+          if (!m_startTime)
+          {
+            m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
+            m_seekStream = i;
+          }
+          return TRANSPORT_STREAM_STATE::READY;
+        }
+        hasAudio = true;
+      }
+    }
+  }
+
+  return (hasAudio) ? TRANSPORT_STREAM_STATE::NOTREADY : TRANSPORT_STREAM_STATE::NONE;
+}
+
+TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamVideoState()
+{
+  AVStream* st = nullptr;
   bool hasVideo = false;
 
-  if (!m_checkvideo)
-    return true;
-
   if (m_program == 0 && !m_pFormatContext->nb_programs)
-    return false;
+    return TRANSPORT_STREAM_STATE::NONE;
 
   if (m_program != UINT_MAX)
   {
@@ -1396,25 +1669,9 @@ bool FFmpegStream::IsVideoReady()
             m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
             m_seekStream = i;
           }
-          return true;
+          return TRANSPORT_STREAM_STATE::READY;
         }
         hasVideo = true;
-      }
-    }
-    // Workaround for live audio-only MPEG-TS streams: If there are no elementary video streams
-    // present attempt to set the start time from the first available elementary audio stream instead
-    if (!hasVideo && !m_startTime)
-    {
-      for (unsigned int i = 0; i < m_pFormatContext->programs[m_program]->nb_stream_indexes; i++)
-      {
-        int idx = m_pFormatContext->programs[m_program]->stream_index[i];
-        st = m_pFormatContext->streams[idx];
-        if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
-        {
-          m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
-          m_seekStream = i;
-          break;
-        }
       }
     }
   }
@@ -1432,28 +1689,29 @@ bool FFmpegStream::IsVideoReady()
             m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
             m_seekStream = i;
           }
-          return true;
+          return TRANSPORT_STREAM_STATE::READY;
         }
         hasVideo = true;
       }
     }
-    // Workaround for live audio-only MPEG-TS streams: If there are no elementary video streams
-    // present attempt to set the start time from the first available elementary audio stream instead
-    if (!hasVideo && !m_startTime)
-    {
-      for (unsigned int i = 0; i < m_pFormatContext->nb_streams; i++)
-      {
-        st = m_pFormatContext->streams[i];
-        if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
-        {
-          m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
-          m_seekStream = i;
-          break;
-        }
-      }
-    }
   }
-  return !hasVideo;
+
+  return (hasVideo) ? TRANSPORT_STREAM_STATE::NOTREADY : TRANSPORT_STREAM_STATE::NONE;
+}
+
+bool FFmpegStream::IsTransportStreamReady()
+{
+  if (!m_checkTransportStream)
+    return true;
+
+  if (m_program == 0 && !m_pFormatContext->nb_programs)
+    return false;
+
+  TRANSPORT_STREAM_STATE state = TransportStreamVideoState();
+  if (state == TRANSPORT_STREAM_STATE::NONE)
+    state = TransportStreamAudioState();
+
+  return state == TRANSPORT_STREAM_STATE::READY;
 }
 
 void FFmpegStream::CreateStreams(unsigned int program)
@@ -1662,42 +1920,42 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
           break;
         }
       }
-      // case AVMEDIA_TYPE_ATTACHMENT:
-      // { //mkv attachments. Only bothering with fonts for now.
-        // if (pStream->codecpar->codec_id == AV_CODEC_ID_TTF ||
-        //     pStream->codecpar->codec_id == AV_CODEC_ID_OTF)
-        // {
-        //   std::string fileName = "special://temp/fonts/";
-        //   XFILE::CDirectory::Create(fileName);
-        //   AVDictionaryEntry* nameTag = av_dict_get(pStream->metadata, "filename", NULL, 0);
-        //   if (!nameTag)
-        //   {
-        //     Log(LOGLEVEL_ERROR, "%s: TTF attachment has no name", __FUNCTION__);
-        //   }
-        //   else
-        //   {
-        //     fileName += nameTag->value;
-        //     XFILE::CFile file;
-        //     if (pStream->codecpar->extradata && file.OpenForWrite(fileName))
-        //     {
-        //       if (file.Write(pStream->codecpar->extradata, pStream->codecpar->extradata_size) !=
-        //           pStream->codecpar->extradata_size)
-        //       {
-        //         file.Close();
-        //         XFILE::CFile::Delete(fileName);
-        //         Log(LOGLEVEL_DEBUG, "%s: Error saving font file \"%s\"", __FUNCTION__, fileName.c_str());
-        //       }
-        //     }
-        //   }
-        // }
-        // stream = new DemuxStream();
-        // stream->type = STREAM_NONE;
-      //   break;
-      // }
+      case AVMEDIA_TYPE_ATTACHMENT:
+      { //mkv attachments. Only bothering with fonts for now.
+        if (pStream->codecpar->codec_id == AV_CODEC_ID_TTF ||
+            pStream->codecpar->codec_id == AV_CODEC_ID_OTF)
+        {
+          std::string fileName = "special://temp/fonts/";
+          kodi::vfs::CreateDirectory(fileName);
+          AVDictionaryEntry* nameTag = av_dict_get(pStream->metadata, "filename", NULL, 0);
+          if (!nameTag)
+          {
+            Log(LOGLEVEL_ERROR, "%s: TTF attachment has no name", __FUNCTION__);
+          }
+          else
+          {
+            fileName += FilenameUtils::MakeLegalFileName(nameTag->value, LEGAL_WIN32_COMPAT);
+            kodi::vfs::CFile file;
+            if (pStream->codecpar->extradata && file.OpenFileForWrite(fileName))
+            {
+              if (file.Write(pStream->codecpar->extradata, pStream->codecpar->extradata_size) !=
+                  pStream->codecpar->extradata_size)
+              {
+                file.Close();
+                kodi::vfs::DeleteFile(fileName);
+                Log(LOGLEVEL_DEBUG, "%s: Error saving font file \"%s\"", __FUNCTION__, fileName.c_str());
+              }
+            }
+          }
+        }
+        stream = new DemuxStream();
+        stream->type = INPUTSTREAM_INFO::STREAM_TYPE::TYPE_NONE;
+        break;
+      }
       default:
       {
         // if analyzing streams is skipped, unknown streams may become valid later
-        if (m_streaminfo && IsVideoReady())
+        if (m_streaminfo && IsTransportStreamReady())
         {
           Log(LOGLEVEL_DEBUG, "CDVDDemuxFFmpeg::AddStream - discarding unknown stream with id: %d", pStream->index);
           pStream->discard = AVDISCARD_ALL;
@@ -1754,6 +2012,15 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
 // #ifdef HAVE_LIBBLURAY
 //     if (m_pInput->IsStreamType(DVDSTREAM_TYPE_BLURAY))
 //     {
+//       // UHD BD have a secondary video stream called by Dolby as enhancement layer.
+//       // This is not used by streaming services and devices (ATV, Nvidia Shield, XONE).
+//       if (pStream->id == 0x1015)
+//       {
+//         CLog::Log(LOGDEBUG, "CDVDDemuxFFmpeg::AddStream - discarding Dolby Vision stream");
+//         pStream->discard = AVDISCARD_ALL;
+//         delete stream;
+//         return nullptr;
+//       }  
 //       stream->dvdNavId = pStream->id;
 
 //       auto it = std::find_if(m_streams.begin(), m_streams.end(),
@@ -1970,7 +2237,7 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
     if (!hasCookies)
     {
       std::string cookies;
-      // TODO:
+      // TODO: once available in koid::vfs
       // if (XFILE::CCurlFile::GetCookies(url, cookies))
       //   av_dict_set(&options, "cookies", cookies.c_str(), 0);
     }
@@ -2122,4 +2389,74 @@ bool FFmpegStream::SeekChapter(int chapter)
   AVChapter* ch = m_pFormatContext->chapters[chapter - 1];
   double dts = ConvertTimestamp(ch->start, ch->time_base.den, ch->time_base.num);
   return SeekTime(DVD_TIME_TO_MSEC(dts), true);
+}
+
+bool FFmpegStream::CheckReturnEmptryOnPacketResult(int result)
+{
+  return false;
+}
+
+void FFmpegStream::GetL16Parameters(int &channels, int &samplerate)
+{
+  std::string content;
+  kodi::vfs::CFile file;
+  if (file.OpenFile(m_curlInput->GetFilename(), READ_NO_CACHE))
+  {
+    content = file.GetPropertyValue(ADDON_FILE_PROPERTY_CONTENT_TYPE, "");
+
+    file.Close();
+  }
+  
+  if (!content.empty())
+  {
+    StringUtils::ToLower(content);
+    const size_t len = content.length();
+    size_t pos = content.find(';');
+    while (pos < len)
+    {
+      // move to the next non-whitespace character
+      pos = content.find_first_not_of(" \t", pos + 1);
+
+      if (pos != std::string::npos)
+      {
+        if (content.compare(pos, 9, "channels=", 9) == 0)
+        {
+          pos += 9; // move position to char after 'channels='
+          size_t len = content.find(';', pos);
+          if (len != std::string::npos)
+            len -= pos;
+          std::string no_channels(content, pos, len);
+          // as we don't support any charset with ';' in name
+          StringUtils::Trim(no_channels, " \t");
+          if (!no_channels.empty())
+          {
+            int val = strtol(no_channels.c_str(), NULL, 0);
+            if (val > 0)
+              channels = val;
+            else
+              Log(LOGLEVEL_DEBUG, "CDVDDemuxFFmpeg::%s - no parameter for channels", __FUNCTION__);
+          }
+        }
+        else if (content.compare(pos, 5, "rate=", 5) == 0)
+        {
+          pos += 5; // move position to char after 'rate='
+          size_t len = content.find(';', pos);
+          if (len != std::string::npos)
+            len -= pos;
+          std::string rate(content, pos, len);
+          // as we don't support any charset with ';' in name
+          StringUtils::Trim(rate, " \t");
+          if (!rate.empty())
+          {
+            int val = strtol(rate.c_str(), NULL, 0);
+            if (val > 0)
+              samplerate = val;
+            else
+              Log(LOGLEVEL_DEBUG, "CDVDDemuxFFmpeg::%s - no parameter for samplerate", __FUNCTION__);
+          }
+        }
+        pos = content.find(';', pos); // find next parameter
+      }
+    }
+  }
 }

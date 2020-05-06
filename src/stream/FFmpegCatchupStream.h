@@ -11,10 +11,15 @@
 #include "FFmpegStream.h"
 #include "../utils/HttpProxy.h"
 
+static const int VIDEO_PLAYER_BUFFER_SECONDS = 10;
+static const int TERMINATING_SECOND_STREAM_MIN_SEEK_FROM_LIVE_TIME = 60;
+static const int TERMINATING_MINUTE_STREAM_MIN_SEEK_FROM_LIVE_TIME = 120;
+
 class FFmpegCatchupStream : public FFmpegStream
 {
 public:
   FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
+                      const OpenMode& openMode,
                       const ffmpegdirect::utils::HttpProxy& httpProxy,
                       std::string& defaultUrl,
                       bool playbackAsLive,
@@ -25,24 +30,43 @@ public:
                       time_t catchupBufferStartTime,
                       time_t catchupBufferEndTime,
                       long long catchupBufferOffset,
+                      bool catchupTerminates,
+                      int catchupGranularity,
                       int timezoneShift,
                       int defaultProgrammeDuration,
                       std::string& m_programmeCatchupId);
   ~FFmpegCatchupStream();
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
-  virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) override;
+  virtual bool DemuxSeekTime(double timeMs, bool backwards, double& startpts) override;
   virtual DemuxPacket* DemuxRead() override;
   virtual void DemuxSetSpeed(int speed) override;
   virtual void GetCapabilities(INPUTSTREAM_CAPABILITIES& caps) override;
+  bool DemuxSeekTime(double timeMs)
+  {
+    double temp = 0;
+    return DemuxSeekTime(timeMs, false, temp);
+  }
 
-  virtual int64_t SeekStream(int64_t position, int whence = SEEK_SET) override;
+  int64_t SeekCatchupStream(double timeMs, bool backwards);
   virtual int64_t LengthStream() override;
   virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
 
 protected:
   void UpdateCurrentPTS() override;
+  bool CheckReturnEmptryOnPacketResult(int result) override;
 
+  long long GetCurrentLiveOffset() { return std::time(nullptr) - m_catchupBufferStartTime; }
+  bool SeekDistanceSupported(int64_t seekBufferOffset);
+  bool TargetDistanceFromLiveSupported(long long secondsFromLive);
+  const std::string GetDateTime(time_t time) 
+  {
+    std::tm timeStruct = *localtime(&time);
+    char buffer[32];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d.%X", &timeStruct);
+
+    return buffer;
+  }
   std::string GetUpdatedCatchupUrl() const;
 
   bool m_playbackAsLive = false;
@@ -54,12 +78,20 @@ protected:
   time_t m_catchupBufferStartTime = 0;
   time_t m_catchupBufferEndTime = 0;
   long long m_catchupBufferOffset = 0;
+  bool m_catchupTerminates = false;
+  int m_catchupGranularity = 1;
+  int m_catchupGranularityLowWaterMark = 1;
   int m_timezoneShift = 0;
   int m_defaultProgrammeDuration = 0;
   std::string m_programmeCatchupId;
 
-  bool m_bIsOpening;
+  bool m_isOpeningStream;
   double m_seekOffset;
   double m_pauseStartTime;
   double m_currentDemuxTime;
+
+  long long m_previousLiveBufferOffset = 0;
+  bool m_lastSeekWasLive = false;
+  bool m_lastPacketWasAvoidedEOF = false;
+  bool m_seekCorrectsEOF = false;
 };

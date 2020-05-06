@@ -19,14 +19,34 @@ using namespace ffmpegdirect::utils;
 * InputSteam Client AddOn specific public library functions
 ***********************************************************/
 
-void Log(const LogLevel loglevel, const char* format, ...)
+void Log(const LogLevel logLevel, const char* format, ...)
 {
+  AddonLog addonLevel;
+
+  switch (logLevel)
+  {
+    case LogLevel::LOGLEVEL_FATAL:
+      addonLevel = AddonLog::ADDON_LOG_FATAL;
+      break;
+    case LogLevel::LOGLEVEL_ERROR:
+      addonLevel = AddonLog::ADDON_LOG_ERROR;
+      break;
+    case LogLevel::LOGLEVEL_WARNING:
+      addonLevel = AddonLog::ADDON_LOG_WARNING;
+      break;
+    case LogLevel::LOGLEVEL_INFO:
+      addonLevel = AddonLog::ADDON_LOG_INFO;
+      break;
+    default:
+      addonLevel = AddonLog::ADDON_LOG_DEBUG;
+  }
+
   char buffer[16384];
   va_list args;
   va_start(args, format);
   vsprintf(buffer, format, args);
   va_end(args);
-  ::kodi::addon::CAddonBase::m_interface->toKodi->addon_log_msg(::kodi::addon::CAddonBase::m_interface->toKodi->kodiBase, loglevel, buffer);
+  ::kodi::addon::CAddonBase::m_interface->toKodi->addon_log_msg(::kodi::addon::CAddonBase::m_interface->toKodi->kodiBase, addonLevel, buffer);
 }
 
 CInputStreamLibavformat::CInputStreamLibavformat(KODI_HANDLE instance)
@@ -40,12 +60,12 @@ CInputStreamLibavformat::~CInputStreamLibavformat()
 
 bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
 {
-  Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect: OpenStream() - Num Props: %d", props.m_nCountInfoValues);
+  Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect: OpenStream() - Num Props: %d", props.m_nCountInfoValues);
   std::string tempString;
 
   for (size_t i = 0; i < props.m_nCountInfoValues; ++i)
   {
-    Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect property: %s = %s", props.m_ListItemProperties[i].m_strKey, props.m_ListItemProperties[i].m_strValue);
+    Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: %s = %s", props.m_ListItemProperties[i].m_strKey, props.m_ListItemProperties[i].m_strValue);
 
     if (PROGRAM_NUMBER == props.m_ListItemProperties[i].m_strKey)
     {
@@ -59,6 +79,17 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
     {
       if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "catchup"))
         m_streamMode = StreamMode::CATCHUP;
+    }
+    else if (OPEN_MODE == props.m_ListItemProperties[i].m_strKey)
+    {
+      if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "ffmpeg"))
+        m_openMode = OpenMode::FFMPEG;
+      else if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "curl"))
+        m_openMode = OpenMode::CURL;
+    }
+    else if (MANIFEST_TYPE == props.m_ListItemProperties[i].m_strKey)
+    {
+      m_manifestType = props.m_ListItemProperties[i].m_strValue;
     }
     else if (DEFAULT_URL == props.m_ListItemProperties[i].m_strKey)
     {
@@ -101,6 +132,15 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
       tempString = props.m_ListItemProperties[i].m_strValue;
       m_catchupBufferOffset = std::stoll(tempString);
     }
+    else if (CATCHUP_TERMINATES == props.m_ListItemProperties[i].m_strKey)
+    {
+      m_catchupTerminates = StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "true");
+    }    
+    else if (CATCHUP_GRANULARITY == props.m_ListItemProperties[i].m_strKey)
+    {
+      tempString = props.m_ListItemProperties[i].m_strValue;
+      m_catchupGranularity = std::stoi(tempString);
+    }    
     else if (TIMEZONE_SHIFT == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
@@ -120,7 +160,20 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
   m_streamUrl = props.m_strURL;
   m_mimeType = props.m_mimeType;
 
-  Log(LOGLEVEL_NOTICE, "inputstream.ffmpegdirect property: mimetype = %s", m_mimeType.c_str());
+  Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: mimetype = %s", m_mimeType.c_str());
+
+  if (m_openMode == OpenMode::DEFAULT)
+  {
+    if (m_mimeType == "application/x-mpegURL" || // HLS
+        m_mimeType == "application/vnd.apple.mpegurl" || //HLS
+        m_mimeType == "application/xml+dash" ||
+        m_manifestType == "hls" || // HLS
+        m_manifestType == "mpd" || // DASH
+        m_manifestType == "ism") //Smooth Streaming
+      m_openMode = OpenMode::FFMPEG;
+    else
+      m_openMode = OpenMode::CURL;
+  }
 
   HttpProxy httpProxy;
 
@@ -128,19 +181,20 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
   if (useHttpProxy)
   {
     httpProxy.SetProxyHost(kodi::GetSettingString("httpProxyHost"));
-    kodi::Log(ADDON_LOG_NOTICE, "HttpProxy host set: '%s'", httpProxy.GetProxyHost().c_str());
+    kodi::Log(ADDON_LOG_INFO, "HttpProxy host set: '%s'", httpProxy.GetProxyHost().c_str());
 
     httpProxy.SetProxyPort(static_cast<uint16_t>(kodi::GetSettingInt("httpProxyPort")));
-    kodi::Log(ADDON_LOG_NOTICE, "HttpProxy port set: %d", static_cast<int>(httpProxy.GetProxyPort()));
+    kodi::Log(ADDON_LOG_INFO, "HttpProxy port set: %d", static_cast<int>(httpProxy.GetProxyPort()));
 
     httpProxy.SetProxyUser(kodi::GetSettingString("httpProxyUser"));
-    kodi::Log(ADDON_LOG_NOTICE, "HttpProxy user set: '%s'", httpProxy.GetProxyUser().c_str());
+    kodi::Log(ADDON_LOG_INFO, "HttpProxy user set: '%s'", httpProxy.GetProxyUser().c_str());
 
     httpProxy.SetProxyPassword(kodi::GetSettingString("httpProxyPassword"));
   }
 
   if (m_streamMode == StreamMode::CATCHUP)
     m_stream = std::make_shared<FFmpegCatchupStream>(static_cast<IManageDemuxPacket*>(this),
+                                                     m_openMode,
                                                      httpProxy,
                                                      m_defaultUrl,
                                                      m_playbackAsLive,
@@ -151,11 +205,13 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
                                                      m_catchupBufferStartTime,
                                                      m_catchupBufferEndTime,
                                                      m_catchupBufferOffset,
+                                                     m_catchupTerminates,
+                                                     m_catchupGranularity,
                                                      m_timezoneShiftSecs,
                                                      m_defaultProgrammeDurationSecs,
                                                      m_programmeCatchupId);
   else
-    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), httpProxy);
+    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), m_openMode, httpProxy);
 
   m_stream->SetVideoResolution(m_videoWidth, m_videoHeight);
 
