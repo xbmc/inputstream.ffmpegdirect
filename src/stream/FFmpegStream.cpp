@@ -189,6 +189,9 @@ void FFmpegStream::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_SEEK |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_PAUSE;
     INPUTSTREAM_CAPABILITIES::SUPPORTS_ICHAPTER;
+
+  if (!IsRealTimeStream())
+    caps.m_mask |= INPUTSTREAM_CAPABILITIES::SUPPORTS_SEEK | INPUTSTREAM_CAPABILITIES::SUPPORTS_PAUSE | INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME;
 }
 
 INPUTSTREAM_IDS FFmpegStream::GetStreamIds()
@@ -560,6 +563,16 @@ int FFmpegStream::GetTime()
 
 bool FFmpegStream::GetTimes(INPUTSTREAM_TIMES& times)
 {
+  if (!IsRealTimeStream())
+  {
+    times = {0};
+
+    times.startTime = 0;
+    times.ptsEnd = m_pFormatContext->duration;
+
+    return true;
+  }
+
   return false;
 }
 
@@ -587,12 +600,22 @@ int64_t FFmpegStream::PositionStream()
 
 int64_t FFmpegStream::LengthStream()
 {
-  return -1;
+  int64_t length = -1;
+  INPUTSTREAM_TIMES times = {0};
+  if (GetTimes(times) && times.ptsEnd >= times.ptsBegin)
+    length = static_cast<int64_t>(times.ptsEnd - times.ptsBegin);
+
+  Log(LOGLEVEL_DEBUG, "%s: %lld", __FUNCTION__, static_cast<long long>(length));
+
+  return length;
 }
 
 bool FFmpegStream::IsRealTimeStream()
 {
-  return m_isRealTimeStream;
+  // If we are told the stream is real time then use that, but double check if it's live
+  // by checking duration too
+
+  return m_isRealTimeStream || m_pFormatContext->duration <= 0;
 }
 
 void FFmpegStream::Dispose()
