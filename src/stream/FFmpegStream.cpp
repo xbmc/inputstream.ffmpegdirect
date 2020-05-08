@@ -26,8 +26,6 @@
 
 // #include <kodi/addon-instance/Inputstream.h>
 
-using namespace ffmpegdirect::utils;
-
 #include <chrono>
 #include <ctime>
 
@@ -50,6 +48,8 @@ extern "C" {
 
 #include <kodi/Filesystem.h>
 #include <p8-platform/util/StringUtils.h>
+
+using namespace ffmpegdirect;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions
@@ -255,7 +255,7 @@ void FFmpegStream::DemuxReset()
 {
   m_demuxResetOpenSuccess = false;
   Dispose();
-  // Here we update the filename and call reset in case the 
+  // Here we update the filename and call reset in case the
   // implementation needs to restart the stream
   m_curlInput->SetFilename(m_streamUrl);
   m_curlInput->Reset();
@@ -320,7 +320,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
       // timeout, probably no real error, return empty packet
       bReturnEmpty = true;
     }
-    else if (CheckReturnEmptryOnPacketResult(m_pkt.result))  
+    else if (CheckReturnEmptyOnPacketResult(m_pkt.result))
     {
       bReturnEmpty = true;
     }
@@ -360,7 +360,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
         // update streams
         CreateStreams(m_program);
 
-        pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(0);
+        pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(0);
         pPacket->iStreamId = DMX_SPECIALID_STREAMCHANGE;
         pPacket->demuxerId = m_demuxerId;
 
@@ -378,7 +378,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
           {
             if (m_pkt.pkt.stream_index == (int)m_pFormatContext->programs[m_program]->stream_index[i])
             {
-              pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(m_pkt.pkt.size);
+              pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(m_pkt.pkt.size);
               break;
             }
           }
@@ -387,7 +387,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
             bReturnEmpty = true;
         }
         else
-          pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(m_pkt.pkt.size);
+          pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(m_pkt.pkt.size);
       }
       else
         bReturnEmpty = true;
@@ -448,7 +448,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
   }
   } // end of lock scope
   if (bReturnEmpty && !pPacket)
-    pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(0);
+    pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(0);
 
   if (!pPacket)
     return nullptr;
@@ -488,8 +488,8 @@ DemuxPacket* FFmpegStream::DemuxRead()
     }
     if (!stream)
     {
-      m_demuxPacketMamnager->FreeDemuxPacketFromInputStreamAPI(pPacket);
-      pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(0);
+      m_demuxPacketManager->FreeDemuxPacketFromInputStreamAPI(pPacket);
+      pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(0);
       return pPacket;
     }
 
@@ -1128,7 +1128,7 @@ bool FFmpegStream::OpenWithCURL(AVInputFormat* iformat)
     av_dict_free(&options);
     return false;
   }
-  av_dict_free(&options);  
+  av_dict_free(&options);
 
   return true;
 }
@@ -1458,7 +1458,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     {
       DemuxPacket* pkt = DemuxRead();
       if (pkt)
-        m_demuxPacketMamnager->FreeDemuxPacketFromInputStreamAPI(pkt);
+        m_demuxPacketManager->FreeDemuxPacketFromInputStreamAPI(pkt);
       else
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
       m_pkt.result = -1;
@@ -2036,7 +2036,7 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
 //         pStream->discard = AVDISCARD_ALL;
 //         delete stream;
 //         return nullptr;
-//       }  
+//       }
 //       stream->dvdNavId = pStream->id;
 
 //       auto it = std::find_if(m_streams.begin(), m_streams.end(),
@@ -2407,7 +2407,7 @@ bool FFmpegStream::SeekChapter(int chapter)
   return SeekTime(DVD_TIME_TO_MSEC(dts), true);
 }
 
-bool FFmpegStream::CheckReturnEmptryOnPacketResult(int result)
+bool FFmpegStream::CheckReturnEmptyOnPacketResult(int result)
 {
   return false;
 }
@@ -2422,7 +2422,7 @@ void FFmpegStream::GetL16Parameters(int &channels, int &samplerate)
 
     file.Close();
   }
-  
+
   if (!content.empty())
   {
     StringUtils::ToLower(content);

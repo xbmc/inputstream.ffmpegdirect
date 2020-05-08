@@ -42,6 +42,9 @@ extern "C" {
 void ff_avutil_log(void* ptr, int level, const char* format, va_list va);
 void ff_flush_avutil_log_buffers(void);
 
+namespace ffmpegdirect
+{
+
 class CFFmpegLog
 {
 public:
@@ -51,3 +54,4 @@ public:
   int level;
 };
 
+} //namespace ffmpegdirect

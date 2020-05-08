@@ -12,12 +12,15 @@
 
 #include <kodi/addon-instance/Inputstream.h>
 
+namespace ffmpegdirect
+{
+
 class IManageDemuxPacket;
 
 class BaseStream
 {
 public:
-  BaseStream(IManageDemuxPacket* demuxPacketMamnager) : m_demuxPacketMamnager(demuxPacketMamnager) {};
+  BaseStream(IManageDemuxPacket* demuxPacketManager) : m_demuxPacketManager(demuxPacketManager) {};
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) = 0;
   virtual void Close() = 0;
@@ -58,5 +61,7 @@ public:
   virtual bool IsRealTimeStream() = 0;
 
 protected:
-  IManageDemuxPacket* m_demuxPacketMamnager;
+  IManageDemuxPacket* m_demuxPacketManager;
 };
+
+} //namespace ffmpegdirect

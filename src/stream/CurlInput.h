@@ -18,6 +18,9 @@
 
 #define SEEK_POSSIBLE 0x10 // flag used to check if protocol allows seeks
 
+namespace ffmpegdirect
+{
+
 class CurlInput
 {
 public:
@@ -43,3 +46,5 @@ protected:
   unsigned int m_flags = 0;
   std::string m_content;
 };
+
+} //namespace ffmpegdirect

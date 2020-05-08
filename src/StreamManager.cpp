@@ -8,12 +8,13 @@
 
 #include "StreamManager.h"
 
+#include "stream/FFmpegCatchupStream.h"
 #include "utils/HttpProxy.h"
 #include "utils/Log.h"
 
 #include <p8-platform/util/StringUtils.h>
 
-using namespace ffmpegdirect::utils;
+using namespace ffmpegdirect;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions
@@ -49,16 +50,16 @@ void Log(const LogLevel logLevel, const char* format, ...)
   ::kodi::addon::CAddonBase::m_interface->toKodi->addon_log_msg(::kodi::addon::CAddonBase::m_interface->toKodi->kodiBase, addonLevel, buffer);
 }
 
-CInputStreamLibavformat::CInputStreamLibavformat(KODI_HANDLE instance, const std::string& version)
-  : CInstanceInputStream(instance, version)
+InputStreamFFmpegDirect::InputStreamFFmpegDirect(KODI_HANDLE instance, const std::string& version)
+  : CInstanceInputStream(instance)
 {
 }
 
-CInputStreamLibavformat::~CInputStreamLibavformat()
+InputStreamFFmpegDirect::~InputStreamFFmpegDirect()
 {
 }
 
-bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
+bool InputStreamFFmpegDirect::Open(INPUTSTREAM& props)
 {
   Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect: OpenStream() - Num Props: %d", props.m_nCountInfoValues);
   std::string tempString;
@@ -69,91 +70,91 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
 
     if (PROGRAM_NUMBER == props.m_ListItemProperties[i].m_strKey)
     {
-      m_programProperty = props.m_ListItemProperties[i].m_strValue;
+      properties.m_programProperty = props.m_ListItemProperties[i].m_strValue;
     }
     else if (IS_REALTIME_STREAM == props.m_ListItemProperties[i].m_strKey)
     {
-      m_isRealTimeStream = StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "true");
+      properties.m_isRealTimeStream = StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "true");
     }
     else if (STREAM_MODE == props.m_ListItemProperties[i].m_strKey)
     {
       if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "catchup"))
-        m_streamMode = StreamMode::CATCHUP;
+        properties.m_streamMode = StreamMode::CATCHUP;
     }
     else if (OPEN_MODE == props.m_ListItemProperties[i].m_strKey)
     {
       if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "ffmpeg"))
-        m_openMode = OpenMode::FFMPEG;
+        properties.m_openMode = OpenMode::FFMPEG;
       else if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "curl"))
-        m_openMode = OpenMode::CURL;
+        properties.m_openMode = OpenMode::CURL;
     }
     else if (MANIFEST_TYPE == props.m_ListItemProperties[i].m_strKey)
     {
-      m_manifestType = props.m_ListItemProperties[i].m_strValue;
+      properties.m_manifestType = props.m_ListItemProperties[i].m_strValue;
     }
     else if (DEFAULT_URL == props.m_ListItemProperties[i].m_strKey)
     {
-      m_defaultUrl = props.m_ListItemProperties[i].m_strValue;
+      properties.m_defaultUrl = props.m_ListItemProperties[i].m_strValue;
     }
     else if (PLAYBACK_AS_LIVE == props.m_ListItemProperties[i].m_strKey)
     {
-      m_playbackAsLive = StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "true");
+      properties.m_playbackAsLive = StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "true");
     }
     else if (PROGRAMME_START_TIME == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
-      m_programmeStartTime = static_cast<time_t>(std::stoll(tempString));
+      properties.m_programmeStartTime = static_cast<time_t>(std::stoll(tempString));
     }
     else if (PROGRAMME_END_TIME == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
-      m_programmeEndTime = static_cast<time_t>(std::stoll(tempString));
+      properties.m_programmeEndTime = static_cast<time_t>(std::stoll(tempString));
     }
     else if (CATCHUP_URL_FORMAT_STRING == props.m_ListItemProperties[i].m_strKey)
     {
-      m_catchupUrlFormatString = props.m_ListItemProperties[i].m_strValue;
+      properties.m_catchupUrlFormatString = props.m_ListItemProperties[i].m_strValue;
     }
     else if (CATCHUP_URL_NEAR_LIVE_FORMAT_STRING == props.m_ListItemProperties[i].m_strKey)
     {
-      m_catchupUrlNearLiveFormatString = props.m_ListItemProperties[i].m_strValue;
+      properties.m_catchupUrlNearLiveFormatString = props.m_ListItemProperties[i].m_strValue;
     }
     else if (CATCHUP_BUFFER_START_TIME == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
-      m_catchupBufferStartTime = static_cast<time_t>(std::stoll(tempString));
+      properties.m_catchupBufferStartTime = static_cast<time_t>(std::stoll(tempString));
     }
     else if (CATCHUP_BUFFER_END_TIME == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
-      m_catchupBufferEndTime = static_cast<time_t>(std::stoll(tempString));
+      properties.m_catchupBufferEndTime = static_cast<time_t>(std::stoll(tempString));
     }
     else if (CATCHUP_BUFFER_OFFSET == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
-      m_catchupBufferOffset = std::stoll(tempString);
+      properties.m_catchupBufferOffset = std::stoll(tempString);
     }
     else if (CATCHUP_TERMINATES == props.m_ListItemProperties[i].m_strKey)
     {
-      m_catchupTerminates = StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "true");
-    }    
+      properties.m_catchupTerminates = StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "true");
+    }
     else if (CATCHUP_GRANULARITY == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
-      m_catchupGranularity = std::stoi(tempString);
-    }    
+      properties.m_catchupGranularity = std::stoi(tempString);
+    }
     else if (TIMEZONE_SHIFT == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
-      m_timezoneShiftSecs = std::stoi(tempString);
+      properties.m_timezoneShiftSecs = std::stoi(tempString);
     }
     else if (DEFAULT_PROGRAMME_DURATION == props.m_ListItemProperties[i].m_strKey)
     {
       tempString = props.m_ListItemProperties[i].m_strValue;
-      m_defaultProgrammeDurationSecs = std::stoi(tempString);
+      properties.m_defaultProgrammeDurationSecs = std::stoi(tempString);
     }
     else if (PROGRAMME_CATCHUP_ID == props.m_ListItemProperties[i].m_strKey)
     {
-      m_programmeCatchupId = props.m_ListItemProperties[i].m_strValue;
+      properties.m_programmeCatchupId = props.m_ListItemProperties[i].m_strValue;
     }
   }
 
@@ -162,17 +163,18 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
 
   Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: mimetype = %s", m_mimeType.c_str());
 
-  if (m_openMode == OpenMode::DEFAULT)
+  const std::string& manifestType = properties.m_manifestType;
+  if (properties.m_openMode == OpenMode::DEFAULT)
   {
     if (m_mimeType == "application/x-mpegURL" || // HLS
         m_mimeType == "application/vnd.apple.mpegurl" || //HLS
         m_mimeType == "application/xml+dash" ||
-        m_manifestType == "hls" || // HLS
-        m_manifestType == "mpd" || // DASH
-        m_manifestType == "ism") //Smooth Streaming
-      m_openMode = OpenMode::FFMPEG;
+        manifestType == "hls" || // HLS
+        manifestType == "mpd" || // DASH
+        manifestType == "ism") //Smooth Streaming
+      properties.m_openMode = OpenMode::FFMPEG;
     else
-      m_openMode = OpenMode::CURL;
+      properties.m_openMode = OpenMode::CURL;
   }
 
   HttpProxy httpProxy;
@@ -192,99 +194,83 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
     httpProxy.SetProxyPassword(kodi::GetSettingString("httpProxyPassword"));
   }
 
-  if (m_streamMode == StreamMode::CATCHUP)
-    m_stream = std::make_shared<FFmpegCatchupStream>(static_cast<IManageDemuxPacket*>(this),
-                                                     m_openMode,
-                                                     httpProxy,
-                                                     m_defaultUrl,
-                                                     m_playbackAsLive,
-                                                     m_programmeStartTime,
-                                                     m_programmeEndTime,
-                                                     m_catchupUrlFormatString,
-                                                     m_catchupUrlNearLiveFormatString,
-                                                     m_catchupBufferStartTime,
-                                                     m_catchupBufferEndTime,
-                                                     m_catchupBufferOffset,
-                                                     m_catchupTerminates,
-                                                     m_catchupGranularity,
-                                                     m_timezoneShiftSecs,
-                                                     m_defaultProgrammeDurationSecs,
-                                                     m_programmeCatchupId);
+  if (properties.m_streamMode == StreamMode::CATCHUP)
+    m_stream = std::make_shared<FFmpegCatchupStream>(static_cast<IManageDemuxPacket*>(this), properties, httpProxy);
   else
-    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), m_openMode, httpProxy);
+    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), properties.m_openMode, httpProxy);
 
   m_stream->SetVideoResolution(m_videoWidth, m_videoHeight);
 
-  m_opened = m_stream->Open(m_streamUrl, m_mimeType, m_isRealTimeStream, m_programProperty);
+  m_opened = m_stream->Open(m_streamUrl, m_mimeType, properties.m_isRealTimeStream, properties.m_programProperty);
 
   return m_opened;
 }
 
-void CInputStreamLibavformat::Close()
+void InputStreamFFmpegDirect::Close()
 {
   m_opened = false;
 
   m_stream->Close();
 }
 
-void CInputStreamLibavformat::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
+void InputStreamFFmpegDirect::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
 {
   Log(LOGLEVEL_DEBUG, "GetCapabilities()");
   m_stream->GetCapabilities(caps);
 }
 
-INPUTSTREAM_IDS CInputStreamLibavformat::GetStreamIds()
+INPUTSTREAM_IDS InputStreamFFmpegDirect::GetStreamIds()
 {
   Log(LOGLEVEL_DEBUG, "GetStreamIds()");
   return m_stream->GetStreamIds();
 }
 
-INPUTSTREAM_INFO CInputStreamLibavformat::GetStream(int streamid)
+INPUTSTREAM_INFO InputStreamFFmpegDirect::GetStream(int streamid)
 {
   return m_stream->GetStream(streamid);
 }
 
-void CInputStreamLibavformat::EnableStream(int streamid, bool enable)
+void InputStreamFFmpegDirect::EnableStream(int streamid, bool enable)
 {
   m_stream->EnableStream(streamid, enable);
 }
 
-bool CInputStreamLibavformat::OpenStream(int streamid)
+bool InputStreamFFmpegDirect::OpenStream(int streamid)
 {
   return m_stream->OpenStream(streamid);
 }
 
-void CInputStreamLibavformat::DemuxReset()
+void InputStreamFFmpegDirect::DemuxReset()
 {
   m_stream->DemuxReset();
 }
 
-void CInputStreamLibavformat::DemuxAbort()
+void InputStreamFFmpegDirect::DemuxAbort()
 {
   m_stream->DemuxAbort();
 }
 
-void CInputStreamLibavformat::DemuxFlush()
+void InputStreamFFmpegDirect::DemuxFlush()
 {
   m_stream->DemuxFlush();
 }
 
-DemuxPacket* CInputStreamLibavformat::DemuxRead()
+DemuxPacket* InputStreamFFmpegDirect::DemuxRead()
 {
   return m_stream->DemuxRead();
 }
 
-bool CInputStreamLibavformat::DemuxSeekTime(double time, bool backwards, double& startpts)
+bool InputStreamFFmpegDirect::DemuxSeekTime(double time, bool backwards, double& startpts)
 {
   return m_stream->DemuxSeekTime(time, backwards, startpts);
 }
 
-void CInputStreamLibavformat::DemuxSetSpeed(int speed)
+void InputStreamFFmpegDirect::DemuxSetSpeed(int speed)
 {
   m_stream->DemuxSetSpeed(speed);
 }
 
-void CInputStreamLibavformat::SetVideoResolution(int width, int height)
+void InputStreamFFmpegDirect::SetVideoResolution(int width, int height)
 {
   Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect: SetVideoResolution()");
 
@@ -292,89 +278,89 @@ void CInputStreamLibavformat::SetVideoResolution(int width, int height)
   m_videoHeight = height;
 }
 
-int CInputStreamLibavformat::GetTotalTime()
+int InputStreamFFmpegDirect::GetTotalTime()
 {
   return m_stream->GetTotalTime();
 }
 
-int CInputStreamLibavformat::GetTime()
+int InputStreamFFmpegDirect::GetTime()
 {
   return m_stream->GetTime();
 }
 
-bool CInputStreamLibavformat::GetTimes(INPUTSTREAM_TIMES& times)
+bool InputStreamFFmpegDirect::GetTimes(INPUTSTREAM_TIMES& times)
 {
   return m_stream->GetTimes(times);
 }
 
-bool CInputStreamLibavformat::PosTime(int ms)
+bool InputStreamFFmpegDirect::PosTime(int ms)
 {
   return m_stream->PosTime(ms);
 }
 
-int CInputStreamLibavformat::GetChapter()
+int InputStreamFFmpegDirect::GetChapter()
 {
   return m_stream->GetChapter();
 }
 
-int CInputStreamLibavformat::GetChapterCount()
+int InputStreamFFmpegDirect::GetChapterCount()
 {
   return m_stream->GetChapterCount();
 }
 
-const char* CInputStreamLibavformat::GetChapterName(int ch)
+const char* InputStreamFFmpegDirect::GetChapterName(int ch)
 {
   return m_stream->GetChapterName(ch);
 }
 
-int64_t CInputStreamLibavformat::GetChapterPos(int ch)
+int64_t InputStreamFFmpegDirect::GetChapterPos(int ch)
 {
   return m_stream->GetChapterPos(ch);
 }
 
-bool CInputStreamLibavformat::SeekChapter(int ch)
+bool InputStreamFFmpegDirect::SeekChapter(int ch)
 {
   return m_stream->SeekChapter(ch);
 }
 
-int CInputStreamLibavformat::ReadStream(uint8_t* buf, unsigned int size)
+int InputStreamFFmpegDirect::ReadStream(uint8_t* buf, unsigned int size)
 {
   return m_stream->ReadStream(buf, size);
 }
 
-int64_t CInputStreamLibavformat::SeekStream(int64_t position, int whence /* SEEK_SET */)
+int64_t InputStreamFFmpegDirect::SeekStream(int64_t position, int whence /* SEEK_SET */)
 {
   return m_stream->SeekStream(position, whence);
 }
 
-int64_t CInputStreamLibavformat::PositionStream()
+int64_t InputStreamFFmpegDirect::PositionStream()
 {
   return m_stream->PositionStream();
 }
 
-int64_t CInputStreamLibavformat::LengthStream()
+int64_t InputStreamFFmpegDirect::LengthStream()
 {
   return m_stream->LengthStream();
 }
 
-bool CInputStreamLibavformat::IsRealTimeStream()
+bool InputStreamFFmpegDirect::IsRealTimeStream()
 {
   return m_stream->IsRealTimeStream();
 }
 
 /*****************************************************************************************************/
 
-DemuxPacket* CInputStreamLibavformat::AllocateDemuxPacketFromInputStreamAPI(int dataSize)
+DemuxPacket* InputStreamFFmpegDirect::AllocateDemuxPacketFromInputStreamAPI(int dataSize)
 {
   return AllocateDemuxPacket(dataSize);
 }
 
-DemuxPacket* CInputStreamLibavformat::AllocateEncryptedDemuxPacketFromInputStreamAPI(int dataSize, unsigned int encryptedSubsampleCount)
+DemuxPacket* InputStreamFFmpegDirect::AllocateEncryptedDemuxPacketFromInputStreamAPI(int dataSize, unsigned int encryptedSubsampleCount)
 {
   return AllocateEncryptedDemuxPacket(dataSize, encryptedSubsampleCount);
 }
 
-void CInputStreamLibavformat::FreeDemuxPacketFromInputStreamAPI(DemuxPacket* packet)
+void InputStreamFFmpegDirect::FreeDemuxPacketFromInputStreamAPI(DemuxPacket* packet)
 {
   return FreeDemuxPacket(packet);
 }
@@ -394,7 +380,7 @@ public:
   {
     if (instanceType == ADDON_INSTANCE_INPUTSTREAM)
     {
-      addonInstance = new CInputStreamLibavformat(instance, version);
+      addonInstance = new InputStreamFFmpegDirect(instance, version);
       return ADDON_STATUS_OK;
     }
     return ADDON_STATUS_NOT_IMPLEMENTED;

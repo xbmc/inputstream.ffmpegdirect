@@ -20,6 +20,8 @@
 
 #include <p8-platform/util/StringUtils.h>
 
+using namespace ffmpegdirect;
+
 static thread_local CFFmpegLog* CFFmpegLogTls;
 
 void CFFmpegLog::SetLogLevel(int level)

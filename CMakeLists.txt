@@ -60,6 +60,7 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/utils/HttpProxy.h
                     src/utils/FilenameUtils.h
                     src/utils/Log.h
+                    src/utils/Properties.h
                     src/stream/url/URL.h
                     src/stream/url/UrlOptions.h
                     src/stream/url/Variant.h)

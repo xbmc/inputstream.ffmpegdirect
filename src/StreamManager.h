@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "stream/FFmpegCatchupStream.h"
 #include "stream/FFmpegStream.h"
 #include "stream/IManageDemuxPacket.h"
+#include "utils/Properties.h"
 
 #include <memory>
 #include <string>
@@ -37,19 +37,12 @@ static const std::string TIMEZONE_SHIFT = "inputstream.ffmpegdirect.timezone_shi
 static const std::string DEFAULT_PROGRAMME_DURATION = "inputstream.ffmpegdirect.default_programme_duration";
 static const std::string PROGRAMME_CATCHUP_ID = "inputstream.ffmpegdirect.programme_catchup_id";
 
-enum class StreamMode
-  : int // same type as addon settings
-{
-  NONE = 0,
-  CATCHUP
-};
-
-class CInputStreamLibavformat
-  : public kodi::addon::CInstanceInputStream, IManageDemuxPacket
+class InputStreamFFmpegDirect
+  : public kodi::addon::CInstanceInputStream, ffmpegdirect::IManageDemuxPacket
 {
 public:
-  CInputStreamLibavformat(KODI_HANDLE instance, const std::string& version);
-  ~CInputStreamLibavformat();
+  InputStreamFFmpegDirect(KODI_HANDLE instance, const std::string& version);
+  ~InputStreamFFmpegDirect();
 
   virtual bool Open(INPUTSTREAM& props) override;
   virtual void Close() override;
@@ -95,26 +88,8 @@ private:
 
   std::string m_streamUrl;
   std::string m_mimeType;
-  std::string m_programProperty;
-  bool m_isRealTimeStream;
-  StreamMode m_streamMode = StreamMode::NONE;
-  OpenMode m_openMode = OpenMode::DEFAULT;
-  std::string m_manifestType;
-  std::string m_defaultUrl;
 
-  bool m_playbackAsLive = false;
-  time_t m_programmeStartTime = 0;
-  time_t m_programmeEndTime = 0;
-  std::string m_catchupUrlFormatString;
-  std::string m_catchupUrlNearLiveFormatString;
-  time_t m_catchupBufferStartTime = 0;
-  time_t m_catchupBufferEndTime = 0;
-  long long m_catchupBufferOffset = 0;
-  bool m_catchupTerminates = false;
-  int m_catchupGranularity = 1;
-  int m_timezoneShiftSecs = 0;
-  int m_defaultProgrammeDurationSecs = 4 * 60 * 60; //Four hours
-  std::string m_programmeCatchupId;
+  ffmpegdirect::Properties properties;
 
   int m_videoWidth;
   int m_videoHeight;

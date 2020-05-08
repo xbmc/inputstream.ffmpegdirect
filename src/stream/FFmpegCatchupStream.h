@@ -11,6 +11,9 @@
 #include "FFmpegStream.h"
 #include "../utils/HttpProxy.h"
 
+namespace ffmpegdirect
+{
+
 static const int VIDEO_PLAYER_BUFFER_SECONDS = 10;
 static const int TERMINATING_SECOND_STREAM_MIN_SEEK_FROM_LIVE_TIME = 60;
 static const int TERMINATING_MINUTE_STREAM_MIN_SEEK_FROM_LIVE_TIME = 120;
@@ -19,22 +22,8 @@ class FFmpegCatchupStream : public FFmpegStream
 {
 public:
   FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
-                      const OpenMode& openMode,
-                      const ffmpegdirect::utils::HttpProxy& httpProxy,
-                      std::string& defaultUrl,
-                      bool playbackAsLive,
-                      time_t programmeStartTime,
-                      time_t programmeEndTime,
-                      std::string& catchupUrlFormatString,
-                      std::string& catchupUrlNearLiveFormatString,
-                      time_t catchupBufferStartTime,
-                      time_t catchupBufferEndTime,
-                      long long catchupBufferOffset,
-                      bool catchupTerminates,
-                      int catchupGranularity,
-                      int timezoneShift,
-                      int defaultProgrammeDuration,
-                      std::string& m_programmeCatchupId);
+                      const Properties props,
+                      const HttpProxy& httpProxy);
   ~FFmpegCatchupStream();
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
@@ -54,12 +43,12 @@ public:
 
 protected:
   void UpdateCurrentPTS() override;
-  bool CheckReturnEmptryOnPacketResult(int result) override;
+  bool CheckReturnEmptyOnPacketResult(int result) override;
 
   long long GetCurrentLiveOffset() { return std::time(nullptr) - m_catchupBufferStartTime; }
   bool SeekDistanceSupported(int64_t seekBufferOffset);
   bool TargetDistanceFromLiveSupported(long long secondsFromLive);
-  const std::string GetDateTime(time_t time) 
+  const std::string GetDateTime(time_t time)
   {
     std::tm timeStruct = *localtime(&time);
     char buffer[32];
@@ -95,3 +84,5 @@ protected:
   bool m_lastPacketWasAvoidedEOF = false;
   bool m_seekCorrectsEOF = false;
 };
+
+} //namespace ffmpegdirect

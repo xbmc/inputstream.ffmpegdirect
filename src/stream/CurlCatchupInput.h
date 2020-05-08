@@ -11,8 +11,13 @@
 #include "CurlInput.h"
 #include "../utils/Log.h"
 
+namespace ffmpegdirect
+{
+
 class CurlCatchupInput : public CurlInput
 {
 public:
   void Reset() override;
 };
+
+} //namespace ffmpegdirect

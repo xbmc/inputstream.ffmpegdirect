@@ -16,6 +16,8 @@
 // #include "utils/URIUtils.h"
 #include "../utils/Log.h"
 
+using namespace ffmpegdirect;
+
 CurlInput::CurlInput()
 {
   m_pFile = nullptr;
