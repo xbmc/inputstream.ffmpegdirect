@@ -48,7 +48,7 @@ class CInputStreamLibavformat
   : public kodi::addon::CInstanceInputStream, IManageDemuxPacket
 {
 public:
-  CInputStreamLibavformat(KODI_HANDLE instance);
+  CInputStreamLibavformat(KODI_HANDLE instance, const std::string& version);
   ~CInputStreamLibavformat();
 
   virtual bool Open(INPUTSTREAM& props) override;

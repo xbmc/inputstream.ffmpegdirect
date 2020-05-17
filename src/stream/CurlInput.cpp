@@ -42,7 +42,7 @@ bool CurlInput::Open(const std::string& filename, const std::string& mimeType, u
   if (!m_pFile)
     return false;
 
-  flags |= READ_AUDIO_VIDEO;
+  flags |= ADDON_READ_AUDIO_VIDEO;
 
   /*
    * There are 5 buffer modes available (configurable in as.xml)
@@ -62,12 +62,12 @@ bool CurlInput::Open(const std::string& filename, const std::string& mimeType, u
     unsigned int iCacheBufferMode = CACHE_BUFFER_MODE_INTERNET; //CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode;
     if (iCacheBufferMode == CACHE_BUFFER_MODE_INTERNET)
     {
-      flags |= READ_CACHED;
+      flags |= ADDON_READ_CACHED;
     }
   //}
 
-  if (!(flags & READ_CACHED))
-    flags |= READ_NO_CACHE; // Make sure CFile honors our no-cache hint
+  if (!(flags & ADDON_READ_CACHED))
+    flags |= ADDON_READ_NO_CACHE; // Make sure CFile honors our no-cache hint
 
   std::string content = m_mimeType;
 
@@ -76,7 +76,7 @@ bool CurlInput::Open(const std::string& filename, const std::string& mimeType, u
       content == "video/avi" ||
       content == "video/x-matroska" ||
       content == "video/x-matroska-3d")
-    flags |= READ_MULTI_STREAM;
+    flags |= ADDON_READ_MULTI_STREAM;
 
   // open file in binary mode
   if (!m_pFile->OpenFile(m_filename, flags))
