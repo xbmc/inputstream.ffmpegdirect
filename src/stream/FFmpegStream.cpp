@@ -156,9 +156,9 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
   m_programProperty = programProperty;
 
   if (m_openMode == OpenMode::CURL)
-    m_curlInput->Open(m_streamUrl, m_mimeType, READ_TRUNCATED |
-                                               READ_BITRATE |
-                                               READ_CHUNKED);
+    m_curlInput->Open(m_streamUrl, m_mimeType, ADDON_READ_TRUNCATED |
+                                               ADDON_READ_BITRATE |
+                                               ADDON_READ_CHUNKED);
 
   m_opened = Open(false);
 
@@ -2400,7 +2400,7 @@ void FFmpegStream::GetL16Parameters(int &channels, int &samplerate)
 {
   std::string content;
   kodi::vfs::CFile file;
-  if (file.OpenFile(m_curlInput->GetFilename(), READ_NO_CACHE))
+  if (file.OpenFile(m_curlInput->GetFilename(), ADDON_READ_NO_CACHE))
   {
     content = file.GetPropertyValue(ADDON_FILE_PROPERTY_CONTENT_TYPE, "");
 

@@ -49,8 +49,8 @@ void Log(const LogLevel logLevel, const char* format, ...)
   ::kodi::addon::CAddonBase::m_interface->toKodi->addon_log_msg(::kodi::addon::CAddonBase::m_interface->toKodi->kodiBase, addonLevel, buffer);
 }
 
-CInputStreamLibavformat::CInputStreamLibavformat(KODI_HANDLE instance)
-  : CInstanceInputStream(instance)
+CInputStreamLibavformat::CInputStreamLibavformat(KODI_HANDLE instance, const std::string& version)
+  : CInstanceInputStream(instance, version)
 {
 }
 
@@ -177,7 +177,7 @@ bool CInputStreamLibavformat::Open(INPUTSTREAM& props)
 
   HttpProxy httpProxy;
 
-  bool useHttpProxy = kodi::GetSettingBoolean("useHttpProxy"); 
+  bool useHttpProxy = kodi::GetSettingBoolean("useHttpProxy");
   if (useHttpProxy)
   {
     httpProxy.SetProxyHost(kodi::GetSettingString("httpProxyHost"));
@@ -381,16 +381,20 @@ void CInputStreamLibavformat::FreeDemuxPacketFromInputStreamAPI(DemuxPacket* pac
 
 /*****************************************************************************************************/
 
-class CMyAddon
+class ATTRIBUTE_HIDDEN CMyAddon
   : public kodi::addon::CAddonBase
 {
 public:
   CMyAddon() { }
-  virtual ADDON_STATUS CreateInstance(int instanceType, std::string instanceID, KODI_HANDLE instance, KODI_HANDLE& addonInstance) override
+  virtual ADDON_STATUS CreateInstance(int instanceType,
+                                      const std::string& instanceID,
+                                      KODI_HANDLE instance,
+                                      const std::string& version,
+                                      KODI_HANDLE& addonInstance) override
   {
     if (instanceType == ADDON_INSTANCE_INPUTSTREAM)
     {
-      addonInstance = new CInputStreamLibavformat(instance);
+      addonInstance = new CInputStreamLibavformat(instance, version);
       return ADDON_STATUS_OK;
     }
     return ADDON_STATUS_NOT_IMPLEMENTED;
