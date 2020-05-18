@@ -1,3 +1,7 @@
+v1.11.0
+- Update: inputstream API 2.3.1
+- Update: Global API 1.2.0
+
 v1.10.0
 - Added: Continued playback of catchtup streams which don't support delayed live streams
 - Added: Skip unsupported seeks like ones too close to live or those less one minute for streams that only allow a 1 minute granulaity

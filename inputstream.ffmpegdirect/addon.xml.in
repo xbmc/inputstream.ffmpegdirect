@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.10.0"
+  version="1.11.0"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -23,6 +23,10 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.11.0
+- Update: inputstream API 2.3.1
+- Update: Global API 1.2.0
+
 v1.10.0
 - Added: Continued playback of catchtup streams which don't support delayed live streams
 - Added: Skip unsupported seeks like ones too close to live or those less one minute for streams that only allow a 1 minute granulaity
