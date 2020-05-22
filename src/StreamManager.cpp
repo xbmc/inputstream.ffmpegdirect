@@ -9,6 +9,7 @@
 #include "StreamManager.h"
 
 #include "stream/FFmpegCatchupStream.h"
+#include "stream/TimeshiftStream.h"
 #include "utils/HttpProxy.h"
 #include "utils/Log.h"
 
@@ -80,6 +81,8 @@ bool InputStreamFFmpegDirect::Open(INPUTSTREAM& props)
     {
       if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "catchup"))
         properties.m_streamMode = StreamMode::CATCHUP;
+      else if (StringUtils::EqualsNoCase(props.m_ListItemProperties[i].m_strValue, "timeshift"))
+        properties.m_streamMode = StreamMode::TIMESHIFT;
     }
     else if (OPEN_MODE == props.m_ListItemProperties[i].m_strKey)
     {
@@ -196,6 +199,8 @@ bool InputStreamFFmpegDirect::Open(INPUTSTREAM& props)
 
   if (properties.m_streamMode == StreamMode::CATCHUP)
     m_stream = std::make_shared<FFmpegCatchupStream>(static_cast<IManageDemuxPacket*>(this), properties, httpProxy);
+  else if (properties.m_streamMode == StreamMode::TIMESHIFT)
+    m_stream = std::make_shared<TimeshiftStream>(static_cast<IManageDemuxPacket*>(this), properties, httpProxy);
   else
     m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), properties.m_openMode, httpProxy);
 

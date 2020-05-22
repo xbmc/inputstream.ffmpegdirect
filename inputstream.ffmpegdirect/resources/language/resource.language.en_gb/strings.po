@@ -45,7 +45,20 @@ msgctxt "#30005"
 msgid "Password"
 msgstr ""
 
-#empty strings from id 30006 to 30599
+#empty strings from id 30006 to 30019
+
+#. label-category: timeshift
+#. label-group: Timeshift - Timeshift
+msgctxt "#30020"
+msgid "Timeshift"
+msgstr ""
+
+#. label: Timeshift - timeshiftbufferpath
+msgctxt "#30021"
+msgid "Timeshift buffer path"
+msgstr ""
+
+#empty strings from id 30022 to 30599
 
 #. ############
 #. help info #
@@ -81,4 +94,18 @@ msgstr ""
 #. help: HTTP Proxy - httpProxyPassword
 msgctxt "#30605"
 msgid "Configure the proxy server password."
+msgstr ""
+
+#empty strings from id 30606 to 30619
+
+#. help info - Timeshift
+
+#. help-category: timeshift
+msgctxt "#30620"
+msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
+msgstr ""
+
+#. help: Timeshift - timeshiftBufferPath
+msgctxt "#30621"
+msgid "The path used to store the timeshift buffer. The default is the `addon_data/inputstream.ffmpegdirect/timeshift` folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when `inputstream.ffmpegdirect.stream_mode=timeshift" property is passed to the addon."
 msgstr ""

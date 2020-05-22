@@ -16,7 +16,8 @@ namespace ffmpegdirect
     : int // same type as addon settings
   {
     NONE = 0,
-    CATCHUP
+    CATCHUP,
+    TIMESHIFT
   };
 
   enum class OpenMode

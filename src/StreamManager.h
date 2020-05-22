@@ -94,5 +94,5 @@ private:
   int m_videoWidth;
   int m_videoHeight;
 
-  std::shared_ptr<BaseStream> m_stream;
+  std::shared_ptr<ffmpegdirect::BaseStream> m_stream;
 };
