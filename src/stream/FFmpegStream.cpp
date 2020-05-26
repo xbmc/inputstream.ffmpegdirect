@@ -47,6 +47,7 @@ extern "C" {
 //#include "platform/posix/XTimeUtils.h"
 
 #include <kodi/Filesystem.h>
+#include <kodi/Network.h>
 #include <p8-platform/util/StringUtils.h>
 
 using namespace ffmpegdirect;
@@ -2243,8 +2244,7 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
     if (!hasUserAgent)
     {
       // set default xbmc user-agent.
-      // TODO:
-      av_dict_set(&options, "user_agent", "Kodi", 0);//CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_userAgent.c_str(), 0);
+      av_dict_set(&options, "user_agent", kodi::network::GetUserAgent().c_str(), 0);
     }
 
     if (!headers.empty())
@@ -2253,9 +2253,8 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
     if (!hasCookies)
     {
       std::string cookies;
-      // TODO: once available in koid::vfs
-      // if (XFILE::CCurlFile::GetCookies(url, cookies))
-      //   av_dict_set(&options, "cookies", cookies.c_str(), 0);
+      if (kodi::vfs::GetCookies(m_streamUrl, cookies))
+        av_dict_set(&options, "cookies", cookies.c_str(), 0);
     }
   }
 
