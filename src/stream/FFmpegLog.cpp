@@ -8,78 +8,74 @@
 
 #include "FFmpegLog.h"
 
-// #include "ServiceBroker.h"
-// #include "settings/AdvancedSettings.h"
-// #include "settings/SettingsComponent.h"
 #include "threads/CriticalSection.h"
 #include "threads/Thread.h"
-//#include "utils/StringUtils.h"
 #include "../utils/Log.h"
 
 #include <map>
 
+#include <kodi/General.h>
 #include <p8-platform/util/StringUtils.h>
 
-static thread_local CFFmpegLog* CFFmpegLogTls;
+using namespace ffmpegdirect;
 
-void CFFmpegLog::SetLogLevel(int level)
+static thread_local FFmpegLog* CFFmpegDirectLogTls;
+
+void FFmpegLog::SetLogLevel(int level)
 {
-  CFFmpegLog::ClearLogLevel();
-  CFFmpegLog *log = new CFFmpegLog();
+  FFmpegLog::ClearLogLevel();
+  FFmpegLog *log = new FFmpegLog();
   log->level = level;
-  CFFmpegLogTls = log;
+  CFFmpegDirectLogTls = log;
 }
 
-int CFFmpegLog::GetLogLevel()
+int FFmpegLog::GetLogLevel()
 {
-  CFFmpegLog* log = CFFmpegLogTls;
+  FFmpegLog* log = CFFmpegDirectLogTls;
   if (!log)
     return -1;
   return log->level;
 }
 
-void CFFmpegLog::ClearLogLevel()
+void FFmpegLog::ClearLogLevel()
 {
-  CFFmpegLog* log = CFFmpegLogTls;
-  CFFmpegLogTls = nullptr;
+  FFmpegLog* log = CFFmpegDirectLogTls;
+  CFFmpegDirectLogTls = nullptr;
   if (log)
     delete log;
 }
 
-static CCriticalSection m_logSection;
-std::map<const CThread*, std::string> g_logbuffer;
+static CCriticalSection m_ffmpegdirectLogSection;
+std::map<const CThread*, std::string> g_ffmpegdirectLogbuffer;
 
 void ff_flush_avutil_log_buffers(void)
 {
-  CSingleLock lock(m_logSection);
+  CSingleLock lock(m_ffmpegdirectLogSection);
   /* Loop through the logbuffer list and remove any blank buffers
      If the thread using the buffer is still active, it will just
      add a new buffer next time it writes to the log */
   std::map<const CThread*, std::string>::iterator it;
-  for (it = g_logbuffer.begin(); it != g_logbuffer.end(); )
+  for (it = g_ffmpegdirectLogbuffer.begin(); it != g_ffmpegdirectLogbuffer.end(); )
     if ((*it).second.empty())
-      g_logbuffer.erase(it++);
+      g_ffmpegdirectLogbuffer.erase(it++);
     else
       ++it;
 }
 
 void ff_avutil_log(void* ptr, int level, const char* format, va_list va)
 {
-  CSingleLock lock(m_logSection);
+  CSingleLock lock(m_ffmpegdirectLogSection);
   const CThread* threadId = CThread::GetCurrentThread();
-  std::string &buffer = g_logbuffer[threadId];
+  std::string &buffer = g_ffmpegdirectLogbuffer[threadId];
 
   AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
 
   int maxLevel = AV_LOG_WARNING;
-  if (CFFmpegLog::GetLogLevel() > 0)
+  if (FFmpegLog::GetLogLevel() > 0)
     maxLevel = AV_LOG_INFO;
 
-  // if (level > maxLevel &&
-  //    !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->CanLogComponent(LOGFFMPEG))
-  //   return;
-  // else if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel <= LOG_LEVEL_NORMAL)
-  //   return;
+  if (level > maxLevel && !kodi::GetSettingBoolean("allowFFmpegLogging"))
+    return;
 
   LogLevel type;
   switch (level)

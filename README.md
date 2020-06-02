@@ -60,6 +60,16 @@ Contains the settings for how the proxy is configured when opening with FFmpeg. 
 * **Username**: Configure the proxy server username.
 * **Password**: Configure the proxy server password.
 
+### Timeshift
+This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording.
+
+* **Timeshift buffer path**: The path used to store the timeshift buffer. The default is the `addon_data/inputstream.ffmpegdirect/timeshift` folder in userdata. Note that this folder will be cleared of timeshift files on Kodi startup. Only relevant when `inputstream.ffmpegdirect.stream_mode=timeshift" property is passed to the addon.
+
+### Advanced
+This category contains the advanced settings for the addon.
+
+* **Allow FFmpeg logging**: If enabled the addon will log any FFmpeg logging to the Kodi log.
+
 ## Using the addon
 
 The addon can be accessed like any other inputstream in Kodi. The following example will show how to manually choose this addon for playback when using IPTV Simple Client with the following entry in the M3U file (Note that the IPTV Simple Client will in fact automatcially detect a catchup stream and use the addon based on configured settings).
@@ -80,7 +90,19 @@ Note that the appropriate mime type should always be set. Here are the some comm
 
 The field `program_number` can be used to indicate the Program ID to use for TS streams.
 
-If enabling archive/catchup support there are a number of other properties that needs to be set as shown in this example.
+If enabling **timeshift** support for live streams here is an example set of properties.
+
+```
+#KODIPROP:inputstream=inputstream.ffmpegdirect
+#KODIPROP:mimetype=application/x-mpegURL
+#KODIPROP:inputstream.ffmpegdirect.is_realtime_stream=true
+#KODIPROP:inputstream.ffmpegdirect.stream_mode=timeshift
+#KODIPROP:inputstream.ffmpegdirect.manifest_type=hls
+#EXTINF:-1,MyChannel
+http://127.0.0.1:3002/mystream.m3u8
+```
+
+If enabling **archive/catchup** support there are a number of other properties that needs to be set as shown in this example.
 
 ```
 #KODIPROP:inputstream=inputstream.ffmpegdirect
@@ -103,9 +125,9 @@ If enabling archive/catchup support there are a number of other properties that 
 http://127.0.0.1:3002/mystream.m3u8
 ```
 
-- `stream_mode`: If the value `catchup` is supplied the inputstream will start in catchup mode. Any other value or if omitted will open as a regular stream.
+- `stream_mode`: If the value `timeshift` is supplied the live stream will have a local timeshift buffer. If `catchup` is supplied the inputstream will start in catchup mode. Any other value or if omitted will open as a regular stream.
 - `open_mode`: If the value `ffmpeg` is supplied the inputstream will be opened with AVFormat. If the value `curl` is supplied the inputstream will be opened with cURL. If neither value is supplied the default is to open HLS, Dash and Smooth Streaming with AVFormat and anything else as a kodi file. Note that a `mimetype` or `manifest_type` property is required to be able to tell if a stream is HLS or Dash. If using Smooth streaming only a `manifest_type` property will work as Smooth Streaming does not have a mimetype.
-- `manifest_type`: Allowed values are `hls` for HLS, `mpd` for Dash and `ism` for Smooth Streaming. 
+- `manifest_type`: Allowed values are `hls` for HLS, `mpd` for Dash and `ism` for Smooth Streaming.
 - `default_url`: The URL to use if a catchup URL cannot be generated for any reason.
 - `playback_as_live`: Should the playback be considerd as live tv, allowing skipping from one programme to the next over the entire catchup window, if so set to `true`. Otherwise set to `false` to treat all programmes as videos.
 - `programme_start_time`: The unix time in seconds of the start of the programme being streamed - optional.

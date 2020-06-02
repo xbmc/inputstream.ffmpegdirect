@@ -10,7 +10,7 @@
 
 #include <p8-platform/util/StringUtils.h>
 
-using namespace ffmpegdirect::utils;
+using namespace ffmpegdirect;
 
 std::string FilenameUtils::MakeLegalFileName(const std::string &strFile, int LegalType)
 {

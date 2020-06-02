@@ -12,8 +12,6 @@
 #include "threads/SingleLock.h"
 #include "../utils/Log.h"
 
-using namespace ffmpegdirect::utils;
-
 #ifdef TARGET_POSIX
 #include "platform/posix/XTimeUtils.h"
 #endif
@@ -37,39 +35,28 @@ extern "C" {
 
 //#include "platform/posix/XTimeUtils.h"
 
+#include <kodi/Filesystem.h>
 #include <p8-platform/util/StringUtils.h>
+
+using namespace ffmpegdirect;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions
 ***********************************************************/
 
 FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
-                                         const OpenMode& openMode,
-                                         const HttpProxy& httpProxy,
-                                         std::string& defaultUrl,
-                                         bool playbackAsLive,
-                                         time_t programmeStartTime,
-                                         time_t programmeEndTime,
-                                         std::string& catchupUrlFormatString,
-                                         std::string& catchupUrlNearLiveFormatString,
-                                         time_t catchupBufferStartTime,
-                                         time_t catchupBufferEndTime,
-                                         long long catchupBufferOffset,
-                                         bool catchupTerminates,
-                                         int catchupGranularity,
-                                         int timezoneShift,
-                                         int defaultProgrammeDuration,
-                                         std::string& programmeCatchupId)
-  : FFmpegStream(demuxPacketManager, openMode, std::make_shared<CurlCatchupInput>(), httpProxy),
+                                         const Properties props,
+                                         const HttpProxy& httpProxy)
+  : FFmpegStream(demuxPacketManager, props.m_openMode, std::make_shared<CurlCatchupInput>(), httpProxy),
     m_isOpeningStream(false), m_seekOffset(0),
-    m_defaultUrl(defaultUrl), m_playbackAsLive(playbackAsLive),
-    m_programmeStartTime(programmeStartTime), m_programmeEndTime(programmeEndTime),
-    m_catchupUrlFormatString(catchupUrlFormatString),
-    m_catchupUrlNearLiveFormatString(catchupUrlNearLiveFormatString),
-    m_catchupBufferStartTime(catchupBufferStartTime), m_catchupBufferEndTime(catchupBufferEndTime),
-    m_catchupBufferOffset(catchupBufferOffset), m_catchupTerminates(catchupTerminates),
-    m_catchupGranularity(catchupGranularity), m_timezoneShift(timezoneShift),
-    m_defaultProgrammeDuration(defaultProgrammeDuration), m_programmeCatchupId(programmeCatchupId)
+    m_defaultUrl(props.m_defaultUrl), m_playbackAsLive(props.m_playbackAsLive),
+    m_programmeStartTime(props.m_programmeStartTime), m_programmeEndTime(props.m_programmeEndTime),
+    m_catchupUrlFormatString(props.m_catchupUrlFormatString),
+    m_catchupUrlNearLiveFormatString(props.m_catchupUrlNearLiveFormatString),
+    m_catchupBufferStartTime(props.m_catchupBufferStartTime), m_catchupBufferEndTime(props.m_catchupBufferEndTime),
+    m_catchupBufferOffset(props.m_catchupBufferOffset), m_catchupTerminates(props.m_catchupTerminates),
+    m_catchupGranularity(props.m_catchupGranularity), m_timezoneShift(props.m_timezoneShiftSecs),
+    m_defaultProgrammeDuration(props.m_defaultProgrammeDurationSecs), m_programmeCatchupId(props.m_programmeCatchupId)
 {
   m_catchupGranularityLowWaterMark = m_catchupGranularity - (m_catchupGranularity / 4);
 }
@@ -150,7 +137,6 @@ DemuxPacket* FFmpegCatchupStream::DemuxRead()
     {
       m_lastPacketWasAvoidedEOF = false;
     }
-    
 
     m_currentDemuxTime = static_cast<double>(pPacket->pts) / 1000;
   }
@@ -158,7 +144,7 @@ DemuxPacket* FFmpegCatchupStream::DemuxRead()
   return pPacket;
 }
 
-bool FFmpegCatchupStream::CheckReturnEmptryOnPacketResult(int result)
+bool FFmpegCatchupStream::CheckReturnEmptyOnPacketResult(int result)
 {
   // If the server returns EOF then for a terminating stream we should should keep playing
   // sending an empty packet instead will allow VideoPlayer to continue as we swap to an
@@ -166,10 +152,10 @@ bool FFmpegCatchupStream::CheckReturnEmptryOnPacketResult(int result)
   // This will only happen if we are within the default programme duration of live
 
   if (result == AVERROR_EOF)
-    Log(LOGLEVEL_DEBUG, "%s - isEOF: %d, terminates: %d, isOpening: %d, lastSeekWasLive: %d, lastLiveOffset+duration: %lld > currentDemuxTime: %lld", 
+    Log(LOGLEVEL_DEBUG, "%s - isEOF: %d, terminates: %d, isOpening: %d, lastSeekWasLive: %d, lastLiveOffset+duration: %lld > currentDemuxTime: %lld",
         __FUNCTION__, result == AVERROR_EOF, m_catchupTerminates, m_isOpeningStream, m_lastSeekWasLive, m_previousLiveBufferOffset + m_defaultProgrammeDuration, static_cast<long long>(m_currentDemuxTime) / 1000);
 
-  if (result == AVERROR_EOF && m_catchupTerminates && !m_isOpeningStream && !m_lastSeekWasLive && 
+  if (result == AVERROR_EOF && m_catchupTerminates && !m_isOpeningStream && !m_lastSeekWasLive &&
       m_previousLiveBufferOffset + m_defaultProgrammeDuration > static_cast<long long>(m_currentDemuxTime) / 1000)
     return true;
 
@@ -296,7 +282,7 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, bool backwards)
       m_streamUrl = GetUpdatedCatchupUrl();
     }
 
-    return static_cast<int64_t>(m_catchupBufferOffset) * DVD_TIME_BASE;   
+    return static_cast<int64_t>(m_catchupBufferOffset) * DVD_TIME_BASE;
   }
 
   return -1;
@@ -308,15 +294,15 @@ bool FFmpegCatchupStream::SeekDistanceSupported(int64_t seekBufferOffset)
   {
     long long currentDemuxSecs = static_cast<long long>(m_currentDemuxTime) / 1000;
     int seekDistanceSecs = std::llabs(seekBufferOffset - currentDemuxSecs);
-    
-    if (m_lastSeekWasLive && 
+
+    if (m_lastSeekWasLive &&
         ((seekDistanceSecs < VIDEO_PLAYER_BUFFER_SECONDS) ||
-         (m_catchupTerminates && m_catchupGranularity == 1 && seekDistanceSecs < (TERMINATING_SECOND_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)) || 
+         (m_catchupTerminates && m_catchupGranularity == 1 && seekDistanceSecs < (TERMINATING_SECOND_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)) ||
          (m_catchupTerminates && m_catchupGranularity > 1 && seekDistanceSecs < (TERMINATING_MINUTE_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)) ||
          (!m_catchupTerminates && m_catchupGranularity > 1 && seekDistanceSecs < m_catchupGranularityLowWaterMark)))
     {
       Log(LOGLEVEL_INFO, "%s - skipping as seek distance of %d seconds is too short", __FUNCTION__, seekDistanceSecs);
-      return false;    
+      return false;
     }
 
     Log(LOGLEVEL_INFO, "%s - seek distance of %d seconds is ok", __FUNCTION__, seekDistanceSecs);
@@ -333,7 +319,7 @@ bool FFmpegCatchupStream::TargetDistanceFromLiveSupported(long long secondsFromL
         (m_catchupGranularity > 1 && secondsFromLive < (TERMINATING_MINUTE_STREAM_MIN_SEEK_FROM_LIVE_TIME - 5)))
     {
       Log(LOGLEVEL_INFO, "%s - skipping as %d seconds from live is too close", __FUNCTION__, secondsFromLive);
-      return false;    
+      return false;
     }
 
     Log(LOGLEVEL_INFO, "%s - %d seconds from live is ok", __FUNCTION__, secondsFromLive, secondsFromLive);
@@ -416,14 +402,16 @@ void FormatUnits(time_t tTime, const std::string& name, std::string &urlFormatSt
 void FormatTime(const char ch, const struct tm *pTime, std::string &urlFormatString)
 {
   char str[] = { '{', ch, '}', 0 };
-  auto pos = urlFormatString.find(str);
-  if (pos != std::string::npos)
+  size_t pos = urlFormatString.find(str);
+  while (pos != std::string::npos)
   {
     char buff[256], timeFmt[3];
     std::snprintf(timeFmt, sizeof(timeFmt), "%%%c", ch);
     std::strftime(buff, sizeof(buff), timeFmt, pTime);
     if (std::strlen(buff) > 0)
       urlFormatString.replace(pos, 3, buff);
+
+    pos = urlFormatString.find(str);
   }
 }
 

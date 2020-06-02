@@ -32,6 +32,9 @@ extern "C"
 #pragma warning(pop)
 #endif
 
+namespace ffmpegdirect
+{
+
 class DemuxStream
 {
 public:
@@ -213,3 +216,5 @@ public:
   AVCodecParserContext* m_parserCtx = nullptr;
   AVCodecContext* m_codecCtx = nullptr;
 };
+
+} //namespace ffmpegdirect

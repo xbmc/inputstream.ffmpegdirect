@@ -12,22 +12,19 @@
 
 namespace ffmpegdirect
 {
-  namespace utils
-  {
-    static const int LEGAL_NONE = 0;
-    static const int LEGAL_WIN32_COMPAT = 1;
-    static const int LEGAL_FATX = 2;
+  static const int LEGAL_NONE = 0;
+  static const int LEGAL_WIN32_COMPAT = 1;
+  static const int LEGAL_FATX = 2;
 
-    class FilenameUtils
-    {
-    public:
+  class FilenameUtils
+  {
+  public:
 #ifdef TARGET_WINDOWS
-      static std::string MakeLegalFileName(const std::string &strFile, int LegalType=LEGAL_WIN32_COMPAT);
-      static std::string MakeLegalPath(const std::string &strPath, int LegalType=LEGAL_WIN32_COMPAT);
+    static std::string MakeLegalFileName(const std::string &strFile, int LegalType=LEGAL_WIN32_COMPAT);
+    static std::string MakeLegalPath(const std::string &strPath, int LegalType=LEGAL_WIN32_COMPAT);
 #else
-      static std::string MakeLegalFileName(const std::string &strFile, int LegalType=LEGAL_NONE);
-      static std::string MakeLegalPath(const std::string &strPath, int LegalType=LEGAL_NONE);
+    static std::string MakeLegalFileName(const std::string &strFile, int LegalType=LEGAL_NONE);
+    static std::string MakeLegalPath(const std::string &strPath, int LegalType=LEGAL_NONE);
 #endif      
-    };
-  } //namespace utils
+  };
 } //namespace ffmpegdirect

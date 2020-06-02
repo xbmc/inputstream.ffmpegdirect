@@ -29,6 +29,9 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/threads/Timer.cpp
                     src/stream/threads/TimeUtils.cpp
                     src/stream/threads/SystemClock.cpp
+                    src/stream/TimeshiftBuffer.cpp
+                    src/stream/TimeshiftSegment.cpp
+                    src/stream/TimeshiftStream.cpp
                     src/stream/url/URL.cpp
                     src/stream/url/UrlOptions.cpp
                     src/stream/url/Variant.cpp
@@ -57,9 +60,13 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/threads/Timer.h
                     src/stream/threads/TimeUtils.h
                     src/stream/threads/platform/ThreadImpl.h
+                    src/stream/TimeshiftBuffer.h
+                    src/stream/TimeshiftSegment.h
+                    src/stream/TimeshiftStream.h
                     src/utils/HttpProxy.h
                     src/utils/FilenameUtils.h
                     src/utils/Log.h
+                    src/utils/Properties.h
                     src/stream/url/URL.h
                     src/stream/url/UrlOptions.h
                     src/stream/url/Variant.h)

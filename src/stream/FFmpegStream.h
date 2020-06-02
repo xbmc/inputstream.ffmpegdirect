@@ -12,6 +12,7 @@
 #include "threads/SystemClock.h"
 
 #include "../utils/HttpProxy.h"
+#include "../utils/Properties.h"
 #include "BaseStream.h"
 #include "DemuxStream.h"
 #include "CurlInput.h"
@@ -45,6 +46,9 @@ extern "C"
 
 struct StereoModeConversionMap;
 
+namespace ffmpegdirect
+{
+
 enum class TRANSPORT_STREAM_STATE
 {
   NONE,
@@ -52,20 +56,12 @@ enum class TRANSPORT_STREAM_STATE
   NOTREADY,
 };
 
-enum class OpenMode
-  : int // same type as addon settings
-{
-  DEFAULT = 0,
-  FFMPEG,
-  CURL
-};
-
 class FFmpegStream
   : public BaseStream
 {
 public:
-  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, const ffmpegdirect::utils::HttpProxy& httpProxy);
-  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, std::shared_ptr<CurlInput> curlInput, const ffmpegdirect::utils::HttpProxy& httpProxy);
+  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, const HttpProxy& httpProxy);
+  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, std::shared_ptr<CurlInput> curlInput, const HttpProxy& httpProxy);
   ~FFmpegStream();
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
@@ -112,7 +108,7 @@ protected:
   virtual std::string GetStreamCodecName(int iStreamId);
   virtual void UpdateCurrentPTS();
   bool IsPaused() { return m_speed == DVD_PLAYSPEED_PAUSE; }
-  virtual bool CheckReturnEmptryOnPacketResult(int result);
+  virtual bool CheckReturnEmptyOnPacketResult(int result);
 
   int64_t m_demuxerId;
   CCriticalSection m_critSection;
@@ -145,7 +141,7 @@ private:
   void ParsePacket(AVPacket* pkt);
   TRANSPORT_STREAM_STATE TransportStreamAudioState();
   TRANSPORT_STREAM_STATE TransportStreamVideoState();
-  bool IsTransportStreamReady();  
+  bool IsTransportStreamReady();
   bool IsProgramChange();
   void StoreSideData(DemuxPacket *pkt, AVPacket *src);
 
@@ -198,6 +194,8 @@ private:
   bool m_isRealTimeStream;
   bool m_opened;
 
-  ffmpegdirect::utils::HttpProxy m_httpProxy;
+  HttpProxy m_httpProxy;
   OpenMode m_openMode;
 };
+
+} //namespace ffmpegdirect

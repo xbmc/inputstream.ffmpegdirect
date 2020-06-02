@@ -26,8 +26,6 @@
 
 // #include <kodi/addon-instance/Inputstream.h>
 
-using namespace ffmpegdirect::utils;
-
 #include <chrono>
 #include <ctime>
 
@@ -49,7 +47,10 @@ extern "C" {
 //#include "platform/posix/XTimeUtils.h"
 
 #include <kodi/Filesystem.h>
+#include <kodi/Network.h>
 #include <p8-platform/util/StringUtils.h>
+
+using namespace ffmpegdirect;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions
@@ -136,7 +137,7 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMod
   m_checkTransportStream = false;
   m_dtsAtDisplayTime = DVD_NOPTS_VALUE;
 
-  CFFmpegLog::SetLogLevel(-100);
+  FFmpegLog::SetLogLevel(AV_LOG_INFO);
   av_log_set_callback(ff_avutil_log);
 }
 
@@ -144,6 +145,7 @@ FFmpegStream::~FFmpegStream()
 {
   Dispose();
   ff_flush_avutil_log_buffers();
+  FFmpegLog::ClearLogLevel();
 }
 
 bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty)
@@ -189,6 +191,9 @@ void FFmpegStream::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_SEEK |
     // INPUTSTREAM_CAPABILITIES::SUPPORTS_PAUSE;
     INPUTSTREAM_CAPABILITIES::SUPPORTS_ICHAPTER;
+
+  if (!IsRealTimeStream())
+    caps.m_mask |= INPUTSTREAM_CAPABILITIES::SUPPORTS_SEEK | INPUTSTREAM_CAPABILITIES::SUPPORTS_PAUSE | INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME;
 }
 
 INPUTSTREAM_IDS FFmpegStream::GetStreamIds()
@@ -252,7 +257,7 @@ void FFmpegStream::DemuxReset()
 {
   m_demuxResetOpenSuccess = false;
   Dispose();
-  // Here we update the filename and call reset in case the 
+  // Here we update the filename and call reset in case the
   // implementation needs to restart the stream
   m_curlInput->SetFilename(m_streamUrl);
   m_curlInput->Reset();
@@ -317,7 +322,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
       // timeout, probably no real error, return empty packet
       bReturnEmpty = true;
     }
-    else if (CheckReturnEmptryOnPacketResult(m_pkt.result))  
+    else if (CheckReturnEmptyOnPacketResult(m_pkt.result))
     {
       bReturnEmpty = true;
     }
@@ -357,7 +362,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
         // update streams
         CreateStreams(m_program);
 
-        pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(0);
+        pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(0);
         pPacket->iStreamId = DMX_SPECIALID_STREAMCHANGE;
         pPacket->demuxerId = m_demuxerId;
 
@@ -375,7 +380,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
           {
             if (m_pkt.pkt.stream_index == (int)m_pFormatContext->programs[m_program]->stream_index[i])
             {
-              pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(m_pkt.pkt.size);
+              pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(m_pkt.pkt.size);
               break;
             }
           }
@@ -384,7 +389,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
             bReturnEmpty = true;
         }
         else
-          pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(m_pkt.pkt.size);
+          pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(m_pkt.pkt.size);
       }
       else
         bReturnEmpty = true;
@@ -445,7 +450,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
   }
   } // end of lock scope
   if (bReturnEmpty && !pPacket)
-    pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(0);
+    pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(0);
 
   if (!pPacket)
     return nullptr;
@@ -485,8 +490,8 @@ DemuxPacket* FFmpegStream::DemuxRead()
     }
     if (!stream)
     {
-      m_demuxPacketMamnager->FreeDemuxPacketFromInputStreamAPI(pPacket);
-      pPacket = m_demuxPacketMamnager->AllocateDemuxPacketFromInputStreamAPI(0);
+      m_demuxPacketManager->FreeDemuxPacketFromInputStreamAPI(pPacket);
+      pPacket = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(0);
       return pPacket;
     }
 
@@ -560,6 +565,16 @@ int FFmpegStream::GetTime()
 
 bool FFmpegStream::GetTimes(INPUTSTREAM_TIMES& times)
 {
+  if (!IsRealTimeStream())
+  {
+    times = {0};
+
+    times.startTime = 0;
+    times.ptsEnd = m_pFormatContext->duration;
+
+    return true;
+  }
+
   return false;
 }
 
@@ -587,12 +602,22 @@ int64_t FFmpegStream::PositionStream()
 
 int64_t FFmpegStream::LengthStream()
 {
-  return -1;
+  int64_t length = -1;
+  INPUTSTREAM_TIMES times = {0};
+  if (GetTimes(times) && times.ptsEnd >= times.ptsBegin)
+    length = static_cast<int64_t>(times.ptsEnd - times.ptsBegin);
+
+  Log(LOGLEVEL_DEBUG, "%s: %lld", __FUNCTION__, static_cast<long long>(length));
+
+  return length;
 }
 
 bool FFmpegStream::IsRealTimeStream()
 {
-  return m_isRealTimeStream;
+  // If we are told the stream is real time then use that, but double check if it's live
+  // by checking duration too
+
+  return m_isRealTimeStream || m_pFormatContext->duration <= 0;
 }
 
 void FFmpegStream::Dispose()
@@ -810,7 +835,7 @@ bool FFmpegStream::Open(bool fileinfo)
           }
         }
       }
-      else if (m_pFormatContext->iformat && strcmp(m_pFormatContext->iformat->name, "hls,applehttp") == 0)
+      else if (m_pFormatContext->iformat && strcmp(m_pFormatContext->iformat->name, "hls") == 0)
       {
         nProgram = HLSSelectProgram();
       }
@@ -855,13 +880,6 @@ bool FFmpegStream::Open(bool fileinfo)
     if (!Open(false))
       return false;
     m_pFormatContext->duration = duration;
-  }
-
-  // seems to be a bug in ffmpeg, hls jumps back to start after a couple of seconds
-  // this cures the issue
-  if (m_pFormatContext->iformat && strcmp(m_pFormatContext->iformat->name, "hls,applehttp") == 0)
-  {
-    SeekTime(0);
   }
 
   return true;
@@ -1112,7 +1130,7 @@ bool FFmpegStream::OpenWithCURL(AVInputFormat* iformat)
     av_dict_free(&options);
     return false;
   }
-  av_dict_free(&options);  
+  av_dict_free(&options);
 
   return true;
 }
@@ -1442,7 +1460,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     {
       DemuxPacket* pkt = DemuxRead();
       if (pkt)
-        m_demuxPacketMamnager->FreeDemuxPacketFromInputStreamAPI(pkt);
+        m_demuxPacketManager->FreeDemuxPacketFromInputStreamAPI(pkt);
       else
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
       m_pkt.result = -1;
@@ -2020,7 +2038,7 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
 //         pStream->discard = AVDISCARD_ALL;
 //         delete stream;
 //         return nullptr;
-//       }  
+//       }
 //       stream->dvdNavId = pStream->id;
 
 //       auto it = std::find_if(m_streams.begin(), m_streams.end(),
@@ -2227,8 +2245,7 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
     if (!hasUserAgent)
     {
       // set default xbmc user-agent.
-      // TODO:
-      av_dict_set(&options, "user_agent", "Kodi", 0);//CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_userAgent.c_str(), 0);
+      av_dict_set(&options, "user_agent", kodi::network::GetUserAgent().c_str(), 0);
     }
 
     if (!headers.empty())
@@ -2237,9 +2254,8 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
     if (!hasCookies)
     {
       std::string cookies;
-      // TODO: once available in koid::vfs
-      // if (XFILE::CCurlFile::GetCookies(url, cookies))
-      //   av_dict_set(&options, "cookies", cookies.c_str(), 0);
+      if (kodi::vfs::GetCookies(m_streamUrl, cookies))
+        av_dict_set(&options, "cookies", cookies.c_str(), 0);
     }
   }
 
@@ -2391,7 +2407,7 @@ bool FFmpegStream::SeekChapter(int chapter)
   return SeekTime(DVD_TIME_TO_MSEC(dts), true);
 }
 
-bool FFmpegStream::CheckReturnEmptryOnPacketResult(int result)
+bool FFmpegStream::CheckReturnEmptyOnPacketResult(int result)
 {
   return false;
 }
@@ -2406,7 +2422,7 @@ void FFmpegStream::GetL16Parameters(int &channels, int &samplerate)
 
     file.Close();
   }
-  
+
   if (!content.empty())
   {
     StringUtils::ToLower(content);

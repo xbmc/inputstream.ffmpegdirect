@@ -10,6 +10,9 @@
 
 #include <kodi/addon-instance/Inputstream.h>
 
+namespace ffmpegdirect
+{
+
 class IManageDemuxPacket
 {
 public:
@@ -19,3 +22,5 @@ public:
   virtual DemuxPacket* AllocateEncryptedDemuxPacketFromInputStreamAPI(int dataSize, unsigned int encryptedSubsampleCount) = 0;
   virtual void FreeDemuxPacketFromInputStreamAPI(DemuxPacket* packet) = 0;
 };
+
+} //namespace ffmpegdirect

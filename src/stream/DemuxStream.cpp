@@ -10,7 +10,6 @@
 
 #include "../utils/Log.h"
 #include "url/URL.h"
-#include "FFmpegLog.h"
 
 #ifdef TARGET_POSIX
 #include "platform/posix/XTimeUtils.h"
@@ -32,6 +31,8 @@ extern "C" {
 }
 
 #include <p8-platform/util/StringUtils.h>
+
+using namespace ffmpegdirect;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions

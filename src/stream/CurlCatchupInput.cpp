@@ -10,6 +10,8 @@
 
 #include "../utils/Log.h"
 
+using namespace ffmpegdirect;
+
 void CurlCatchupInput::Reset()
 {
   if (m_pFile)
