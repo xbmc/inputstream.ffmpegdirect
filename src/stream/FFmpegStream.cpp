@@ -137,7 +137,7 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMod
   m_checkTransportStream = false;
   m_dtsAtDisplayTime = DVD_NOPTS_VALUE;
 
-  CFFmpegLog::SetLogLevel(-100);
+  FFmpegLog::SetLogLevel(AV_LOG_INFO);
   av_log_set_callback(ff_avutil_log);
 }
 
@@ -145,6 +145,7 @@ FFmpegStream::~FFmpegStream()
 {
   Dispose();
   ff_flush_avutil_log_buffers();
+  FFmpegLog::ClearLogLevel();
 }
 
 bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty)

@@ -58,7 +58,25 @@ msgctxt "#30021"
 msgid "Timeshift buffer path"
 msgstr ""
 
-#empty strings from id 30022 to 30599
+#empty strings from id 30022 to 30039
+
+#. label-category: advanced
+msgctxt "#30040"
+msgid "Advanced"
+msgstr ""
+
+#. label-category: advanced
+#. label-group: Advanced - Logging
+msgctxt "#30041"
+msgid "Logging"
+msgstr ""
+
+#. label: Advanced - allowFFmpegLogging
+msgctxt "#30042"
+msgid "Allow FFmpeg logging"
+msgstr ""
+
+#empty strings from id 30043 to 30599
 
 #. ############
 #. help info #
@@ -108,4 +126,18 @@ msgstr ""
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the `addon_data/inputstream.ffmpegdirect/timeshift` folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when `inputstream.ffmpegdirect.stream_mode=timeshift" property is passed to the addon."
+msgstr ""
+
+#empty strings from id 30622 to 30639
+
+#. help info - Advanced
+
+#. help-category: advanced
+msgctxt "#30640"
+msgid "This category contains advanced settings for the addon."
+msgstr ""
+
+#. help: Timeshift - allowFFmpegLogging
+msgctxt "#30641"
+msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
 msgstr ""

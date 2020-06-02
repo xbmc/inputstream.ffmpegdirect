@@ -77,5 +77,16 @@
         </setting>
       </group>
     </category>
+
+    <!-- Advanved -->
+    <category id="advanced" label="30040" help="30640">
+      <group id="1" label="30041">
+        <setting id="allowFFmpegLogging" type="boolean" label="30042" help="30641">
+          <level>2</level>
+          <default>false</default>
+          <control type="toggle" />
+        </setting>
+      </group>
+    </category>
   </section>
 </settings>

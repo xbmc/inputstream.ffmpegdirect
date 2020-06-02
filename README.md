@@ -65,6 +65,11 @@ This category contains the settings for timeshift. Timeshifting allows you to pa
 
 * **Timeshift buffer path**: The path used to store the timeshift buffer. The default is the `addon_data/inputstream.ffmpegdirect/timeshift` folder in userdata. Note that this folder will be cleared of timeshift files on Kodi startup. Only relevant when `inputstream.ffmpegdirect.stream_mode=timeshift" property is passed to the addon.
 
+### Advanced
+This category contains the advanced settings for the addon.
+
+* **Allow FFmpeg logging**: If enabled the addon will log any FFmpeg logging to the Kodi log.
+
 ## Using the addon
 
 The addon can be accessed like any other inputstream in Kodi. The following example will show how to manually choose this addon for playback when using IPTV Simple Client with the following entry in the M3U file (Note that the IPTV Simple Client will in fact automatcially detect a catchup stream and use the addon based on configured settings).
