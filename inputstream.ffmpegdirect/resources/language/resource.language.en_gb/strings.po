@@ -53,12 +53,27 @@ msgctxt "#30020"
 msgid "Timeshift"
 msgstr ""
 
-#. label: Timeshift - timeshiftbufferpath
+#. label: Timeshift - timeshiftBufferPath
 msgctxt "#30021"
 msgid "Timeshift buffer path"
 msgstr ""
 
-#empty strings from id 30022 to 30039
+#. label: Timeshift - timeshiftEnableLimit
+msgctxt "#30022"
+msgid "Enable timeshift limit"
+msgstr ""
+
+#. label: Timeshift - timeshiftOnDiskLength
+msgctxt "#30023"
+msgid "Maximum timeshift buffer length"
+msgstr ""
+
+#. format-label: Timeshift - timeshiftOnDiskLength
+msgctxt "#30024"
+msgid "{0:.2f} hours"
+msgstr ""
+
+#empty strings from id 30025 to 30039
 
 #. label-category: advanced
 msgctxt "#30040"
@@ -128,13 +143,23 @@ msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the `addon_data/inputstream.ffmpegdirect/timeshift` folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when `inputstream.ffmpegdirect.stream_mode=timeshift" property is passed to the addon."
 msgstr ""
 
-#empty strings from id 30622 to 30639
+#. help: Timeshift - timeshiftEnableLimit
+msgctxt "#30622"
+msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Reagrdless of this setting the buffer will also grow forever if paused."
+msgstr ""
+
+#. help: Timeshift - timeshiftOnDiskLength
+msgctxt "#30623"
+msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
+msgstr ""
+
+#empty strings from id 30624 to 30639
 
 #. help info - Advanced
 
 #. help-category: advanced
 msgctxt "#30640"
-msgid "This category contains advanced settings for the addon."
+msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Reagrdless of this setting the buffer will also grow forever if paused."
 msgstr ""
 
 #. help: Timeshift - allowFFmpegLogging

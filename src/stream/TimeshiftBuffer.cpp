@@ -22,6 +22,20 @@ TimeshiftBuffer::TimeshiftBuffer(IManageDemuxPacket* demuxPacketManager)
   if (m_timeshiftBufferPath.empty())
     m_timeshiftBufferPath = DEFAULT_TIMESHIFT_BUFFER_PATH;
   kodi::vfs::CreateDirectory(m_timeshiftBufferPath);
+
+  if (!kodi::CheckSettingBoolean("timeshiftEnableLimit", m_enableOnDiskSegmentLimit))
+    m_enableOnDiskSegmentLimit = true;
+  float onDiskTotalLengthHours = kodi::GetSettingFloat("timeshiftOnDiskLength");
+  if (onDiskTotalLengthHours <= 0.0f)
+    onDiskTotalLengthHours = DEFAULT_TIMESHIFT_SEGMENT_ON_DISK_LENGTH_HOURS;
+  int onDiskTotalLengthSeconds = onDiskTotalLengthHours * 60 * 60;
+
+  if (m_enableOnDiskSegmentLimit)
+    Log(LOGLEVEL_INFO, "%s - On disk length limit 'enabled', length limit set to %.2f hours", __FUNCTION__, onDiskTotalLengthHours);
+  else
+    Log(LOGLEVEL_INFO, "%s - On disk length limit 'disabled'", __FUNCTION__);
+
+  m_maxOnDiskSegments = (onDiskTotalLengthSeconds / TIMESHIFT_SEGMENT_LENGTH_SECS) + 1;
 }
 
 TimeshiftBuffer::~TimeshiftBuffer()
@@ -103,7 +117,7 @@ void TimeshiftBuffer::AddPacket(DemuxPacket* packet)
       }
 
       if (m_segmentTimeIndexMap.size() > MAX_IN_MEMORY_SEGMENT_INDEXES)
-        RemoveOldestInMemorySegment();
+        RemoveOldestInMemoryAndOnDiskSegments();
 
       m_writeSegment = std::make_shared<TimeshiftSegment>(m_demuxPacketManager, m_streamId, m_currentSegmentIndex, m_timeshiftBufferPath);
       m_previousWriteSegment->SetNextSegment(m_writeSegment);
@@ -118,7 +132,7 @@ void TimeshiftBuffer::AddPacket(DemuxPacket* packet)
   m_writeSegment->AddPacket(packet);
 }
 
-void TimeshiftBuffer::RemoveOldestInMemorySegment()
+void TimeshiftBuffer::RemoveOldestInMemoryAndOnDiskSegments()
 {
   std::shared_ptr<TimeshiftSegment> oldFirstSegment = m_firstSegment;
 
@@ -130,9 +144,11 @@ void TimeshiftBuffer::RemoveOldestInMemorySegment()
 
   Log(LOGLEVEL_DEBUG, "%s - Removed oldest in memory segment with ID: %d", __FUNCTION__, oldFirstSegment->GetSegmentId());
 
-  if (!m_paused && m_segmentTotalCount > MAX_ON_DISK_SEGMENTS && m_currentDemuxTimeIndex > m_minOnDiskSeekTimeIndex)
+  if (m_enableOnDiskSegmentLimit && !m_paused &&
+      m_segmentTotalCount > m_maxOnDiskSegments &&
+      m_currentDemuxTimeIndex > m_minOnDiskSeekTimeIndex)
   {
-    while (m_segmentTotalCount > MAX_ON_DISK_SEGMENTS && m_currentDemuxTimeIndex > m_minOnDiskSeekTimeIndex)
+    while (m_segmentTotalCount > m_maxOnDiskSegments && m_currentDemuxTimeIndex > m_minOnDiskSeekTimeIndex)
     {
       std::string segmentFilename = StringUtils::Format("%s-%08d.seg", m_streamId.c_str(), m_earliestOnDiskSegmentId);
       if (kodi::vfs::FileExists(m_timeshiftBufferPath + "/" + segmentFilename))

@@ -2,6 +2,43 @@
 <settings version="1">
   <section id="inputstream.ffmpegdirect">
 
+    <!-- Timeshift -->
+    <category id="timeshift" label="30020" help="30620">
+      <group id="1" label="30020">
+        <setting id="timeshiftBufferPath" type="path" label="30021" help="30621">
+          <level>0</level>
+          <default>special://userdata/addon_data/inputstream.ffmpegdirect/timeshift</default>
+          <constraints>
+            <allowempty>true</allowempty>
+            <writable>true</writable>
+          </constraints>
+          <control type="button" format="path">
+            <heading>657</heading>
+          </control>
+        </setting>
+        <setting id="timeshiftEnableLimit" type="boolean" label="30022" help="30622">
+          <level>2</level>
+          <default>true</default>
+          <control type="toggle" />
+        </setting>
+        <setting id="timeshiftOnDiskLength" type="number" parent="timeshiftEnableLimit" label="30023" help="30623">
+          <level>0</level>
+          <default>1</default>
+          <constraints>
+            <minimum>0.25</minimum>
+            <step>0.25</step>
+            <maximum>24</maximum>
+          </constraints>
+          <dependencies>
+            <dependency type="enable" setting="timeshiftEnableLimit">true</dependency>
+          </dependencies>
+          <control type="slider" format="number">
+            <formatlabel>30024</formatlabel>
+          </control>
+        </setting>
+      </group>
+    </category>
+
     <!-- HTTP Proxy -->
     <category id="httpProxy" label="30000" help="30600">
       <group id="1" label="30000">
@@ -56,23 +93,6 @@
           </dependencies>
           <control type="edit" format="string">
             <hidden>true</hidden>
-          </control>
-        </setting>
-      </group>
-    </category>
-
-    <!-- Timeshift -->
-    <category id="timeshift" label="30020" help="30620">
-      <group id="1" label="30020">
-        <setting id="timeshiftBufferPath" type="path" label="30021" help="30621">
-          <level>0</level>
-          <default>special://userdata/addon_data/inputstream.ffmpegdirect/timeshift</default>
-          <constraints>
-            <allowempty>true</allowempty>
-            <writable>true</writable>
-          </constraints>
-          <control type="button" format="path">
-            <heading>657</heading>
           </control>
         </setting>
       </group>
