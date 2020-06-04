@@ -64,6 +64,8 @@ Contains the settings for how the proxy is configured when opening with FFmpeg. 
 This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording.
 
 * **Timeshift buffer path**: The path used to store the timeshift buffer. The default is the `addon_data/inputstream.ffmpegdirect/timeshift` folder in userdata. Note that this folder will be cleared of timeshift files on Kodi startup. Only relevant when `inputstream.ffmpegdirect.stream_mode=timeshift" property is passed to the addon.
+* **Enable timeshift limit**: Enable this option to limit the length of the timeshift buffer.
+* **Maximum timeshift buffer length**: The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video.
 
 ### Advanced
 This category contains the advanced settings for the addon.

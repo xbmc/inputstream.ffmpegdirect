@@ -22,13 +22,6 @@
 namespace ffmpegdirect
 {
 
-constexpr int TIMESHIFT_SEGMENT_LENGTH_SECS = 12;
-constexpr int TIMESHIFT_SEGMENT_IN_MEMORY_INDEXED_LENGTH_SECS = 60 * 12; // 12 minutes
-constexpr int MAX_IN_MEMORY_SEGMENT_INDEXES = TIMESHIFT_SEGMENT_IN_MEMORY_INDEXED_LENGTH_SECS / TIMESHIFT_SEGMENT_LENGTH_SECS + 1;
-constexpr int TIMESHIFT_SEGMENT_ON_DISK_LENGTH_SECS = 60 * 60 * 4; // 4 hours
-constexpr int MAX_ON_DISK_SEGMENTS = (TIMESHIFT_SEGMENT_ON_DISK_LENGTH_SECS / TIMESHIFT_SEGMENT_LENGTH_SECS) + 1;
-constexpr int SEGMENT_INDEX_FILE_LINE_LENGTH = 30;
-
 struct SegmentIndexOnDiskEntry
 {
   int m_segmentId = -1;
@@ -84,7 +77,13 @@ protected:
   IManageDemuxPacket* m_demuxPacketManager;
 
 private:
-  void RemoveOldestInMemorySegment();
+  static const int TIMESHIFT_SEGMENT_LENGTH_SECS = 12;
+  static const int SEGMENT_INDEX_FILE_LINE_LENGTH = 30;
+  static const int TIMESHIFT_SEGMENT_IN_MEMORY_INDEXED_LENGTH_SECS = 60 * 12; // 12 minutes
+  static const int MAX_IN_MEMORY_SEGMENT_INDEXES = TIMESHIFT_SEGMENT_IN_MEMORY_INDEXED_LENGTH_SECS / TIMESHIFT_SEGMENT_LENGTH_SECS + 1;
+  static constexpr float DEFAULT_TIMESHIFT_SEGMENT_ON_DISK_LENGTH_HOURS = 1.0f;
+
+  void RemoveOldestInMemoryAndOnDiskSegments();
   SegmentIndexOnDiskEntry SearchOnDiskIndex(const SegmentIndexSearchBy& segmentIndexSearchBy, int searchValue);
 
   int m_lastPacketSecondsSinceStart = 0;
@@ -118,6 +117,9 @@ private:
 
   int m_currentDemuxTimeIndex;
   bool m_paused = false;
+
+  bool m_enableOnDiskSegmentLimit = false;
+  int m_maxOnDiskSegments;
 };
 
 } //namespace ffmpegdirect
