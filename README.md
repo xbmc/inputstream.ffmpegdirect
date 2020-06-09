@@ -52,13 +52,14 @@ If you would prefer to run the rebuild steps manually instead of using the above
 ## Settings
 
 ### FFmpeg HTTP Proxy
-Contains the settings for how the proxy is configured when opening with FFmpeg. Note that the setting has no effect when opening using Kodi's cURL. In that case it will use the proxy configured in Kodi.
+This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits.
 
-* **Use HTTP proxy when opening with FFmpeg**: Whether or not a proxy should be used when opening with FFmpeg.
+* **Use HTTP proxy when opening with FFmpeg**: Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used.
 * **Server**: Configure the proxy server address.
 * **Port**: Configure the proxy server port.
 * **Username**: Configure the proxy server username.
 * **Password**: Configure the proxy server password.
+* **Stream selection bandwidth**: Use this value as a maximum when selecting which HLS stream to use.
 
 ### Timeshift
 This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording.
@@ -71,6 +72,8 @@ This category contains the settings for timeshift. Timeshifting allows you to pa
 This category contains the advanced settings for the addon.
 
 * **Allow FFmpeg logging**: If enabled the addon will log any FFmpeg logging to the Kodi log.
+* **Probe for FPS**: Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used.
+* **Enable teletext**: Allow teletext. Default enabled.
 
 ## Using the addon
 

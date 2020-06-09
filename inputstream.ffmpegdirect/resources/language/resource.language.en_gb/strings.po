@@ -14,38 +14,52 @@ msgstr ""
 
 #. settings labels
 
-#. label-category: httpProxy
-#. label-group: HTTP proxy - httpProxt
+#. label-category: Network
 msgctxt "#30000"
-msgid "FFmpeg HTTP proxy"
+msgid "Network"
 msgstr ""
 
-#. label: HTTP proxy - useHttpProxy
+#. label-group: Network - httpProxy
 msgctxt "#30001"
+msgid "HTTP proxy"
+msgstr ""
+
+#. label: Network - useHttpProxy
+msgctxt "#30002"
 msgid "Use HTTP proxy when opening with FFmpeg"
 msgstr ""
 
-#. label-option: HTTP proxy - httpProxyHost
-msgctxt "#30002"
+#. label-option: Network - httpProxyHost
+msgctxt "#30003"
 msgid "Server"
 msgstr ""
 
-#. label-option: HTTP proxy - httpProxyPort
-msgctxt "#30003"
+#. label-option: Network - httpProxyPort
+msgctxt "#30004"
 msgid "Port"
 msgstr ""
 
-#. label-option: HTTP proxy - httpProxyUser
-msgctxt "#30004"
+#. label-option: Network - httpProxyUser
+msgctxt "#30005"
 msgid "Username"
 msgstr ""
 
-#. label-option: HTTP proxy - httpProxyPassword
-msgctxt "#30005"
+#. label-option: Network - httpProxyPassword
+msgctxt "#30006"
 msgid "Password"
 msgstr ""
 
-#empty strings from id 30006 to 30019
+#. label-group: Network - Bandwidth
+msgctxt "#30007"
+msgid "Bandwidth"
+msgstr ""
+
+#. label-option: Network - networkBandwidth
+msgctxt "#30008"
+msgid "Stream selection bandwidth"
+msgstr ""
+
+#empty strings from id 30009 to 30019
 
 #. label-category: timeshift
 #. label-group: Timeshift - Timeshift
@@ -83,7 +97,7 @@ msgstr ""
 #. label-category: advanced
 #. label-group: Advanced - Logging
 msgctxt "#30041"
-msgid "Logging"
+msgid "FFmpeg"
 msgstr ""
 
 #. label: Advanced - allowFFmpegLogging
@@ -91,7 +105,17 @@ msgctxt "#30042"
 msgid "Allow FFmpeg logging"
 msgstr ""
 
-#empty strings from id 30043 to 30599
+#. label: Advanced - probeForFps
+msgctxt "#30043"
+msgid "Probe for FPS"
+msgstr ""
+
+#. label: Advanced - enableTeletext
+msgctxt "#30044"
+msgid "Enable teletext"
+msgstr ""
+
+#empty strings from id 30045 to 30599
 
 #. ############
 #. help info #
@@ -99,37 +123,42 @@ msgstr ""
 
 #. help info - HTTP Proxy
 
-#. help-category: httpProxy
+#. help-category: Network
 msgctxt "#30600"
-msgid "This category contains the settings for how the proxy is configured when opening with FFmpeg. Note that the setting has no effect when opening using Kodi's cURL. In that case it will use the proxy configured in Kodi."
+msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
 msgstr ""
 
-#. help: HTTP Proxy - useHttpProxy
+#. help: Network - useHttpProxy
 msgctxt "#30601"
-msgid "Whether or not a proxy should be used when opening with FFmpeg."
+msgid "Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used."
 msgstr ""
 
-#. help: HTTP Proxy - httpProxyHost
+#. help: Network - httpProxyHost
 msgctxt "#30602"
 msgid "Configure the proxy server address."
 msgstr ""
 
-#. help: HTTP Proxy - httpProxyPort
+#. help: Network- httpProxyPort
 msgctxt "#30603"
 msgid "Configure the proxy server port."
 msgstr ""
 
-#. help: HTTP Proxy - httpProxyUser
+#. help: Network - httpProxyUser
 msgctxt "#30604"
 msgid "Configure the proxy server username."
 msgstr ""
 
-#. help: HTTP Proxy - httpProxyPassword
+#. help: Network - httpProxyPassword
 msgctxt "#30605"
 msgid "Configure the proxy server password."
 msgstr ""
 
-#empty strings from id 30606 to 30619
+#. help: Network - streamBandwidth
+msgctxt "#30606"
+msgid "Use this value as a maximum when selecting which HLS stream to use."
+msgstr ""
+
+#empty strings from id 30607 to 30619
 
 #. help info - Timeshift
 
@@ -165,4 +194,14 @@ msgstr ""
 #. help: Timeshift - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
+msgstr ""
+
+#. help: Timeshift - probeForFps
+msgctxt "#30642"
+msgid "Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used."
+msgstr ""
+
+#. help: Timeshift - enableTeletext
+msgctxt "#30643"
+msgid "Allow teletext. Default enabled."
 msgstr ""

@@ -724,9 +724,9 @@ bool FFmpegStream::Open(bool fileinfo)
       return false;
   }
 
-  // Avoid detecting framerate if advancedsettings.xml says so
-  // if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoFpsDetect == 0)
-  //     m_pFormatContext->fps_probe_size = 0;
+  // Avoid detecting framerate if our advanced settings says so
+  if (!kodi::GetSettingBoolean("probeForFps"))
+    m_pFormatContext->fps_probe_size = 0;
 
   // analyse very short to speed up mjpeg playback start
   if (iformat && (strcmp(iformat->name, "mjpeg") == 0) && m_ioContext->seekable == 0)
@@ -1250,7 +1250,7 @@ unsigned int FFmpegStream::HLSSelectProgram()
 {
   unsigned int prog = UINT_MAX;
 
-  int bandwidth = 0;//CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_NETWORK_BANDWIDTH) * 1000;
+  int bandwidth = kodi::GetSettingInt("streamBandwidth") * 1000;
   if (bandwidth <= 0)
     bandwidth = INT_MAX;
 
@@ -1921,7 +1921,7 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
       // }
       case AVMEDIA_TYPE_SUBTITLE:
       {
-        if (pStream->codecpar->codec_id == AV_CODEC_ID_DVB_TELETEXT && true)//CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_VIDEOPLAYER_TELETEXTENABLED))
+        if (pStream->codecpar->codec_id == AV_CODEC_ID_DVB_TELETEXT && kodi::GetSettingBoolean("enableTeletext"))
         {
           DemuxStreamTeletext* st = new DemuxStreamTeletext();
           stream = st;
