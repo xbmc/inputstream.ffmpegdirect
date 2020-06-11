@@ -653,11 +653,11 @@ void FFmpegStream::Dispose()
 
 void FFmpegStream::DisposeStreams()
 {
-  // std::map<int, DemuxStream*>::iterator it;
-  // for(it = m_streams.begin(); it != m_streams.end(); ++it)
-  //   delete it->second;
-  // m_streams.clear();
-  // m_parsers.clear();
+  std::map<int, DemuxStream*>::iterator it;
+  for(it = m_streams.begin(); it != m_streams.end(); ++it)
+    delete it->second;
+  m_streams.clear();
+  m_parsers.clear();
 }
 
 bool FFmpegStream::Aborted()
