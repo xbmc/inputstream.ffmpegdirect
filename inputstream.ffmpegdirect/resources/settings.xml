@@ -41,13 +41,13 @@
 
     <!-- HTTP Proxy -->
     <category id="httpProxy" label="30000" help="30600">
-      <group id="1" label="30000">
-        <setting id="useHttpProxy" type="boolean" label="30001" help="30601">
+      <group id="1" label="30001">
+        <setting id="useHttpProxy" type="boolean" label="30002" help="30601">
           <level>1</level>
           <default>false</default>
           <control type="toggle" />
         </setting>
-        <setting id="httpProxyHost" type="string" parent="useHttpProxy" label="30002" help="30602">
+        <setting id="httpProxyHost" type="string" parent="useHttpProxy" label="30003" help="30602">
           <level>1</level>
           <default></default>
           <constraints>
@@ -58,7 +58,7 @@
           </dependencies>
           <control type="edit" format="string" />
         </setting>
-        <setting id="httpProxyPort" type="integer" parent="useHttpProxy" label="30003" help="30603">
+        <setting id="httpProxyPort" type="integer" parent="useHttpProxy" label="30004" help="30603">
           <level>1</level>
           <default>8080</default>
           <constraints>
@@ -71,7 +71,7 @@
           </dependencies>
           <control type="edit" format="integer" />
         </setting>
-        <setting id="httpProxyUser" type="string" parent="useHttpProxy" label="30004" help="30604">
+        <setting id="httpProxyUser" type="string" parent="useHttpProxy" label="30005" help="30604">
           <level>1</level>
           <default></default>
           <constraints>
@@ -82,7 +82,7 @@
           </dependencies>
           <control type="edit" format="string" />
         </setting>
-        <setting id="httpProxyPassword" type="string" parent="useHttpProxy" label="30005" help="30605">
+        <setting id="httpProxyPassword" type="string" parent="useHttpProxy" label="30006" help="30605">
           <level>1</level>
           <default></default>
           <constraints>
@@ -96,6 +96,20 @@
           </control>
         </setting>
       </group>
+      <group id="2" label="30007">
+        <setting id="streamBandwidth" type="integer" label="30008" help="30606">
+          <level>1</level>
+          <default>0</default>
+          <constraints>
+            <minimum label="351">0</minimum>
+            <step>512</step>
+            <maximum>102400</maximum>
+          </constraints>
+          <control type="list" format="string">
+            <formatlabel>14048</formatlabel> <!-- kbps-->
+          </control>
+        </setting>
+      </group>
     </category>
 
     <!-- Advanved -->
@@ -104,6 +118,16 @@
         <setting id="allowFFmpegLogging" type="boolean" label="30042" help="30641">
           <level>2</level>
           <default>false</default>
+          <control type="toggle" />
+        </setting>
+        <setting id="probeForFps" type="boolean" label="30043" help="30642">
+          <level>2</level>
+          <default>true</default>
+          <control type="toggle" />
+        </setting>
+        <setting id="enableTeletext" type="boolean" label="30044" help="30643">
+          <level>2</level>
+          <default>true</default>
           <control type="toggle" />
         </setting>
       </group>
