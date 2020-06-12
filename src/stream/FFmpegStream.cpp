@@ -2027,11 +2027,8 @@ std::string FFmpegStream::GetStreamCodecName(int iStreamId)
 
 AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
 {
-  // const std::shared_ptr<CDVDInputStreamFFmpeg> input =
-  //   std::dynamic_pointer_cast<CDVDInputStreamFFmpeg>(m_pInput);
-
   CURL url;
-  url.Parse(m_streamUrl);//m_pInput->GetURL();
+  url.Parse(m_streamUrl);
   AVDictionary* options = nullptr;
 
   // For a local file we need the following protocol whitelist
