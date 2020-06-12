@@ -8,13 +8,6 @@
 
 #include "FFmpegStream.h"
 
-// #include <iostream>
-// #include <map>
-// #include <string.h>
-// #include <sstream>
-// #include <librtmp/log.h>
-// #include <librtmp/rtmp.h>
-
 #include "threads/SingleLock.h"
 #include "url/URL.h"
 #include "FFmpegLog.h"
@@ -23,8 +16,6 @@
 
 #include "IManageDemuxPacket.h"
 
-
-// #include <kodi/addon-instance/Inputstream.h>
 
 #include <chrono>
 #include <ctime>
@@ -43,8 +34,6 @@ extern "C" {
 #include <libavutil/dict.h>
 #include <libavutil/opt.h>
 }
-
-//#include "platform/posix/XTimeUtils.h"
 
 #include <kodi/Filesystem.h>
 #include <kodi/Network.h>
@@ -119,11 +108,9 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMod
     m_openMode(openMode),
     m_curlInput(curlInput),
     m_httpProxy(httpProxy),
-//    m_session(nullptr),
     m_paused(false)
 {
   m_pFormatContext = NULL;
-  //m_pInput = NULL;
   m_ioContext = NULL;
   m_currentPts = DVD_NOPTS_VALUE;
   m_bMatroska = false;
@@ -169,12 +156,6 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
 
 void FFmpegStream::Close()
 {
-  // if (m_session)
-  // {
-  //   // RTMP_Close(m_session);
-  //   // RTMP_Free(m_session);
-  // }
-  // m_session = nullptr;
   m_paused = false;
   m_opened = false;
 
@@ -203,7 +184,6 @@ INPUTSTREAM_IDS FFmpegStream::GetStreamIds()
 
   if(m_opened)
   {
-    //int chapter = m_session->GetChapter();
     iids.m_streamCount = 0;
 
     for (const auto& streamPair : m_streams)
@@ -416,25 +396,21 @@ DemuxPacket* FFmpegStream::DemuxRead()
 
         StoreSideData(pPacket, &m_pkt.pkt);
 
-        // TODO check this
-        //CDVDInputStream::IDisplayTime* inputStream = m_pInput->GetIDisplayTime();
-        // if (inputStream)
-        // {
-          int dispTime = GetTime();
-          if (m_displayTime != dispTime)
+        // TODO check this is ok to do.
+        int dispTime = GetTime();
+        if (m_displayTime != dispTime)
+        {
+          m_displayTime = dispTime;
+          if (pPacket->dts != DVD_NOPTS_VALUE)
           {
-            m_displayTime = dispTime;
-            if (pPacket->dts != DVD_NOPTS_VALUE)
-            {
-              m_dtsAtDisplayTime = pPacket->dts;
-            }
+            m_dtsAtDisplayTime = pPacket->dts;
           }
-          if (m_dtsAtDisplayTime != DVD_NOPTS_VALUE && pPacket->dts != DVD_NOPTS_VALUE)
-          {
-            pPacket->dispTime = m_displayTime;
-            pPacket->dispTime += DVD_TIME_TO_MSEC(pPacket->dts - m_dtsAtDisplayTime);
-          }
-        // }
+        }
+        if (m_dtsAtDisplayTime != DVD_NOPTS_VALUE && pPacket->dts != DVD_NOPTS_VALUE)
+        {
+          pPacket->dispTime = m_displayTime;
+          pPacket->dispTime += DVD_TIME_TO_MSEC(pPacket->dts - m_dtsAtDisplayTime);
+        }
 
         // used to guess streamlength
         if (pPacket->dts != DVD_NOPTS_VALUE && (pPacket->dts > m_currentPts || m_currentPts == DVD_NOPTS_VALUE))
@@ -516,12 +492,10 @@ void FFmpegStream::DemuxSetSpeed(int speed)
 
   if (m_speed != DVD_PLAYSPEED_PAUSE && speed == DVD_PLAYSPEED_PAUSE)
   {
-    //m_pInput->Pause(m_currentPts);
     av_read_pause(m_pFormatContext);
   }
   else if (m_speed == DVD_PLAYSPEED_PAUSE && speed != DVD_PLAYSPEED_PAUSE)
   {
-    //m_pInput->Pause(m_currentPts);
     av_read_play(m_pFormatContext);
   }
   m_speed = speed;
@@ -646,9 +620,6 @@ void FFmpegStream::Dispose()
   m_speed = DVD_PLAYSPEED_NORMAL;
 
   DisposeStreams();
-
-  // TODO
-  //m_pInput = NULL;
 }
 
 void FFmpegStream::DisposeStreams()
@@ -664,10 +635,6 @@ bool FFmpegStream::Aborted()
 {
   if (m_timeout.IsTimePast())
     return true;
-
-  // std::shared_ptr<CDVDInputStreamFFmpeg> input = std::dynamic_pointer_cast<CDVDInputStreamFFmpeg>(m_pInput);
-  // if (input && input->Aborted())
-  //   return true;
 
   return false;
 }
@@ -1506,7 +1473,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
         else
           ret = 0;
       }
-      else if (Aborted()) // TODO Was pInput->IsEOF();
+      else if (Aborted()) // TODO: Was pInput->IsEOF();
         ret = 0;
     }
 
