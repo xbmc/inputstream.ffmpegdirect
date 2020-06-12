@@ -700,7 +700,7 @@ bool FFmpegStream::Open(bool fileinfo)
     av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
 
   bool skipCreateStreams = false;
-  bool isBluray = false;//pInput->IsStreamType(DVDSTREAM_TYPE_BLURAY);
+  bool isBluray = false;
   if (iformat && (strcmp(iformat->name, "mpegts") == 0) && !fileinfo && !isBluray)
   {
     av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
@@ -727,10 +727,6 @@ bool FFmpegStream::Open(bool fileinfo)
 
   if (m_streaminfo)
   {
-    /* to speed up dvd switches, only analyse very short */
-    // if (m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD))
-    //   av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
-
     Log(LOGLEVEL_DEBUG, "%s - avformat_find_stream_info starting", __FUNCTION__);
     int iErr = avformat_find_stream_info(m_pFormatContext, NULL);
     if (iErr < 0)
@@ -1830,15 +1826,6 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
           st->iFpsScale = 0;
         }
 
-        // if (pStream->codec_info_nb_frames > 0 &&
-        //     pStream->codec_info_nb_frames <= 2 &&
-        //     m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD))
-        // {
-        //   Log(LOGLEVEL_DEBUG, "%s - fps may be unreliable since ffmpeg decoded only %d frame(s)", __FUNCTION__, pStream->codec_info_nb_frames);
-        //   st->iFpsRate  = 0;
-        //   st->iFpsScale = 0;
-        // }
-
         st->iWidth = pStream->codecpar->width;
         st->iHeight = pStream->codecpar->height;
         st->fAspect = SelectAspect(pStream, st->bForcedAspect);
@@ -1860,21 +1847,6 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
         if (!stereoMode.empty())
           st->stereo_mode = stereoMode;
 
-
-        // if (m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD))
-        // {
-        //   if (pStream->codecpar->codec_id == AV_CODEC_ID_PROBE)
-        //   {
-        //     // fix MPEG-1/MPEG-2 video stream probe returning AV_CODEC_ID_PROBE for still frames.
-        //     // ffmpeg issue 1871, regression from ffmpeg r22831.
-        //     if ((pStream->id & 0xF0) == 0xE0)
-        //     {
-        //       pStream->codecpar->codec_id = AV_CODEC_ID_MPEG2VIDEO;
-        //       pStream->codecpar->codec_tag = MKTAG('M','P','2','V');
-        //       CLog::Log(LOGLEVEL_ERROR, "%s - AV_CODEC_ID_PROBE detected, forcing AV_CODEC_ID_MPEG2VIDEO", __FUNCTION__);
-        //     }
-        //   }
-        // }
         if (av_dict_get(pStream->metadata, "title", NULL, 0))
           st->m_description = av_dict_get(pStream->metadata, "title", NULL, 0)->value;
 
@@ -1993,66 +1965,6 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
       stream->ExtraData = new uint8_t[pStream->codecpar->extradata_size];
       memcpy(stream->ExtraData, pStream->codecpar->extradata, pStream->codecpar->extradata_size);
     }
-
-// #ifdef HAVE_LIBBLURAY
-//     if (m_pInput->IsStreamType(DVDSTREAM_TYPE_BLURAY))
-//     {
-//       // UHD BD have a secondary video stream called by Dolby as enhancement layer.
-//       // This is not used by streaming services and devices (ATV, Nvidia Shield, XONE).
-//       if (pStream->id == 0x1015)
-//       {
-//         CLog::Log(LOGDEBUG, "CDVDDemuxFFmpeg::AddStream - discarding Dolby Vision stream");
-//         pStream->discard = AVDISCARD_ALL;
-//         delete stream;
-//         return nullptr;
-//       }
-//       stream->dvdNavId = pStream->id;
-
-//       auto it = std::find_if(m_streams.begin(), m_streams.end(),
-//         [&stream](const std::pair<int, DemuxStream*>& v)
-//         {return (v.second->dvdNavId == stream->dvdNavId) && (v.second->type == stream->type); });
-
-//       if (it != m_streams.end())
-//       {
-//         if (stream->codec == AV_CODEC_ID_AC3 && it->second->codec == AV_CODEC_ID_TRUEHD)
-//           CLog::Log(LOGLEVEL_DEBUG, "CDVDDemuxFFmpeg::AddStream - discarding duplicated bluray stream (truehd ac3 core)");
-//         else
-//           CLog::Log(LOGLEVEL_DEBUG, "CDVDDemuxFFmpeg::AddStream - discarding duplicate bluray stream %s", stream->codecName);
-
-//         pStream->discard = AVDISCARD_ALL;
-//         delete stream;
-//         return nullptr;
-//       }
-//       std::static_pointer_cast<CDVDInputStreamBluray>(m_pInput)->GetStreamInfo(pStream->id, stream->language);
-//     }
-// #endif
-//     if (m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD))
-//     {
-//       // this stuff is really only valid for dvd's.
-//       // this is so that the physicalid matches the
-//       // id's reported from libdvdnav
-//       switch (stream->codec)
-//       {
-//         case AV_CODEC_ID_AC3:
-//           stream->dvdNavId = pStream->id - 128;
-//           break;
-//         case AV_CODEC_ID_DTS:
-//           stream->dvdNavId = pStream->id - 136;
-//           break;
-//         case AV_CODEC_ID_MP2:
-//           stream->dvdNavId = pStream->id - 448;
-//           break;
-//         case AV_CODEC_ID_PCM_S16BE:
-//           stream->dvdNavId = pStream->id - 160;
-//           break;
-//         case AV_CODEC_ID_DVD_SUBTITLE:
-//           stream->dvdNavId = pStream->id - 0x20;
-//           break;
-//         default:
-//           stream->dvdNavId = pStream->id & 0x1f;
-//           break;
-//       }
-//     }
 
     stream->uniqueId = pStream->index;
     stream->demuxerId = m_demuxerId;
