@@ -7,7 +7,7 @@
 
 This is a [Kodi](https://kodi.tv) input stream addon for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH are supported as well as many others. Note that the only DASH streams supported are those without DRM.
 
-The addon also has support for Archive/Catchup services where there is a replay window (usually in days) and can timeshift across that span.
+The addon also has support for Archive/Catchup services where there is a replay window (usually in days) and can timeshift across that span. In addition the addon can also provide timeshift to live streams where rewind/pause and fast-forward woud not have previously been possible.
 
 ## Build instructions
 
