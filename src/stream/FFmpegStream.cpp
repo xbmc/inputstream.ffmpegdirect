@@ -2249,62 +2249,6 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
     av_dict_set(&options, "http_proxy", urlStream.str().c_str(), 0);
   }
 
-  //   // rtmp options
-  //   if (url.IsProtocol("rtmp")  || url.IsProtocol("rtmpt")  ||
-  //       url.IsProtocol("rtmpe") || url.IsProtocol("rtmpte") ||
-  //       url.IsProtocol("rtmps"))
-  //   {
-  //     static const std::map<std::string,std::string> optionmap =
-  //     {{{"SWFPlayer", "rtmp_swfurl"},
-  //       {"swfplayer", "rtmp_swfurl"},
-  //       {"PageURL", "rtmp_pageurl"},
-  //       {"pageurl", "rtmp_pageurl"},
-  //       {"PlayPath", "rtmp_playpath"},
-  //       {"playpath", "rtmp_playpath"},
-  //       {"TcUrl",    "rtmp_tcurl"},
-  //       {"tcurl",    "rtmp_tcurl"},
-  //       {"IsLive",   "rtmp_live"},
-  //       {"islive",   "rtmp_live"},
-  //       {"swfurl",   "rtmp_swfurl"},
-  //       {"swfvfy",   "rtmp_swfverify"},
-  //     }};
-
-  //     for (const auto& it : optionmap)
-  //     {
-  //       if (input->GetItem().HasProperty(it.first))
-  //       {
-  //         av_dict_set(&options, it.second.c_str(),
-  //                     input->GetItem().GetProperty(it.first).asString().c_str(),0);
-  //       }
-  //     }
-
-  //     CURL tmpUrl = url;
-  //     std::vector<std::string> opts = StringUtils::Split(tmpUrl.Get(), " ");
-  //     if (opts.size() > 1) // inline rtmp options
-  //     {
-  //       std::string swfurl;
-  //       bool swfvfy=false;
-  //       for (size_t i = 1; i < opts.size(); ++i)
-  //       {
-  //         std::vector<std::string> value = StringUtils::Split(opts[i], "=", 2);
-  //         StringUtils::ToLower(value[0]);
-  //         auto it = optionmap.find(value[0]);
-  //         if (it != optionmap.end())
-  //         {
-  //           if (value[0] == "swfurl" || value[0] == "SWFPlayer")
-  //             swfurl = value[1];
-  //           if (value[0] == "swfvfy" && (value[1] == "true" || value[1] == "1"))
-  //             swfvfy = true;
-  //           else
-  //             av_dict_set(&options, it->second.c_str(), value[1].c_str(), 0);
-  //         }
-  //         if (swfvfy)
-  //           av_dict_set(&options, "rtmp_swfverify", swfurl.c_str(), 0);
-  //       }
-  //       tmpUrl = CURL(opts.front());
-  //     }
-  //   }
-
   return options;
 }
 
