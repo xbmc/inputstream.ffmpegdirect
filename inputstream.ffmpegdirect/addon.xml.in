@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.14.0"
+  version="1.14.1"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -24,6 +24,9 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.14.1
+- Update: Kodi API Bump
+
 v1.14.0
 - Added: Add HLS bandwidth limit and teletext/fps advanced settings
 - Fixed: Add missing ATTRIBUTE_HIDDEN qualifer to InputSteamFFmpegDirect class

@@ -1,3 +1,6 @@
+v1.14.1
+- Update: Kodi API Bump
+
 v1.14.0
 - Added: Add HLS bandwidth limit and teletext/fps advanced settings
 - Fixed: Add missing ATTRIBUTE_HIDDEN qualifer to InputSteamFFmpegDirect class
