@@ -13,10 +13,5 @@
 	dh $@ --parallel
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 -DUSE_LTO=1
+	dh_auto_configure -- -DBUILD_SHARED_LIBS=1 -DUSE_LTO=1
 
-override_dh_strip:
-	dh_strip -pkodi-inputstream-ffmpegdirect --dbg-package=kodi-inputstream-ffmpegdirect-dbg
-
-override_dh_installdocs:
-	dh_installdocs --link-doc=kodi-inputstream-ffmpegdirect
