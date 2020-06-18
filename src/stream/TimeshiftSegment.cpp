@@ -411,7 +411,7 @@ bool TimeshiftSegment::Seek(double timeMs)
   return false;
 }
 
-/* For refernce */
+/* For reference */
 
 // typedef struct DemuxPacket
 // {
