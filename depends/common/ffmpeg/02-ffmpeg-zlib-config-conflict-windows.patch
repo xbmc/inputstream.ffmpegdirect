@@ -1,13 +1,13 @@
-diff -ur ffmpeg/configure ffmpeg-patch/configure
---- ffmpeg/configure	2020-01-31 13:06:00.000000000 +0000
-+++ ffmpeg-patch/configure	2020-01-31 13:06:40.000000000 +0000
-@@ -7439,6 +7439,9 @@
+diff -ur FFmpeg-n4.3-01/configure FFmpeg-n4.3-02/configure
+--- FFmpeg-n4.3-01/configure	2020-06-18 09:00:30.000000000 +0100
++++ FFmpeg-n4.3-02/configure	2020-06-18 09:05:33.000000000 +0100
+@@ -7555,6 +7555,9 @@
                                       $CONFIG_EXTRA      \
                                       $ALL_COMPONENTS    \
- 
+
 +echo "#if defined(HAVE_UNISTD_H) && HAVE_UNISTD_H == 0" >> $TMPH
 +echo "#undef HAVE_UNISTD_H" >> $TMPH
 +echo "#endif" >> $TMPH
  echo "#endif /* FFMPEG_CONFIG_H */" >> $TMPH
  echo "endif # FFMPEG_CONFIG_MAK" >> ffbuild/config.mak
- 
+

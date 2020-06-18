@@ -104,7 +104,10 @@ if(WIN32)
                       Winmm.lib
                       WS2_32.lib
                       Bcrypt.lib
-                      Secur32.lib)
+                      Secur32.lib
+                      Mfplat.lib
+                      Mfuuid.lib
+                      Strmiids.lib)
 elseif(CORE_SYSTEM_NAME STREQUAL osx OR
        CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   find_library(AUDIOTOOLBOX AudioToolbox)
