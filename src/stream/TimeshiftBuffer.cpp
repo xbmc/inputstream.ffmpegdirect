@@ -111,7 +111,6 @@ void TimeshiftBuffer::AddPacket(DemuxPacket* packet)
 
       if (m_segmentIndexFileHandle.IsOpen())
       {
-        //std::string line = std::to_string(m_previousWriteSegment->GetSegmentId()) + "," + std::to_string(m_lastSegmentSecondsSinceStart) + "," + std::to_string(secondsSinceStart) + "\n";
         std::string line = StringUtils::Format("%9d,%9d,%9d\n", m_previousWriteSegment->GetSegmentId(), m_lastSegmentSecondsSinceStart, secondsSinceStart); // 30 characters per line
         m_segmentIndexFileHandle.Write(line.c_str(), line.length());
       }

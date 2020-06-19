@@ -1,3 +1,6 @@
+v1.14.3
+- Update: Use FFmpeg 4.3
+
 v1.14.2
 - Fixed: Debian packaging
 
