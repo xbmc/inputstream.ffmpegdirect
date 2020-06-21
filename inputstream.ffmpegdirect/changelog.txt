@@ -1,3 +1,6 @@
+v1.14.4
+- Fixed: Use kodi's own FFmpeg for ubuntu packaging
+
 v1.14.3
 - Update: Use FFmpeg 4.3
 
