@@ -9,6 +9,14 @@ This is a [Kodi](https://kodi.tv) input stream addon for streams that can be ope
 
 The addon also has support for Archive/Catchup services where there is a replay window (usually in days) and can timeshift across that span. In addition the addon can also provide timeshift to live streams where rewind/pause and fast-forward woud not have previously been possible.
 
+## Platform specific differences
+
+There are a few minor differences between the implementations. If using the kodi Ubuntu PPA the underlying ffmpeg is the same as Kodi's, which means it won't support teletext or Dash without DRM but it will currently have AV1 support as Kodi does. For users who need it with teletext or Dash without DRM support please just build the addon using the instructions below.
+
+On windows there is no teletext support unfortuntely as libzvbi is not currently building. If anyone would like to figure this out I'm sure the users would appreciate it.
+
+Finally, outside of the Ubuntu PPA there is currently no support for AV1. This is simply because the python3/ninja/meson build system required to build `libdav1d` would have to be built from scratch specifically for the addon. I'm sure support will get added eventually when someone has the time to do it.
+
 ## Build instructions
 
 ### Linux
