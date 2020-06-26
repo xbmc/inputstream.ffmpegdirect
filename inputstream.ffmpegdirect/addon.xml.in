@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.14.4"
+  version="1.14.5"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -24,6 +24,10 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.14.5
+- Fixed: Fix lintian spellings and mimetype log statement
+- Update: Readme
+
 v1.14.4
 - Fixed: Use kodi's own FFmpeg for ubuntu packaging
 
