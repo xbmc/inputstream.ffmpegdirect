@@ -45,7 +45,7 @@ TimeshiftBuffer::~TimeshiftBuffer()
     for (int segmentId = m_earliestOnDiskSegmentId; segmentId <= m_writeSegment->GetSegmentId(); segmentId++)
     {
       std::string segmentFilename = StringUtils::Format("%s-%08d.seg", m_streamId.c_str(), segmentId);
-      Log(LOGLEVEL_DEBUG, "%s - Deleteing on disk segment - Segment ID: %d, Segment Filename: %s", __FUNCTION__, segmentId, segmentFilename.c_str());
+      Log(LOGLEVEL_DEBUG, "%s - Deleting on disk segment - Segment ID: %d, Segment Filename: %s", __FUNCTION__, segmentId, segmentFilename.c_str());
 
       kodi::vfs::DeleteFile(m_timeshiftBufferPath + "/" + segmentFilename);
     }

@@ -403,7 +403,7 @@ bool TimeshiftSegment::Seek(double timeMs)
     int timeIndexStart = it->first;
     auto it2 = m_packetTimeIndexMap.rbegin();
     int timeIndexEnd = it2->first;
-    Log(LOGLEVEL_INFO, "%s - Seek segment packet - segment ID: %d, packet index: %d, seek seconds: %d, segmetn start seconds: %d, segment end seconds: %d", __FUNCTION__, m_segmentId, m_readPacketIndex, seekSeconds, timeIndexStart, timeIndexEnd);
+    Log(LOGLEVEL_INFO, "%s - Seek segment packet - segment ID: %d, packet index: %d, seek seconds: %d, segment start seconds: %d, segment end seconds: %d", __FUNCTION__, m_segmentId, m_readPacketIndex, seekSeconds, timeIndexStart, timeIndexEnd);
 
     return true;
   }

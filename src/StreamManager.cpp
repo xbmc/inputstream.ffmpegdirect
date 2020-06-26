@@ -164,7 +164,7 @@ bool InputStreamFFmpegDirect::Open(INPUTSTREAM& props)
   m_streamUrl = props.m_strURL;
   m_mimeType = props.m_mimeType;
 
-  Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: mimetype = %s", m_mimeType.c_str());
+  Log(LOGLEVEL_INFO, "Stream mimetype: %s", m_mimeType.c_str());
 
   const std::string& manifestType = properties.m_manifestType;
   if (properties.m_openMode == OpenMode::DEFAULT)
