@@ -591,7 +591,7 @@ bool FFmpegStream::IsRealTimeStream()
   // If we are told the stream is real time then use that, but double check if it's live
   // by checking duration too
 
-  return m_isRealTimeStream || m_pFormatContext->duration <= 0;
+  return m_isRealTimeStream && m_pFormatContext->duration <= 0;
 }
 
 void FFmpegStream::Dispose()
