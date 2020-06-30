@@ -28,7 +28,7 @@ class TimeshiftStream
 {
 public:
   TimeshiftStream(IManageDemuxPacket* demuxPacketManager,
-                  const Properties props,
+                  const Properties& props,
                   const HttpProxy& httpProxy);
   ~TimeshiftStream();
 

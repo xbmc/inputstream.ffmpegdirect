@@ -60,8 +60,8 @@ class FFmpegStream
   : public BaseStream
 {
 public:
-  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, const HttpProxy& httpProxy);
-  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, std::shared_ptr<CurlInput> curlInput, const HttpProxy& httpProxy);
+  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Properties& props, const HttpProxy& httpProxy);
+  FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Properties& props, std::shared_ptr<CurlInput> curlInput, const HttpProxy& httpProxy);
   ~FFmpegStream();
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
@@ -116,6 +116,7 @@ protected:
   bool m_demuxResetOpenSuccess = false;
   std::string m_streamUrl;
   int m_lastPacketResult;
+  bool m_isRealTimeStream;
 
 private:
   bool Open(bool fileinfo);
@@ -191,7 +192,7 @@ private:
 
   std::string m_mimeType;
   std::string m_programProperty;
-  bool m_isRealTimeStream;
+  std::string m_manifestType;
   bool m_opened;
 
   HttpProxy m_httpProxy;

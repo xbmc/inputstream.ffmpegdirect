@@ -24,9 +24,9 @@
 using namespace ffmpegdirect;
 
 TimeshiftStream::TimeshiftStream(IManageDemuxPacket* demuxPacketManager,
-                                 const Properties props,
+                                 const Properties& props,
                                  const HttpProxy& httpProxy)
-  : FFmpegStream(demuxPacketManager, props.m_openMode, httpProxy)
+  : FFmpegStream(demuxPacketManager, props, httpProxy)
 {
   std::random_device randomDevice; //Will be used to obtain a seed for the random number engine
   m_randomGenerator = std::mt19937(randomDevice()); //Standard mersenne_twister_engine seeded with randomDevice()

@@ -45,9 +45,9 @@ using namespace ffmpegdirect;
 ***********************************************************/
 
 FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
-                                         const Properties props,
+                                         const Properties& props,
                                          const HttpProxy& httpProxy)
-  : FFmpegStream(demuxPacketManager, props.m_openMode, std::make_shared<CurlCatchupInput>(), httpProxy),
+  : FFmpegStream(demuxPacketManager, props, std::make_shared<CurlCatchupInput>(), httpProxy),
     m_isOpeningStream(false), m_seekOffset(0),
     m_defaultUrl(props.m_defaultUrl), m_playbackAsLive(props.m_playbackAsLive),
     m_programmeStartTime(props.m_programmeStartTime), m_programmeEndTime(props.m_programmeEndTime),
@@ -368,6 +368,14 @@ void FFmpegCatchupStream::UpdateCurrentPTS()
   FFmpegStream::UpdateCurrentPTS();
   if (m_currentPts != DVD_NOPTS_VALUE)
     m_currentPts += m_seekOffset;
+}
+
+bool FFmpegCatchupStream::IsRealTimeStream()
+{
+  if (kodi::GetSettingBoolean("forceRealtimeOffCatchup"))
+    return false;
+
+  return m_isRealTimeStream && m_pFormatContext->duration <= 0;
 }
 
 namespace
