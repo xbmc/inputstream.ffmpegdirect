@@ -137,9 +137,6 @@ bool TimeshiftStream::IsRealTimeStream()
 
 bool TimeshiftStream::DemuxSeekTime(double timeMs, bool backwards, double& startpts)
 {
-  if (timeMs < 0)
-    return false;
-
   return m_timeshiftBuffer.Seek(timeMs);
 }
 

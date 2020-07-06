@@ -210,6 +210,9 @@ bool TimeshiftBuffer::Seek(double timeMs)
   int seekSeconds = timeMs / 1000;
   std::lock_guard<std::mutex> lock(m_mutex);
 
+  if (seekSeconds < 0)
+      seekSeconds = m_minOnDiskSeekTimeIndex;
+
   if (seekSeconds >= m_minInMemorySeekTimeIndex)
   {
     auto seekSegmentIndex = m_segmentTimeIndexMap.upper_bound(seekSeconds);
