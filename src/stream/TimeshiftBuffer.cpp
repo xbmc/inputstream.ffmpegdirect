@@ -50,6 +50,8 @@ TimeshiftBuffer::~TimeshiftBuffer()
 {
   if (!m_streamId.empty())
   {
+    //We need to make sure any filehandle is closed as you can't delete an open file on windows
+    m_writeSegment->MarkAsComplete();
     for (int segmentId = m_earliestOnDiskSegmentId; segmentId <= m_writeSegment->GetSegmentId(); segmentId++)
     {
       std::string segmentFilename = StringUtils::Format("%s-%08d.seg", m_streamId.c_str(), segmentId);
