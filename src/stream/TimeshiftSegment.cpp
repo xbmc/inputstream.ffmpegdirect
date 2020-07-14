@@ -208,7 +208,7 @@ void TimeshiftSegment::LoadSegment()
 
   if (!m_loaded && m_fileHandle.OpenFile(m_timeshiftSegmentFilePath, ADDON_READ_NO_CACHE))
   {
-    int32_t packetCount;
+    int32_t packetCount = 0;
     m_fileHandle.Read(&packetCount, sizeof(packetCount));
 
     for (int i = 0; i < packetCount; i++)
@@ -376,7 +376,7 @@ DemuxPacket* TimeshiftSegment::ReadPacket()
 
   std::lock_guard<std::mutex> lock(m_mutex);
 
-  if (m_readPacketIndex != m_packetBuffer.size())
+  if (m_packetBuffer.size() != 0 && m_readPacketIndex != m_packetBuffer.size())
   {
     std::shared_ptr<DemuxPacket>& nextPacket = m_packetBuffer[m_readPacketIndex++];
 
