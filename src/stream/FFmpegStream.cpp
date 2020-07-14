@@ -126,6 +126,7 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Propert
   m_dtsAtDisplayTime = DVD_NOPTS_VALUE;
 
   FFmpegLog::SetLogLevel(AV_LOG_INFO);
+  FFmpegLog::SetEnabled(kodi::GetSettingBoolean("allowFFmpegLogging"));
   av_log_set_callback(ff_avutil_log);
 }
 
@@ -133,7 +134,6 @@ FFmpegStream::~FFmpegStream()
 {
   Dispose();
   ff_flush_avutil_log_buffers();
-  FFmpegLog::ClearLogLevel();
 }
 
 bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty)
@@ -151,6 +151,12 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
                                                ADDON_READ_CHUNKED);
 
   m_opened = Open(false);
+  if (m_opened)
+  {
+    FFmpegLog::SetEnabled(true);
+    av_dump_format(m_pFormatContext, 0, streamUrl.c_str(), 0);
+  }
+  FFmpegLog::SetEnabled(kodi::GetSettingBoolean("allowFFmpegLogging"));
 
   return m_opened;
 }
