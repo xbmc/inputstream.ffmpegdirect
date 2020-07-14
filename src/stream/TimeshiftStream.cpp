@@ -42,9 +42,10 @@ bool TimeshiftStream::Open(const std::string& streamUrl, const std::string& mime
 {
   if (FFmpegStream::Open(streamUrl, mimeType, isRealTimeStream, programProperty))
   {
-    Start();
-
-    return true;
+    if (Start())
+      return true;
+    else
+      Close();
   }
 
   return false;
@@ -63,12 +64,17 @@ bool TimeshiftStream::Start()
   if (m_running)
     return true;
 
-  Log(LOGLEVEL_DEBUG, "%s - Timeshift: started", __FUNCTION__);
-  m_timeshiftBuffer.Start(GenerateStreamId(m_streamUrl));
-  m_running = true;
-  m_inputThread = std::thread([&] { DoReadWrite(); });
+  if (m_timeshiftBuffer.Start(GenerateStreamId(m_streamUrl)))
+  {
+    Log(LOGLEVEL_DEBUG, "%s - Timeshift: started", __FUNCTION__);
+    m_running = true;
+    m_inputThread = std::thread([&] { DoReadWrite(); });
 
-  return true;
+    return true;
+  }
+
+  Log(LOGLEVEL_DEBUG, "%s - Timeshift: failed to start", __FUNCTION__);
+  return false;
 }
 
 void TimeshiftStream::Close()

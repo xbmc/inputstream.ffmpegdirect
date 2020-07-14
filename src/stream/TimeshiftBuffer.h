@@ -46,7 +46,7 @@ public:
   bool Seek(double timeMs);
   void SetPaused(bool paused);
 
-  void Start(const std::string& streamId);
+  bool Start(const std::string& streamId);
 
   time_t GetStartTimeSecs() { return m_startTime; }
 

@@ -65,7 +65,7 @@ TimeshiftBuffer::~TimeshiftBuffer()
   kodi::vfs::DeleteFile(m_segmentIndexFilePath);
 }
 
-void TimeshiftBuffer::Start(const std::string& streamId)
+bool TimeshiftBuffer::Start(const std::string& streamId)
 {
   m_segmentIndexFilePath = m_timeshiftBufferPath + "/" + streamId + ".idx";
   // We need to pass the overwrite parameter as true as otherwise
@@ -86,6 +86,8 @@ void TimeshiftBuffer::Start(const std::string& streamId)
   m_currentSegmentIndex++;
   m_segmentTotalCount++;
   m_readSegment = m_writeSegment;
+
+  return true;
 }
 
 void TimeshiftBuffer::AddPacket(DemuxPacket* packet)
