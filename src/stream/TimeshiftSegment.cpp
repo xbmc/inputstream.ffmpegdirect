@@ -8,6 +8,7 @@
 
 #include "TimeshiftSegment.h"
 
+#include "../utils/DiskUtils.h"
 #include "../utils/Log.h"
 
 extern "C"
@@ -42,7 +43,11 @@ TimeshiftSegment::TimeshiftSegment(IManageDemuxPacket* demuxPacketManager, const
     }
     else
     {
-      Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s", __FUNCTION__, m_timeshiftSegmentFilePath.c_str());
+      uint64_t freeSpaceMB = 0;
+      if (DiskUtils::GetFreeDiskSpaceMB(timeshiftBufferPath, freeSpaceMB))
+        Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s, disk free space (MB): %lld", __FUNCTION__, m_timeshiftSegmentFilePath.c_str(), static_cast<long long>(freeSpaceMB));
+      else
+        Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s, not possible to calculate free space", __FUNCTION__, m_timeshiftSegmentFilePath.c_str());
       m_persistSegments = false;
     }
   }
