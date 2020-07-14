@@ -68,7 +68,9 @@ TimeshiftBuffer::~TimeshiftBuffer()
 void TimeshiftBuffer::Start(const std::string& streamId)
 {
   m_segmentIndexFilePath = m_timeshiftBufferPath + "/" + streamId + ".idx";
-  if (!m_segmentIndexFileHandle.OpenFileForWrite(m_segmentIndexFilePath))
+  // We need to pass the overwrite parameter as true as otherwise
+  // opening on SMB for write on android will fail.
+  if (!m_segmentIndexFileHandle.OpenFileForWrite(m_segmentIndexFilePath, true))
   {
     Log(LOGLEVEL_ERROR, "%s - Failed to open segment index file on disk: %s", __FUNCTION__, m_segmentIndexFilePath.c_str());
   }

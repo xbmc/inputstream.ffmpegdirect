@@ -33,7 +33,9 @@ TimeshiftSegment::TimeshiftSegment(IManageDemuxPacket* demuxPacketManager, const
   // to load an out of memory segment for a seek operation
   if (!kodi::vfs::FileExists(m_timeshiftSegmentFilePath))
   {
-    if (m_fileHandle.OpenFileForWrite(m_timeshiftSegmentFilePath))
+    // We need to pass the overwrite parameter as true as otherwise
+    // opening on SMB for write on android will fail.
+    if (m_fileHandle.OpenFileForWrite(m_timeshiftSegmentFilePath, true))
     {
       int32_t packetCountPlaceholder = 0;
       m_fileHandle.Write(&packetCountPlaceholder, sizeof(packetCountPlaceholder));
