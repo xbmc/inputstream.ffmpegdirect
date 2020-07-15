@@ -115,7 +115,17 @@ msgctxt "#30044"
 msgid "Enable teletext"
 msgstr ""
 
-#empty strings from id 30045 to 30599
+#. help: Advanced - useFastOpemForManifestStreams
+msgctxt "#30045"
+msgid "Use fast open for streams using a manifest file"
+msgstr ""
+
+#. help: Advanced - forceRealtimeOffCatchup
+msgctxt "#30046"
+msgid "For catchup streams report stream is not realtime"
+msgstr ""
+
+#empty strings from id 30047 to 30599
 
 #. ############
 #. help info #
@@ -174,7 +184,7 @@ msgstr ""
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
-msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Reagrdless of this setting the buffer will also grow forever if paused."
+msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
 msgstr ""
 
 #. help: Timeshift - timeshiftOnDiskLength
@@ -188,20 +198,30 @@ msgstr ""
 
 #. help-category: advanced
 msgctxt "#30640"
-msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Reagrdless of this setting the buffer will also grow forever if paused."
+msgid "Advanced settings"
 msgstr ""
 
-#. help: Timeshift - allowFFmpegLogging
+#. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
 msgstr ""
 
-#. help: Timeshift - probeForFps
+#. help: Advanced - probeForFps
 msgctxt "#30642"
 msgid "Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used."
 msgstr ""
 
-#. help: Timeshift - enableTeletext
+#. help: Advanced - enableTeletext
 msgctxt "#30643"
 msgid "Allow teletext. Default enabled."
+msgstr ""
+
+#. help: Advanced - useFastOpenForManifestStreams
+msgctxt "#30644"
+msgid "Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled."
+msgstr ""
+
+#. help: Advanced - forceRealtimeOffCatchup
+msgctxt "#30645"
+msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a `#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false` to the M3U entry in question. This setting should not be left enabled for all streams."
 msgstr ""

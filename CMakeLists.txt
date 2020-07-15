@@ -35,6 +35,7 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/url/URL.cpp
                     src/stream/url/UrlOptions.cpp
                     src/stream/url/Variant.cpp
+                    src/utils/DiskUtils.cpp
                     src/utils/FilenameUtils.cpp)
 
 set(CATCHUP_HEADERS src/StreamManager.h
@@ -64,6 +65,7 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/TimeshiftSegment.h
                     src/stream/TimeshiftStream.h
                     src/utils/HttpProxy.h
+                    src/utils/DiskUtils.h
                     src/utils/FilenameUtils.h
                     src/utils/Log.h
                     src/utils/Properties.h

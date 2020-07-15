@@ -22,7 +22,7 @@ class FFmpegCatchupStream : public FFmpegStream
 {
 public:
   FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
-                      const Properties props,
+                      const Properties& props,
                       const HttpProxy& httpProxy);
   ~FFmpegCatchupStream();
 
@@ -40,6 +40,7 @@ public:
   int64_t SeekCatchupStream(double timeMs, bool backwards);
   virtual int64_t LengthStream() override;
   virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
+  virtual bool IsRealTimeStream() override;
 
 protected:
   void UpdateCurrentPTS() override;

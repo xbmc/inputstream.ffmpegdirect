@@ -98,14 +98,15 @@ static int64_t dvd_file_seek(void* h, int64_t pos, int whence)
     return curlInput->Seek(pos, whence & ~AVSEEK_FORCE);
 }
 
-FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, const HttpProxy& httpProxy)
-  : FFmpegStream(demuxPacketManager, openMode, std::make_shared<CurlInput>(), httpProxy)
+FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Properties& props, const HttpProxy& httpProxy)
+  : FFmpegStream(demuxPacketManager, props, std::make_shared<CurlInput>(), httpProxy)
 {
 }
 
-FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMode& openMode, std::shared_ptr<CurlInput> curlInput, const HttpProxy& httpProxy)
+FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Properties& props, std::shared_ptr<CurlInput> curlInput, const HttpProxy& httpProxy)
   : BaseStream(demuxPacketManager),
-    m_openMode(openMode),
+    m_openMode(props.m_openMode),
+    m_manifestType(props.m_manifestType),
     m_curlInput(curlInput),
     m_httpProxy(httpProxy),
     m_paused(false)
@@ -125,6 +126,7 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const OpenMod
   m_dtsAtDisplayTime = DVD_NOPTS_VALUE;
 
   FFmpegLog::SetLogLevel(AV_LOG_INFO);
+  FFmpegLog::SetEnabled(kodi::GetSettingBoolean("allowFFmpegLogging"));
   av_log_set_callback(ff_avutil_log);
 }
 
@@ -132,7 +134,6 @@ FFmpegStream::~FFmpegStream()
 {
   Dispose();
   ff_flush_avutil_log_buffers();
-  FFmpegLog::ClearLogLevel();
 }
 
 bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty)
@@ -150,6 +151,12 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
                                                ADDON_READ_CHUNKED);
 
   m_opened = Open(false);
+  if (m_opened)
+  {
+    FFmpegLog::SetEnabled(true);
+    av_dump_format(m_pFormatContext, 0, CURL::GetRedacted(streamUrl).c_str(), 0);
+  }
+  FFmpegLog::SetEnabled(kodi::GetSettingBoolean("allowFFmpegLogging"));
 
   return m_opened;
 }
@@ -901,18 +908,23 @@ bool FFmpegStream::OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB&
   }
   if (result < 0)
   {
-    m_pFormatContext->flags |= AVFMT_FLAG_PRIV_OPT;
-    if (avformat_open_input(&m_pFormatContext, strFile.c_str(), iformat, &options) < 0)
+    // We only process this condition for manifest streams when this setting is disabled
+    if (!kodi::GetSettingBoolean("useFastOpenForManifestStreams") || m_manifestType.empty())
     {
-      Log(LOGLEVEL_DEBUG, "Error, could not open file %s", CURL::GetRedacted(strFile).c_str());
-      Dispose();
+      m_pFormatContext->flags |= AVFMT_FLAG_PRIV_OPT;
+      if (avformat_open_input(&m_pFormatContext, strFile.c_str(), iformat, &options) < 0)
+      {
+        Log(LOGLEVEL_DEBUG, "Error, could not open file %s", CURL::GetRedacted(strFile).c_str());
+        Dispose();
+        av_dict_free(&options);
+        return false;
+      }
+
       av_dict_free(&options);
-      return false;
+      avformat_close_input(&m_pFormatContext);
+      m_pFormatContext = avformat_alloc_context();
     }
 
-    av_dict_free(&options);
-    avformat_close_input(&m_pFormatContext);
-    m_pFormatContext = avformat_alloc_context();
     m_pFormatContext->interrupt_callback = int_cb;
     m_pFormatContext->flags &= ~AVFMT_FLAG_PRIV_OPT;
     options = GetFFMpegOptionsFromInput();

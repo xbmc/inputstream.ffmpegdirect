@@ -202,7 +202,7 @@ bool InputStreamFFmpegDirect::Open(INPUTSTREAM& props)
   else if (properties.m_streamMode == StreamMode::TIMESHIFT)
     m_stream = std::make_shared<TimeshiftStream>(static_cast<IManageDemuxPacket*>(this), properties, httpProxy);
   else
-    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), properties.m_openMode, httpProxy);
+    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), properties, httpProxy);
 
   m_stream->SetVideoResolution(m_videoWidth, m_videoHeight);
 

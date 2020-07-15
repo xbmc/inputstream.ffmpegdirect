@@ -82,6 +82,8 @@ This category contains the advanced settings for the addon.
 * **Allow FFmpeg logging**: If enabled the addon will log any FFmpeg logging to the Kodi log.
 * **Probe for FPS**: Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used.
 * **Enable teletext**: Allow teletext. Default enabled.
+* **Use fast open for streams using a manifest file**: Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled.
+* **For catchup streams report stream is not realtime**: For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a `#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false` to the M3U entry in question. This setting should not be left enabled for all streams.
 
 ## Using the addon
 

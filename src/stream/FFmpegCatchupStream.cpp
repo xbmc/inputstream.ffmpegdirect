@@ -10,6 +10,7 @@
 
 #include "CurlCatchupInput.h"
 #include "threads/SingleLock.h"
+#include "url/URL.h"
 #include "../utils/Log.h"
 
 #ifdef TARGET_POSIX
@@ -45,9 +46,9 @@ using namespace ffmpegdirect;
 ***********************************************************/
 
 FFmpegCatchupStream::FFmpegCatchupStream(IManageDemuxPacket* demuxPacketManager,
-                                         const Properties props,
+                                         const Properties& props,
                                          const HttpProxy& httpProxy)
-  : FFmpegStream(demuxPacketManager, props.m_openMode, std::make_shared<CurlCatchupInput>(), httpProxy),
+  : FFmpegStream(demuxPacketManager, props, std::make_shared<CurlCatchupInput>(), httpProxy),
     m_isOpeningStream(false), m_seekOffset(0),
     m_defaultUrl(props.m_defaultUrl), m_playbackAsLive(props.m_playbackAsLive),
     m_programmeStartTime(props.m_programmeStartTime), m_programmeEndTime(props.m_programmeEndTime),
@@ -370,6 +371,14 @@ void FFmpegCatchupStream::UpdateCurrentPTS()
     m_currentPts += m_seekOffset;
 }
 
+bool FFmpegCatchupStream::IsRealTimeStream()
+{
+  if (kodi::GetSettingBoolean("forceRealtimeOffCatchup"))
+    return false;
+
+  return m_isRealTimeStream && m_pFormatContext->duration <= 0;
+}
+
 namespace
 {
 
@@ -450,7 +459,7 @@ std::string FormatDateTime(time_t dateTimeEpg, time_t duration, const std::strin
   FormatUtc("${offset}", dateTimeNow - dateTimeEpg, formattedUrl);
   FormatUnits(dateTimeNow - dateTimeEpg, "offset", formattedUrl);
 
-  Log(LOGLEVEL_DEBUG, "%s - \"%s\"", __FUNCTION__, formattedUrl.c_str());
+  Log(LOGLEVEL_DEBUG, "%s - \"%s\"", __FUNCTION__, CURL::GetRedacted(formattedUrl).c_str());
 
   return formattedUrl;
 }
@@ -480,7 +489,7 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
     if (offset > (timeNow - m_defaultProgrammeDuration) && !m_catchupUrlNearLiveFormatString.empty())
       urlFormatString = m_catchupUrlNearLiveFormatString;
 
-    Log(LOGLEVEL_DEBUG, "%s - Offset Time - \"%lld\" - %s", __FUNCTION__, static_cast<long long>(offset), m_catchupUrlFormatString.c_str());
+    Log(LOGLEVEL_DEBUG, "%s - Offset Time - \"%lld\" - %s", __FUNCTION__, static_cast<long long>(offset), CURL::GetRedacted(m_catchupUrlFormatString).c_str());
 
     std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, urlFormatString);
 
@@ -490,11 +499,11 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
 
     if (!catchupUrl.empty())
     {
-      Log(LOGLEVEL_DEBUG, "%s - Catchup URL: %s", __FUNCTION__, catchupUrl.c_str());
+      Log(LOGLEVEL_DEBUG, "%s - Catchup URL: %s", __FUNCTION__, CURL::GetRedacted(catchupUrl).c_str());
       return catchupUrl;
     }
   }
 
-  Log(LOGLEVEL_DEBUG, "%s - Default URL: %s", __FUNCTION__, m_defaultUrl.c_str());
+  Log(LOGLEVEL_DEBUG, "%s - Default URL: %s", __FUNCTION__, CURL::GetRedacted(m_defaultUrl).c_str());
   return m_defaultUrl;
 }

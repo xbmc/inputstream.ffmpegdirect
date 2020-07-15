@@ -8,6 +8,8 @@
 
 #include "TimeshiftSegment.h"
 
+#include "url/URL.h"
+#include "../utils/DiskUtils.h"
 #include "../utils/Log.h"
 
 extern "C"
@@ -24,7 +26,7 @@ TimeshiftSegment::TimeshiftSegment(IManageDemuxPacket* demuxPacketManager, const
   : m_demuxPacketManager(demuxPacketManager), m_streamId(streamId), m_segmentId(segmentId)
 {
   m_segmentFilename = StringUtils::Format("%s-%08d.seg", streamId.c_str(), segmentId);
-  Log(LOGLEVEL_DEBUG, "%s - Segment ID: %d, Segment Filename: %s", __FUNCTION__, segmentId, m_segmentFilename.c_str());
+  Log(LOGLEVEL_DEBUG, "%s - Segment ID: %d, Segment Filename: %s", __FUNCTION__, segmentId, CURL::GetRedacted(m_segmentFilename).c_str());
 
   m_timeshiftSegmentFilePath = timeshiftBufferPath + "/" + m_segmentFilename;
 
@@ -33,14 +35,20 @@ TimeshiftSegment::TimeshiftSegment(IManageDemuxPacket* demuxPacketManager, const
   // to load an out of memory segment for a seek operation
   if (!kodi::vfs::FileExists(m_timeshiftSegmentFilePath))
   {
-    if (m_fileHandle.OpenFileForWrite(m_timeshiftSegmentFilePath))
+    // We need to pass the overwrite parameter as true as otherwise
+    // opening on SMB for write on android will fail.
+    if (m_fileHandle.OpenFileForWrite(m_timeshiftSegmentFilePath, true))
     {
       int32_t packetCountPlaceholder = 0;
       m_fileHandle.Write(&packetCountPlaceholder, sizeof(packetCountPlaceholder));
     }
     else
     {
-      Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s", __FUNCTION__, m_timeshiftSegmentFilePath.c_str());
+      uint64_t freeSpaceMB = 0;
+      if (DiskUtils::GetFreeDiskSpaceMB(timeshiftBufferPath, freeSpaceMB))
+        Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s, disk free space (MB): %lld", __FUNCTION__, CURL::GetRedacted(m_timeshiftSegmentFilePath).c_str(), static_cast<long long>(freeSpaceMB));
+      else
+        Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s, not possible to calculate free space", __FUNCTION__, CURL::GetRedacted(m_timeshiftSegmentFilePath).c_str());
       m_persistSegments = false;
     }
   }
@@ -201,7 +209,7 @@ void TimeshiftSegment::LoadSegment()
 
   if (!m_loaded && m_fileHandle.OpenFile(m_timeshiftSegmentFilePath, ADDON_READ_NO_CACHE))
   {
-    int32_t packetCount;
+    int32_t packetCount = 0;
     m_fileHandle.Read(&packetCount, sizeof(packetCount));
 
     for (int i = 0; i < packetCount; i++)
@@ -369,7 +377,7 @@ DemuxPacket* TimeshiftSegment::ReadPacket()
 
   std::lock_guard<std::mutex> lock(m_mutex);
 
-  if (m_readPacketIndex != m_packetBuffer.size())
+  if (m_packetBuffer.size() != 0 && m_readPacketIndex != m_packetBuffer.size())
   {
     std::shared_ptr<DemuxPacket>& nextPacket = m_packetBuffer[m_readPacketIndex++];
 

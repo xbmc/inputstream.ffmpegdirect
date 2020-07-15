@@ -27,9 +27,12 @@ class FFmpegLog
 {
 public:
   static void SetLogLevel(int level);
+  static void SetEnabled(bool enabled);
+  static bool GetEnabled();
   static int GetLogLevel();
-  static void ClearLogLevel();
-  int level;
+
+  static int level;
+  static bool enabled;
 };
 
 } //namespace ffmpegdirect

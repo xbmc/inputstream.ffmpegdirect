@@ -8,6 +8,8 @@
 
 #include "TimeshiftBuffer.h"
 
+#include "url/URL.h"
+#include "../utils/DiskUtils.h"
 #include "../utils/Log.h"
 
 #include <kodi/Filesystem.h>
@@ -20,8 +22,17 @@ TimeshiftBuffer::TimeshiftBuffer(IManageDemuxPacket* demuxPacketManager)
 {
   m_timeshiftBufferPath = kodi::GetSettingString("timeshiftBufferPath");
   if (m_timeshiftBufferPath.empty())
+  {
     m_timeshiftBufferPath = DEFAULT_TIMESHIFT_BUFFER_PATH;
-  kodi::vfs::CreateDirectory(m_timeshiftBufferPath);
+  }
+  else
+  {
+    if (StringUtils::EndsWith(m_timeshiftBufferPath, "/") || StringUtils::EndsWith(m_timeshiftBufferPath, "\\"))
+      m_timeshiftBufferPath.pop_back();
+  }
+
+  if (!kodi::vfs::DirectoryExists(m_timeshiftBufferPath))
+    kodi::vfs::CreateDirectory(m_timeshiftBufferPath);
 
   if (!kodi::CheckSettingBoolean("timeshiftEnableLimit", m_enableOnDiskSegmentLimit))
     m_enableOnDiskSegmentLimit = true;
@@ -42,6 +53,8 @@ TimeshiftBuffer::~TimeshiftBuffer()
 {
   if (!m_streamId.empty())
   {
+    //We need to make sure any filehandle is closed as you can't delete an open file on windows
+    m_writeSegment->MarkAsComplete();
     for (int segmentId = m_earliestOnDiskSegmentId; segmentId <= m_writeSegment->GetSegmentId(); segmentId++)
     {
       std::string segmentFilename = StringUtils::Format("%s-%08d.seg", m_streamId.c_str(), segmentId);
@@ -55,12 +68,19 @@ TimeshiftBuffer::~TimeshiftBuffer()
   kodi::vfs::DeleteFile(m_segmentIndexFilePath);
 }
 
-void TimeshiftBuffer::Start(const std::string& streamId)
+bool TimeshiftBuffer::Start(const std::string& streamId)
 {
   m_segmentIndexFilePath = m_timeshiftBufferPath + "/" + streamId + ".idx";
-  if (!m_segmentIndexFileHandle.OpenFileForWrite(m_segmentIndexFilePath))
+  // We need to pass the overwrite parameter as true as otherwise
+  // opening on SMB for write on android will fail.
+  if (!m_segmentIndexFileHandle.OpenFileForWrite(m_segmentIndexFilePath, true))
   {
-    Log(LOGLEVEL_ERROR, "%s - Failed to open segment index file on disk: %s", __FUNCTION__, m_segmentIndexFilePath.c_str());
+    uint64_t freeSpaceMB = 0;
+    if (DiskUtils::GetFreeDiskSpaceMB(m_timeshiftBufferPath, freeSpaceMB))
+      Log(LOGLEVEL_ERROR, "%s - Failed to open segment index file on disk: %s, disk free space (MB): %lld", __FUNCTION__, CURL::GetRedacted(m_segmentIndexFilePath).c_str(), static_cast<long long>(freeSpaceMB));
+    else
+      Log(LOGLEVEL_ERROR, "%s - Failed to open segment index file on disk: %s, not possible to calculate free space", __FUNCTION__, CURL::GetRedacted(m_segmentIndexFilePath).c_str());
+    return false;
   }
 
   m_streamId = streamId;
@@ -74,6 +94,8 @@ void TimeshiftBuffer::Start(const std::string& streamId)
   m_currentSegmentIndex++;
   m_segmentTotalCount++;
   m_readSegment = m_writeSegment;
+
+  return true;
 }
 
 void TimeshiftBuffer::AddPacket(DemuxPacket* packet)
@@ -209,6 +231,9 @@ bool TimeshiftBuffer::Seek(double timeMs)
 {
   int seekSeconds = timeMs / 1000;
   std::lock_guard<std::mutex> lock(m_mutex);
+
+  if (seekSeconds < 0)
+      seekSeconds = m_minOnDiskSeekTimeIndex;
 
   if (seekSeconds >= m_minInMemorySeekTimeIndex)
   {

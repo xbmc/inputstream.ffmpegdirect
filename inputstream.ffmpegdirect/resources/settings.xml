@@ -130,6 +130,16 @@
           <default>true</default>
           <control type="toggle" />
         </setting>
+        <setting id="useFastOpenForManifestStreams" type="boolean" label="30045" help="30644">
+          <level>2</level>
+          <default>true</default>
+          <control type="toggle" />
+        </setting>
+        <setting id="forceRealtimeOffCatchup" type="boolean" label="30046" help="30645">
+          <level>2</level>
+          <default>false</default>
+          <control type="toggle" />
+        </setting>
       </group>
     </category>
   </section>

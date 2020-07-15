@@ -19,30 +19,27 @@
 
 using namespace ffmpegdirect;
 
-static thread_local FFmpegLog* CFFmpegDirectLogTls;
+int FFmpegLog::level = AV_LOG_INFO;
+bool FFmpegLog::enabled = false;
 
 void FFmpegLog::SetLogLevel(int level)
 {
-  FFmpegLog::ClearLogLevel();
-  FFmpegLog *log = new FFmpegLog();
-  log->level = level;
-  CFFmpegDirectLogTls = log;
+  FFmpegLog::level = level;
+}
+
+void FFmpegLog::SetEnabled(bool enabled)
+{
+  FFmpegLog::enabled = enabled;
+}
+
+bool FFmpegLog::GetEnabled()
+{
+  return FFmpegLog::enabled;
 }
 
 int FFmpegLog::GetLogLevel()
 {
-  FFmpegLog* log = CFFmpegDirectLogTls;
-  if (!log)
-    return -1;
-  return log->level;
-}
-
-void FFmpegLog::ClearLogLevel()
-{
-  FFmpegLog* log = CFFmpegDirectLogTls;
-  CFFmpegDirectLogTls = nullptr;
-  if (log)
-    delete log;
+  return FFmpegLog::level;
 }
 
 static CCriticalSection m_ffmpegdirectLogSection;
@@ -74,7 +71,7 @@ void ff_avutil_log(void* ptr, int level, const char* format, va_list va)
   if (FFmpegLog::GetLogLevel() > 0)
     maxLevel = AV_LOG_INFO;
 
-  if (level > maxLevel && !kodi::GetSettingBoolean("allowFFmpegLogging"))
+  if (level > maxLevel || !FFmpegLog::GetEnabled())
     return;
 
   LogLevel type;
