@@ -30,7 +30,8 @@ TimeshiftBuffer::TimeshiftBuffer(IManageDemuxPacket* demuxPacketManager)
       m_timeshiftBufferPath.pop_back();
   }
 
-  kodi::vfs::CreateDirectory(m_timeshiftBufferPath);
+  if (!kodi::vfs::DirectoryExists(m_timeshiftBufferPath))
+    kodi::vfs::CreateDirectory(m_timeshiftBufferPath);
 
   if (!kodi::CheckSettingBoolean("timeshiftEnableLimit", m_enableOnDiskSegmentLimit))
     m_enableOnDiskSegmentLimit = true;
