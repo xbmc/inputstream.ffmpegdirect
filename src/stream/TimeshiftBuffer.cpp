@@ -8,6 +8,7 @@
 
 #include "TimeshiftBuffer.h"
 
+#include "url/URL.h"
 #include "../utils/DiskUtils.h"
 #include "../utils/Log.h"
 
@@ -76,9 +77,9 @@ bool TimeshiftBuffer::Start(const std::string& streamId)
   {
     uint64_t freeSpaceMB = 0;
     if (DiskUtils::GetFreeDiskSpaceMB(m_timeshiftBufferPath, freeSpaceMB))
-      Log(LOGLEVEL_ERROR, "%s - Failed to open segment index file on disk: %s, disk free space (MB): %lld", __FUNCTION__, m_segmentIndexFilePath.c_str(), static_cast<long long>(freeSpaceMB));
+      Log(LOGLEVEL_ERROR, "%s - Failed to open segment index file on disk: %s, disk free space (MB): %lld", __FUNCTION__, CURL::GetRedacted(m_segmentIndexFilePath).c_str(), static_cast<long long>(freeSpaceMB));
     else
-      Log(LOGLEVEL_ERROR, "%s - Failed to open segment index file on disk: %s, not possible to calculate free space", __FUNCTION__, m_segmentIndexFilePath.c_str());
+      Log(LOGLEVEL_ERROR, "%s - Failed to open segment index file on disk: %s, not possible to calculate free space", __FUNCTION__, CURL::GetRedacted(m_segmentIndexFilePath).c_str());
     return false;
   }
 

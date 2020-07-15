@@ -8,6 +8,7 @@
 
 #include "TimeshiftSegment.h"
 
+#include "url/URL.h"
 #include "../utils/DiskUtils.h"
 #include "../utils/Log.h"
 
@@ -25,7 +26,7 @@ TimeshiftSegment::TimeshiftSegment(IManageDemuxPacket* demuxPacketManager, const
   : m_demuxPacketManager(demuxPacketManager), m_streamId(streamId), m_segmentId(segmentId)
 {
   m_segmentFilename = StringUtils::Format("%s-%08d.seg", streamId.c_str(), segmentId);
-  Log(LOGLEVEL_DEBUG, "%s - Segment ID: %d, Segment Filename: %s", __FUNCTION__, segmentId, m_segmentFilename.c_str());
+  Log(LOGLEVEL_DEBUG, "%s - Segment ID: %d, Segment Filename: %s", __FUNCTION__, segmentId, CURL::GetRedacted(m_segmentFilename).c_str());
 
   m_timeshiftSegmentFilePath = timeshiftBufferPath + "/" + m_segmentFilename;
 
@@ -45,9 +46,9 @@ TimeshiftSegment::TimeshiftSegment(IManageDemuxPacket* demuxPacketManager, const
     {
       uint64_t freeSpaceMB = 0;
       if (DiskUtils::GetFreeDiskSpaceMB(timeshiftBufferPath, freeSpaceMB))
-        Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s, disk free space (MB): %lld", __FUNCTION__, m_timeshiftSegmentFilePath.c_str(), static_cast<long long>(freeSpaceMB));
+        Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s, disk free space (MB): %lld", __FUNCTION__, CURL::GetRedacted(m_timeshiftSegmentFilePath).c_str(), static_cast<long long>(freeSpaceMB));
       else
-        Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s, not possible to calculate free space", __FUNCTION__, m_timeshiftSegmentFilePath.c_str());
+        Log(LOGLEVEL_ERROR, "%s - Failed to open segment file on disk: %s, not possible to calculate free space", __FUNCTION__, CURL::GetRedacted(m_timeshiftSegmentFilePath).c_str());
       m_persistSegments = false;
     }
   }
