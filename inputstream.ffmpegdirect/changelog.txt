@@ -1,3 +1,8 @@
+v1.16.0
+- Update: Inputstream API 2.3.4
+- Added: German translation
+- Added: Debian build test to Travis CI
+
 v1.15.5
 - Update: Use add-on supplied StringUtils and remove local version
 - Update: Remove local threading code and use addon supplied instead

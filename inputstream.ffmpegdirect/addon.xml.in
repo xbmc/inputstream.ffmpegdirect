@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.15.5"
+  version="1.16.0"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -26,6 +26,11 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.16.0
+- Update: Inputstream API 2.3.4
+- Added: German translation
+- Added: Debian build test to Travis CI
+
 v1.15.5
 - Update: Use add-on supplied StringUtils and remove local version
 - Update: Remove local threading code and use addon supplied instead
