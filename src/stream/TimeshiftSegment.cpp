@@ -279,7 +279,7 @@ int TimeshiftSegment::LoadPacket(std::shared_ptr<DemuxPacket>& packet)
     int numSubSamples;
     m_fileHandle.Read(&numSubSamples, sizeof(numSubSamples));
 
-    packet->cryptoInfo = std::make_shared<DemuxCryptoInfo>(numSubSamples);
+    packet->cryptoInfo = new DemuxCryptoInfo(numSubSamples);
     m_fileHandle.Read(&packet->cryptoInfo->flags, sizeof(packet->cryptoInfo->flags));
     if (numSubSamples > 0)
     {
@@ -323,6 +323,10 @@ void TimeshiftSegment::ClearPackets()
   for (auto& demuxPacket : m_packetBuffer)
   {
     delete[] demuxPacket->pData;
+    if (demuxPacket->cryptoInfo)
+    {
+      delete demuxPacket->cryptoInfo;
+    }
     FreeSideData(demuxPacket);
   }
 
