@@ -1,1 +1,1 @@
-gnutls http://mirrors.kodi.tv/build-deps/sources/gnutls-3.6.13.tar.xz
+gnutls http://mirrors.kodi.tv/build-deps/sources/gnutls-3.6.15.tar.xz
