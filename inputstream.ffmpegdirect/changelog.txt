@@ -1,3 +1,7 @@
+v1.15.1
+- Fixed: Use correct index for streams using a program number, fixes EIT data embedded in streams
+- Update: FFmpeg to 4.3.1
+
 v1.15.0
 - Added: Add fast open for manifest stream and test setting for realtime off
 - Fixed: Honour realtime stream property
