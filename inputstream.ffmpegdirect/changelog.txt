@@ -1,3 +1,6 @@
+v1.15.3
+- Update: gnutls 3.6.15 and nettle 3.6 bump
+
 v1.15.2
 - Update: bump to fix version number
 
