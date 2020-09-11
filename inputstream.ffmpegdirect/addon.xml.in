@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.15.2"
+  version="1.15.3"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -24,6 +24,9 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.15.3
+- Update: gnutls 3.6.15 and nettle 3.6 bump
+
 v1.15.2
 - Update: bump to fix version number
 
