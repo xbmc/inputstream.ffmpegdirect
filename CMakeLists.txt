@@ -9,7 +9,6 @@ if(WIN32)
   find_package(Iconv REQUIRED)
   find_package(OpenSSL REQUIRED)
 endif()
-find_package(p8-platform REQUIRED)
 find_package(Kodi REQUIRED)
 find_package(FFMPEG REQUIRED)
 find_package(ZLIB REQUIRED)
@@ -36,7 +35,8 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/url/UrlOptions.cpp
                     src/stream/url/Variant.cpp
                     src/utils/DiskUtils.cpp
-                    src/utils/FilenameUtils.cpp)
+                    src/utils/FilenameUtils.cpp
+                    src/utils/StringUtils.cpp)
 
 set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/BaseStream.h
@@ -69,6 +69,7 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/utils/FilenameUtils.h
                     src/utils/Log.h
                     src/utils/Properties.h
+                    src/utils/StringUtils.h
                     src/stream/url/URL.h
                     src/stream/url/UrlOptions.h
                     src/stream/url/Variant.h)
@@ -80,8 +81,7 @@ if(NOT WIN32)
                               src/stream/platform/posix/XTimeUtils.h)
 endif()
 
-include_directories(${p8-platform_INCLUDE_DIRS}
-                    ${INCLUDES}
+include_directories(${INCLUDES}
                     ${FFMPEG_INCLUDE_DIRS}
                     ${ZLIB_INCLUDE_DIRS}
                     ${BZIP2_INCLUDE_DIRS}
@@ -93,8 +93,7 @@ include_directories(${p8-platform_INCLUDE_DIRS}
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v")
 
 # We don't add FFMPEG_LIBRARIES here as we handle them at the end
-list(APPEND DEPLIBS ${p8-platform_LIBRARIES}
-                    ${ZLIB_LIBRARIES}
+list(APPEND DEPLIBS ${ZLIB_LIBRARIES}
                     ${BZIP2_LIBRARIES})
 
 if(WIN32)
@@ -115,16 +114,18 @@ elseif(CORE_SYSTEM_NAME STREQUAL osx OR
   find_library(AUDIOTOOLBOX AudioToolbox)
   find_library(COREFOUNDATION CoreFoundation)
   find_library(COREMEDIA CoreMedia)
+  find_library(COREVIDEO CoreVideo)
   find_library(VIDEOTOOLBOX VideoToolbox)
   find_library(SECURITY Security)
 
   include_directories(${AUDIOTOOLBOX}
                       ${COREFOUNDATION}
                       ${COREMEDIA}
+                      ${COREVIDEO}
                       ${VIDEOTOOLBOX}
                       ${SECURITY})
 
-  list(APPEND DEPLIBS ${AUDIOTOOLBOX} ${COREFOUNDATION} ${COREMEDIA} ${VIDEOTOOLBOX} ${SECURITY})
+  list(APPEND DEPLIBS ${AUDIOTOOLBOX} ${COREFOUNDATION} ${COREMEDIA} ${COREVIDEO} ${VIDEOTOOLBOX} ${SECURITY})
 else()
   list(APPEND DEPLIBS ${FFMPEG_LIBRARIES})
 endif()

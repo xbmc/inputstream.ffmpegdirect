@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(mingw)
 
 # Currently unused (our mirrors bring some download problems for Msys2)
-if(0)
+if(1)
   foreach(repo msys mingw32 mingw64)
     if(${repo} STREQUAL msys)
       file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/etc/pacman.d/mirrorlist.${repo} "Server = http://mirrors.kodi.tv/build-deps/win32/msys2/repos/${repo}2/$arch\n")

@@ -12,8 +12,7 @@
 // This include should be moved to commons but even as it is,
 // it wont cause a linker circular dependency since it's just
 // a header.
-//#include "utils/StringUtils.h"
-#include <p8-platform/util/StringUtils.h>
+#include "../../utils/StringUtils.h"
 //---------------------------------------------------------
 #include <stdarg.h>
 

@@ -9,6 +9,7 @@
 #include "DemuxStream.h"
 
 #include "../utils/Log.h"
+#include "../utils/StringUtils.h"
 #include "url/URL.h"
 
 #ifdef TARGET_POSIX
@@ -29,8 +30,6 @@ extern "C" {
 #include <libavutil/dict.h>
 #include <libavutil/opt.h>
 }
-
-#include <p8-platform/util/StringUtils.h>
 
 using namespace ffmpegdirect;
 

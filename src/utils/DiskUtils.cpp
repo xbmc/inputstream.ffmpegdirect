@@ -8,10 +8,11 @@
 
 #include "DiskUtils.h"
 
+#include "StringUtils.h"
+
 #include <limits>
 
 #include <kodi/Filesystem.h>
-#include <p8-platform/util/StringUtils.h>
 
 using namespace ffmpegdirect;
 

@@ -8,6 +8,7 @@
 
 #include "URL.h"
 #include "../../utils/Log.h"
+#include "../../utils/StringUtils.h"
 
 //#include "utils/URIUtils.h"
 // #include "utils/StringUtils.h"
@@ -23,8 +24,6 @@
 
 #include <string>
 #include <vector>
-
-#include <p8-platform/util/StringUtils.h>
 
 //using namespace ADDON;
 

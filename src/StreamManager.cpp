@@ -12,8 +12,7 @@
 #include "stream/TimeshiftStream.h"
 #include "utils/HttpProxy.h"
 #include "utils/Log.h"
-
-#include <p8-platform/util/StringUtils.h>
+#include "utils/StringUtils.h"
 
 using namespace ffmpegdirect;
 
