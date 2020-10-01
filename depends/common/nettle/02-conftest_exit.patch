@@ -1,0 +1,61 @@
+--- a/aclocal.m4
++++ b/aclocal.m4
+@@ -369,7 +369,7 @@
+ int
+ main ()
+ {
+-  exit(0);
++  return 0;
+ }
+ EOF
+ gmp_compile="$1 conftest.c"
+@@ -410,7 +410,7 @@
+ int
+ main ()
+ {
+-  exit (0);
++  return 0;
+ }
+ EOF
+   for i in .exe ,ff8 ""; do
+
+
+--- a/configure
++++ b/configure
+@@ -4640,7 +4640,7 @@
+ int
+ main ()
+ {
+-  exit(0);
++  return 0;
+ }
+ EOF
+ gmp_compile="$CC_FOR_BUILD conftest.c"
+@@ -4672,7 +4672,7 @@
+ int
+ main ()
+ {
+-  exit(0);
++  return 0;
+ }
+ EOF
+ gmp_compile="$HOST_CC conftest.c"
+@@ -4708,7 +4708,7 @@
+ int
+ main ()
+ {
+-  exit(0);
++  return 0;
+ }
+ EOF
+ gmp_compile="$i conftest.c"
+@@ -4758,7 +4758,7 @@
+ int
+ main ()
+ {
+-  exit (0);
++  return 0;
+ }
+ EOF
+   for i in .exe ,ff8 ""; do
+
