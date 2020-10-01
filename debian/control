@@ -2,7 +2,7 @@ Source: kodi-inputstream-ffmpegdirect
 Priority: extra
 Maintainer: Ross Nicholson <phunkyfish@gmail.com>
 Build-Depends: debhelper (>= 10.0.0), cmake, kodi-addon-dev, kodi-ffmpeg-dev,
-               libbz2-dev, libp8-platform-dev, libz3-dev, pkg-config, yasm, zlib1g-dev
+               libbz2-dev, libz3-dev, pkg-config, yasm, zlib1g-dev
 Standards-Version: 4.0.0
 Section: libs
 Homepage: <https://kodi.tv>

@@ -8,7 +8,7 @@
 
 #include "FilenameUtils.h"
 
-#include <p8-platform/util/StringUtils.h>
+#include "StringUtils.h"
 
 using namespace ffmpegdirect;
 

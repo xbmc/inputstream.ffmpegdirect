@@ -13,6 +13,7 @@
 #include "FFmpegLog.h"
 #include "../utils/FilenameUtils.h"
 #include "../utils/Log.h"
+#include "../utils/StringUtils.h"
 
 #include "IManageDemuxPacket.h"
 
@@ -37,7 +38,6 @@ extern "C" {
 
 #include <kodi/Filesystem.h>
 #include <kodi/Network.h>
-#include <p8-platform/util/StringUtils.h>
 
 using namespace ffmpegdirect;
 

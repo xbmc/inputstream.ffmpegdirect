@@ -11,11 +11,11 @@
 #include "threads/CriticalSection.h"
 #include "threads/Thread.h"
 #include "../utils/Log.h"
+#include "../utils/StringUtils.h"
 
 #include <map>
 
 #include <kodi/General.h>
-#include <p8-platform/util/StringUtils.h>
 
 using namespace ffmpegdirect;
 

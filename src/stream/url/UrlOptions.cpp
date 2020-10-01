@@ -9,9 +9,8 @@
 #include "UrlOptions.h"
 
 #include "URL.h"
-// #include "utils/StringUtils.h"
-#include <p8-platform/util/StringUtils.h>
 #include "../../utils/Log.h"
+#include "../../utils/StringUtils.h"
 
 
 CUrlOptions::CUrlOptions() = default;

@@ -11,9 +11,9 @@
 #include "url/URL.h"
 #include "../utils/DiskUtils.h"
 #include "../utils/Log.h"
+#include "../utils/StringUtils.h"
 
 #include <kodi/Filesystem.h>
-#include <p8-platform/util/StringUtils.h>
 
 using namespace ffmpegdirect;
 

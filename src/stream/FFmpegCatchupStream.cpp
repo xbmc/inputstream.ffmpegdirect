@@ -12,6 +12,7 @@
 #include "threads/SingleLock.h"
 #include "url/URL.h"
 #include "../utils/Log.h"
+#include "../utils/StringUtils.h"
 
 #ifdef TARGET_POSIX
 #include "platform/posix/XTimeUtils.h"
@@ -37,7 +38,6 @@ extern "C" {
 //#include "platform/posix/XTimeUtils.h"
 
 #include <kodi/Filesystem.h>
-#include <p8-platform/util/StringUtils.h>
 
 using namespace ffmpegdirect;
 
