@@ -1,3 +1,7 @@
+v1.15.4
+- Update: Remove p8-platforms and add local StringUtils for cpp17
+- Update: Nettle patch for xcode 12
+
 v1.15.3
 - Update: gnutls 3.6.15 and nettle 3.6 bump
 
