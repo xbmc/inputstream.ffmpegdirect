@@ -17,6 +17,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <thread>
 
 #ifndef __STDC_CONSTANT_MACROS
 #define __STDC_CONSTANT_MACROS
@@ -1428,7 +1429,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
 
   if (m_checkTransportStream)
   {
-    FFmpegDirectThreads::EndTime timer(1000);
+    kodi::tools::CEndTime timer(1000);
 
     while (!IsTransportStreamReady())
     {

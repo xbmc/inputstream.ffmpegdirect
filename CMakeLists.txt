@@ -21,8 +21,6 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/FFmpegStream.cpp
                     src/stream/CurlCatchupInput.cpp
                     src/stream/CurlInput.cpp
-                    src/stream/threads/TimeUtils.cpp
-                    src/stream/threads/SystemClock.cpp
                     src/stream/TimeshiftBuffer.cpp
                     src/stream/TimeshiftSegment.cpp
                     src/stream/TimeshiftStream.cpp
@@ -41,8 +39,6 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/CurlCatchupInput.h
                     src/stream/CurlInput.h
                     src/stream/IManageDemuxPacket.h
-                    src/stream/threads/SystemClock.h
-                    src/stream/threads/TimeUtils.h
                     src/stream/TimeshiftBuffer.h
                     src/stream/TimeshiftSegment.h
                     src/stream/TimeshiftStream.h
