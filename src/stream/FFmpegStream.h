@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "threads/CriticalSection.h"
 #include "threads/SystemClock.h"
 
 #include "../utils/HttpProxy.h"
@@ -20,6 +19,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <sstream>
 
@@ -111,7 +111,7 @@ protected:
   virtual bool CheckReturnEmptyOnPacketResult(int result);
 
   int64_t m_demuxerId;
-  CCriticalSection m_critSection;
+  mutable std::mutex m_mutex;
   double m_currentPts; // used for stream length estimation
   bool m_demuxResetOpenSuccess = false;
   std::string m_streamUrl;

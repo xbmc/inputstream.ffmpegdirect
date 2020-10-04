@@ -8,7 +8,6 @@
 
 #include "TimeshiftStream.h"
 
-#include "threads/SingleLock.h"
 #include "../utils/Log.h"
 
 #ifndef __STDC_CONSTANT_MACROS

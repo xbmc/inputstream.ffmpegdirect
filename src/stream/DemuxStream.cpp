@@ -11,10 +11,6 @@
 #include "../utils/Log.h"
 #include "url/URL.h"
 
-#ifdef TARGET_POSIX
-#include "platform/posix/XTimeUtils.h"
-#endif
-
 #ifndef __STDC_CONSTANT_MACROS
 #define __STDC_CONSTANT_MACROS
 #endif
