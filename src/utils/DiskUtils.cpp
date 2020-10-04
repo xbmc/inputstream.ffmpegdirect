@@ -8,13 +8,13 @@
 
 #include "DiskUtils.h"
 
-#include "StringUtils.h"
-
 #include <limits>
 
+#include <kodi/tools/StringUtils.h>
 #include <kodi/Filesystem.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 bool DiskUtils::GetFreeDiskSpaceMB(const std::string& path, uint64_t& freeMB)
 {

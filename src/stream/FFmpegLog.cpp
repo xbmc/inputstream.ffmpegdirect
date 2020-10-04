@@ -11,13 +11,14 @@
 #include "threads/CriticalSection.h"
 #include "threads/Thread.h"
 #include "../utils/Log.h"
-#include "../utils/StringUtils.h"
 
 #include <map>
 
+#include <kodi/tools/StringUtils.h>
 #include <kodi/General.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 int FFmpegLog::level = AV_LOG_INFO;
 bool FFmpegLog::enabled = false;

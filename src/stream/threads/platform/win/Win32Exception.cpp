@@ -10,13 +10,16 @@
 
 #include "Util.h"
 #include "WIN32Util.h"
-#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
 #include "platform/win32/CharsetConverter.h"
 
 #include <VersionHelpers.h>
 #include <dbghelp.h>
+
+#include <kodi/tools/StringUtils.h>
+
+using namespace kodi::tools;
 
 typedef BOOL (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
                                         const PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,

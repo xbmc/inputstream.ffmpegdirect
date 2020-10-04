@@ -35,8 +35,7 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/url/UrlOptions.cpp
                     src/stream/url/Variant.cpp
                     src/utils/DiskUtils.cpp
-                    src/utils/FilenameUtils.cpp
-                    src/utils/StringUtils.cpp)
+                    src/utils/FilenameUtils.cpp)
 
 set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/BaseStream.h
@@ -69,7 +68,6 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/utils/FilenameUtils.h
                     src/utils/Log.h
                     src/utils/Properties.h
-                    src/utils/StringUtils.h
                     src/stream/url/URL.h
                     src/stream/url/UrlOptions.h
                     src/stream/url/Variant.h)

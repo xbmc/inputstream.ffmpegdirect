@@ -13,10 +13,8 @@
 #include "FFmpegLog.h"
 #include "../utils/FilenameUtils.h"
 #include "../utils/Log.h"
-#include "../utils/StringUtils.h"
 
 #include "IManageDemuxPacket.h"
-
 
 #include <chrono>
 #include <ctime>
@@ -36,10 +34,12 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
+#include <kodi/tools/StringUtils.h>
 #include <kodi/Filesystem.h>
 #include <kodi/Network.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions

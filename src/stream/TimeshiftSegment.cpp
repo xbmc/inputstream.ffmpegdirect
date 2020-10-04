@@ -11,16 +11,17 @@
 #include "url/URL.h"
 #include "../utils/DiskUtils.h"
 #include "../utils/Log.h"
-#include "../utils/StringUtils.h"
 
 extern "C"
 {
 #include <libavcodec/avcodec.h>
 }
 
+#include <kodi/tools/StringUtils.h>
 #include <kodi/DemuxCrypto.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 TimeshiftSegment::TimeshiftSegment(IManageDemuxPacket* demuxPacketManager, const std::string& streamId, int segmentId, const std::string& timeshiftBufferPath)
   : m_demuxPacketManager(demuxPacketManager), m_streamId(streamId), m_segmentId(segmentId)

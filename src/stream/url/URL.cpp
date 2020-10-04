@@ -8,10 +8,8 @@
 
 #include "URL.h"
 #include "../../utils/Log.h"
-#include "../../utils/StringUtils.h"
 
 //#include "utils/URIUtils.h"
-// #include "utils/StringUtils.h"
 // #include "Util.h"
 // #include "filesystem/File.h"
 // #include "FileItem.h"
@@ -25,6 +23,9 @@
 #include <string>
 #include <vector>
 
+#include <kodi/tools/StringUtils.h>
+
+using namespace kodi::tools;
 //using namespace ADDON;
 
 namespace
@@ -839,7 +840,7 @@ std::string CURL::Encode(const std::string& strURLData)
 
     // Don't URL encode "-_.!()" according to RFC1738
     //! @todo Update it to "-_.~" after Gotham according to RFC3986
-    if (StringUtils::isasciialphanum(kar) || kar == '-' || kar == '.' || kar == '_' || kar == '!' || kar == '(' || kar == ')')
+    if (StringUtils::IsAsciiAlphaNum(kar) || kar == '-' || kar == '.' || kar == '_' || kar == '!' || kar == '(' || kar == ')')
       strResult.push_back(kar);
     else
       strResult += StringUtils::Format("%%%2.2x", (unsigned int)((unsigned char)kar));

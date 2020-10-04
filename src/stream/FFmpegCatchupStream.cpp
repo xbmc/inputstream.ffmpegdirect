@@ -12,7 +12,6 @@
 #include "threads/SingleLock.h"
 #include "url/URL.h"
 #include "../utils/Log.h"
-#include "../utils/StringUtils.h"
 
 #ifdef TARGET_POSIX
 #include "platform/posix/XTimeUtils.h"
@@ -37,9 +36,11 @@ extern "C" {
 
 //#include "platform/posix/XTimeUtils.h"
 
+#include <kodi/tools/StringUtils.h>
 #include <kodi/Filesystem.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions

@@ -8,9 +8,10 @@
 
 #include "FilenameUtils.h"
 
-#include "StringUtils.h"
+#include <kodi/tools/StringUtils.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 std::string FilenameUtils::MakeLegalFileName(const std::string &strFile, int LegalType)
 {
