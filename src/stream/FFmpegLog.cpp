@@ -8,16 +8,17 @@
 
 #include "FFmpegLog.h"
 
-#include "threads/CriticalSection.h"
-#include "threads/Thread.h"
 #include "../utils/Log.h"
-#include "../utils/StringUtils.h"
 
 #include <map>
+#include <mutex>
+#include <thread>
 
+#include <kodi/tools/StringUtils.h>
 #include <kodi/General.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 int FFmpegLog::level = AV_LOG_INFO;
 bool FFmpegLog::enabled = false;
@@ -42,16 +43,16 @@ int FFmpegLog::GetLogLevel()
   return FFmpegLog::level;
 }
 
-static CCriticalSection m_ffmpegdirectLogSection;
-std::map<const CThread*, std::string> g_ffmpegdirectLogbuffer;
+static std::mutex m_ffmpegdirectLogMutex;
+std::map<const std::thread::id, std::string> g_ffmpegdirectLogbuffer;
 
 void ff_flush_avutil_log_buffers(void)
 {
-  CSingleLock lock(m_ffmpegdirectLogSection);
+  std::lock_guard<std::mutex> lock(m_ffmpegdirectLogMutex);
   /* Loop through the logbuffer list and remove any blank buffers
      If the thread using the buffer is still active, it will just
      add a new buffer next time it writes to the log */
-  std::map<const CThread*, std::string>::iterator it;
+  std::map<const std::thread::id, std::string>::iterator it;
   for (it = g_ffmpegdirectLogbuffer.begin(); it != g_ffmpegdirectLogbuffer.end(); )
     if ((*it).second.empty())
       g_ffmpegdirectLogbuffer.erase(it++);
@@ -61,8 +62,8 @@ void ff_flush_avutil_log_buffers(void)
 
 void ff_avutil_log(void* ptr, int level, const char* format, va_list va)
 {
-  CSingleLock lock(m_ffmpegdirectLogSection);
-  const CThread* threadId = CThread::GetCurrentThread();
+  std::lock_guard<std::mutex> lock(m_ffmpegdirectLogMutex);
+  const std::thread::id threadId = std::this_thread::get_id();
   std::string &buffer = g_ffmpegdirectLogbuffer[threadId];
 
   AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
@@ -92,7 +93,8 @@ void ff_avutil_log(void* ptr, int level, const char* format, va_list va)
   }
 
   std::string message = StringUtils::FormatV(format, va);
-  std::string prefix = StringUtils::Format("ffmpeg[%pX]: ", static_cast<const void*>(threadId));
+  //std::string prefix = StringUtils::Format("ffmpeg[%pX]: ", static_cast<const void*>(threadId));
+  std::string prefix = StringUtils::Format("ffmpeg[%X]: ", std::hash<std::thread::id>{}(std::this_thread::get_id()));
   if (avc)
   {
     if (avc->item_name)

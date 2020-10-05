@@ -10,8 +10,10 @@
 
 #include "URL.h"
 #include "../../utils/Log.h"
-#include "../../utils/StringUtils.h"
 
+#include <kodi/tools/StringUtils.h>
+
+using namespace kodi::tools;
 
 CUrlOptions::CUrlOptions() = default;
 

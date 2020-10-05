@@ -9,14 +9,8 @@
 #include "FFmpegCatchupStream.h"
 
 #include "CurlCatchupInput.h"
-#include "threads/SingleLock.h"
 #include "url/URL.h"
 #include "../utils/Log.h"
-#include "../utils/StringUtils.h"
-
-#ifdef TARGET_POSIX
-#include "platform/posix/XTimeUtils.h"
-#endif
 
 #ifndef __STDC_CONSTANT_MACROS
 #define __STDC_CONSTANT_MACROS
@@ -37,9 +31,11 @@ extern "C" {
 
 //#include "platform/posix/XTimeUtils.h"
 
+#include <kodi/tools/StringUtils.h>
 #include <kodi/Filesystem.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions
@@ -92,7 +88,7 @@ bool FFmpegCatchupStream::DemuxSeekTime(double timeMs, bool backwards, double& s
   if (seekResult >= 0)
   {
     {
-      CSingleLock lock(m_critSection);
+      std::lock_guard<std::mutex> lock(m_mutex);
       m_seekOffset = seekResult;
     }
 
@@ -118,7 +114,7 @@ DemuxPacket* FFmpegCatchupStream::DemuxRead()
   DemuxPacket* pPacket = FFmpegStream::DemuxRead();
   if (pPacket)
   {
-    CSingleLock lock(m_critSection);
+    std::lock_guard<std::mutex> lock(m_mutex);
     pPacket->pts += m_seekOffset;
     pPacket->dts += m_seekOffset;
 
@@ -177,7 +173,7 @@ void FFmpegCatchupStream::DemuxSetSpeed(int speed)
   else if (!IsPaused() && speed == DVD_PLAYSPEED_PAUSE)
   {
     // Pause Playback
-    CSingleLock lock(m_critSection);
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_pauseStartTime = m_currentDemuxTime;
     Log(LOGLEVEL_DEBUG, "%s - DemuxSetSpeed - Pause time: %lld", __FUNCTION__, static_cast<long long>(m_pauseStartTime));
   }

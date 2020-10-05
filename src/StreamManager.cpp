@@ -12,9 +12,11 @@
 #include "stream/TimeshiftStream.h"
 #include "utils/HttpProxy.h"
 #include "utils/Log.h"
-#include "utils/StringUtils.h"
+
+#include <kodi/tools/StringUtils.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions

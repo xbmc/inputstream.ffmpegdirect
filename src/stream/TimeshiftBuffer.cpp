@@ -11,11 +11,12 @@
 #include "url/URL.h"
 #include "../utils/DiskUtils.h"
 #include "../utils/Log.h"
-#include "../utils/StringUtils.h"
 
+#include <kodi/tools/StringUtils.h>
 #include <kodi/Filesystem.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 TimeshiftBuffer::TimeshiftBuffer(IManageDemuxPacket* demuxPacketManager)
   : m_demuxPacketManager(demuxPacketManager)

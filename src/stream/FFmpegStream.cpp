@@ -8,18 +8,16 @@
 
 #include "FFmpegStream.h"
 
-#include "threads/SingleLock.h"
 #include "url/URL.h"
 #include "FFmpegLog.h"
 #include "../utils/FilenameUtils.h"
 #include "../utils/Log.h"
-#include "../utils/StringUtils.h"
 
 #include "IManageDemuxPacket.h"
 
-
 #include <chrono>
 #include <ctime>
+#include <thread>
 
 #ifndef __STDC_CONSTANT_MACROS
 #define __STDC_CONSTANT_MACROS
@@ -36,10 +34,12 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
+#include <kodi/tools/StringUtils.h>
 #include <kodi/Filesystem.h>
 #include <kodi/Network.h>
 
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions
@@ -282,7 +282,7 @@ DemuxPacket* FFmpegStream::DemuxRead()
   // on some cases where the received packet is invalid we will need to return an empty packet (0 length) otherwise the main loop (in CVideoPlayer)
   // would consider this the end of stream and stop.
   bool bReturnEmpty = false;
-  { CSingleLock lock(m_critSection); // open lock scope
+  { std::lock_guard<std::mutex> lock(m_mutex); // open lock scope
   if (m_pFormatContext)
   {
     // assume we are not eof
@@ -1429,7 +1429,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
 
   if (m_checkTransportStream)
   {
-    FFmpegDirectThreads::EndTime timer(1000);
+    kodi::tools::CEndTime timer(1000);
 
     while (!IsTransportStreamReady())
     {
@@ -1457,7 +1457,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
 
   int ret;
   {
-    CSingleLock lock(m_critSection);
+    std::lock_guard<std::mutex> lock(m_mutex);
     ret = av_seek_frame(m_pFormatContext, m_seekStream, seek_pts, backwards ? AVSEEK_FLAG_BACKWARD : 0);
 
     if (ret < 0)

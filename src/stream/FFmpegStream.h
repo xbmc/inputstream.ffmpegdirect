@@ -8,9 +8,6 @@
 
 #pragma once
 
-#include "threads/CriticalSection.h"
-#include "threads/SystemClock.h"
-
 #include "../utils/HttpProxy.h"
 #include "../utils/Properties.h"
 #include "BaseStream.h"
@@ -20,10 +17,12 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <sstream>
 
 #include <kodi/addon-instance/Inputstream.h>
+#include <kodi/tools/EndTime.h>
 #include <kodi/DemuxCrypto.h>
 
 #ifndef __GNUC__
@@ -111,7 +110,7 @@ protected:
   virtual bool CheckReturnEmptyOnPacketResult(int result);
 
   int64_t m_demuxerId;
-  CCriticalSection m_critSection;
+  mutable std::mutex m_mutex;
   double m_currentPts; // used for stream length estimation
   bool m_demuxResetOpenSuccess = false;
   std::string m_streamUrl;
@@ -171,7 +170,7 @@ private:
   unsigned int m_initialProgramNumber;
   int m_seekStream;
 
-  FFmpegDirectThreads::EndTime  m_timeout;
+  kodi::tools::CEndTime  m_timeout;
 
   // Due to limitations of ffmpeg, we only can detect a program change
   // with a packet. This struct saves the packet for the next read and

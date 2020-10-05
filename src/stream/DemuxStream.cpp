@@ -9,12 +9,7 @@
 #include "DemuxStream.h"
 
 #include "../utils/Log.h"
-#include "../utils/StringUtils.h"
 #include "url/URL.h"
-
-#ifdef TARGET_POSIX
-#include "platform/posix/XTimeUtils.h"
-#endif
 
 #ifndef __STDC_CONSTANT_MACROS
 #define __STDC_CONSTANT_MACROS
@@ -31,7 +26,10 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
+#include <kodi/tools/StringUtils.h>
+
 using namespace ffmpegdirect;
+using namespace kodi::tools;
 
 /***********************************************************
 * InputSteam Client AddOn specific public library functions
