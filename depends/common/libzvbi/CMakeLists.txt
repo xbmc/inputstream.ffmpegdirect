@@ -18,6 +18,7 @@ endif()
 include(ExternalProject)
 externalproject_add(libzvbi
                     SOURCE_DIR ${CMAKE_SOURCE_DIR}
+                    PATCH_COMMAND cd <SOURCE_DIR> && autoreconf -fi
                     CONFIGURE_COMMAND <SOURCE_DIR>/configure
                       --prefix=${CMAKE_INSTALL_PREFIX}
                       --enable-shared=no

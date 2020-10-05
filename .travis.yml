@@ -26,8 +26,9 @@ matrix:
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y yasm; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yasm; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y yasm autopoint; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yasm gettext; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH=${PATH}:/usr/local/opt/gettext/bin; fi
 
 #
 # The addon source is automatically checked out in $TRAVIS_BUILD_DIR,
