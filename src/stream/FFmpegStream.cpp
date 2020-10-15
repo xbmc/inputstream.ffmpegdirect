@@ -195,10 +195,10 @@ INPUTSTREAM_IDS FFmpegStream::GetStreamIds()
 
     for (const auto& streamPair : m_streams)
     {
-      if (iids.m_streamCount < INPUTSTREAM_IDS::MAX_STREAM_COUNT)
+      if (iids.m_streamCount < INPUTSTREAM_MAX_STREAM_COUNT)
         iids.m_streamIds[iids.m_streamCount++] = streamPair.second->uniqueId;
       else
-        Log(LOGLEVEL_ERROR, "Too many streams, only %u supported", INPUTSTREAM_IDS::MAX_STREAM_COUNT);
+        Log(LOGLEVEL_ERROR, "Too many streams, only %u supported", INPUTSTREAM_MAX_STREAM_COUNT);
     }
   }
 
