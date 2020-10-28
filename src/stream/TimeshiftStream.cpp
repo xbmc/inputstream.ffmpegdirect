@@ -50,7 +50,7 @@ bool TimeshiftStream::Open(const std::string& streamUrl, const std::string& mime
   return false;
 }
 
-DemuxPacket* TimeshiftStream::DemuxRead()
+DEMUX_PACKET* TimeshiftStream::DemuxRead()
 {
   std::unique_lock<std::mutex> lock(m_mutex);
   m_condition.wait_for(lock, std::chrono::milliseconds(10), [&] { return m_timeshiftBuffer.HasPacketAvailable(); });
@@ -92,7 +92,7 @@ void TimeshiftStream::DoReadWrite()
   Log(LOGLEVEL_DEBUG, "%s - Timeshift: started", __FUNCTION__);
   while (m_running)
   {
-    DemuxPacket* pPacket = FFmpegStream::DemuxRead();
+    DEMUX_PACKET* pPacket = FFmpegStream::DemuxRead();
     if (pPacket)
     {
       std::lock_guard<std::mutex> lock(m_mutex);
@@ -105,32 +105,30 @@ void TimeshiftStream::DoReadWrite()
   return;
 }
 
-void TimeshiftStream::GetCapabilities(INPUTSTREAM_CAPABILITIES &caps)
+void TimeshiftStream::GetCapabilities(kodi::addon::InputstreamCapabilities& caps)
 {
-  caps.m_mask = INPUTSTREAM_CAPABILITIES::SUPPORTS_IDEMUX |
-    INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME |
-    INPUTSTREAM_CAPABILITIES::SUPPORTS_SEEK |
-    INPUTSTREAM_CAPABILITIES::SUPPORTS_PAUSE;
+  caps.SetMask(INPUTSTREAM_SUPPORTS_IDEMUX |
+    INPUTSTREAM_SUPPORTS_ITIME |
+    INPUTSTREAM_SUPPORTS_SEEK |
+    INPUTSTREAM_SUPPORTS_PAUSE);
 }
 
 int64_t TimeshiftStream::LengthStream()
 {
   int64_t length = -1;
-  INPUTSTREAM_TIMES times = {0};
-  if (GetTimes(times) && times.ptsEnd >= times.ptsBegin)
-    length = static_cast<int64_t>(times.ptsEnd - times.ptsBegin);
+  kodi::addon::InputstreamTimes times;
+  if (GetTimes(times) && times.GetPtsEnd() >= times.GetPtsBegin())
+    length = static_cast<int64_t>(times.GetPtsEnd() - times.GetPtsBegin());
 
   return length;
 }
 
-bool TimeshiftStream::GetTimes(INPUTSTREAM_TIMES& times)
+bool TimeshiftStream::GetTimes(kodi::addon::InputstreamTimes& times)
 {
-  times = {0};
-
-  times.startTime = m_timeshiftBuffer.GetStartTimeSecs();
-  times.ptsStart = 0;
-  times.ptsBegin = m_timeshiftBuffer.GetEarliestSegmentMillisecondsSinceStart() * 1000;
-  times.ptsEnd = m_timeshiftBuffer.GetMillisecondsSinceStart() * 1000;
+  times.SetStartTime(m_timeshiftBuffer.GetStartTimeSecs());
+  times.SetPtsStart(0);
+  times.SetPtsBegin(m_timeshiftBuffer.GetEarliestSegmentMillisecondsSinceStart() * 1000);
+  times.SetPtsEnd(m_timeshiftBuffer.GetMillisecondsSinceStart() * 1000);
 
   return true;
 }
@@ -149,9 +147,9 @@ void TimeshiftStream::DemuxSetSpeed(int speed)
 {
   Log(LOGLEVEL_DEBUG, "%s - DemuxSetSpeed %d", __FUNCTION__, speed);
 
-  if (m_demuxSpeed == DVD_PLAYSPEED_PAUSE && speed != DVD_PLAYSPEED_PAUSE)
+  if (m_demuxSpeed == STREAM_PLAYSPEED_PAUSE && speed != STREAM_PLAYSPEED_PAUSE)
     m_timeshiftBuffer.SetPaused(false); // Resume Playback
-  else if (m_demuxSpeed != DVD_PLAYSPEED_PAUSE && speed == DVD_PLAYSPEED_PAUSE)
+  else if (m_demuxSpeed != STREAM_PLAYSPEED_PAUSE && speed == STREAM_PLAYSPEED_PAUSE)
     m_timeshiftBuffer.SetPaused(true); // Pause Playback
 
   m_demuxSpeed = speed;

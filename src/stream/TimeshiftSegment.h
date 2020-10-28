@@ -31,8 +31,8 @@ public:
   TimeshiftSegment(IManageDemuxPacket* demuxPacketManager, const std::string& streamId, int segmentId, const std::string& timeshiftBufferPath);
   ~TimeshiftSegment();
 
-  void AddPacket(DemuxPacket* packet);
-  DemuxPacket* ReadPacket();
+  void AddPacket(DEMUX_PACKET* packet);
+  DEMUX_PACKET* ReadPacket();
   bool Seek(double timeMs);
 
   int GetPacketCount();
@@ -52,11 +52,11 @@ protected:
   IManageDemuxPacket* m_demuxPacketManager;
 
 private:
-  void CopyPacket(DemuxPacket* sourcePacket, DemuxPacket* newPacket, bool allocateData);
-  void CopySideData(DemuxPacket *sourcePacket, DemuxPacket* newPacket);
-  void FreeSideData(std::shared_ptr<DemuxPacket>& packet);
-  void WritePacket(std::shared_ptr<DemuxPacket>& packet);
-  int LoadPacket(std::shared_ptr<DemuxPacket>& packet);
+  void CopyPacket(DEMUX_PACKET* sourcePacket, DEMUX_PACKET* newPacket, bool allocateData);
+  void CopySideData(DEMUX_PACKET *sourcePacket, DEMUX_PACKET* newPacket);
+  void FreeSideData(std::shared_ptr<DEMUX_PACKET>& packet);
+  void WritePacket(std::shared_ptr<DEMUX_PACKET>& packet);
+  int LoadPacket(std::shared_ptr<DEMUX_PACKET>& packet);
 
   std::shared_ptr<TimeshiftSegment> m_nextSegment;
 
@@ -64,7 +64,7 @@ private:
   int m_readPacketIndex = 0;
   int m_lastPacketSecondsSinceStart = 0;
 
-  std::vector<std::shared_ptr<DemuxPacket>> m_packetBuffer;
+  std::vector<std::shared_ptr<DEMUX_PACKET>> m_packetBuffer;
   std::map<int, int> m_packetTimeIndexMap;
 
   bool m_completed = false;

@@ -18,9 +18,9 @@ class IManageDemuxPacket
 public:
   virtual ~IManageDemuxPacket() = default;
 
-  virtual DemuxPacket* AllocateDemuxPacketFromInputStreamAPI(int dataSize) = 0;
-  virtual DemuxPacket* AllocateEncryptedDemuxPacketFromInputStreamAPI(int dataSize, unsigned int encryptedSubsampleCount) = 0;
-  virtual void FreeDemuxPacketFromInputStreamAPI(DemuxPacket* packet) = 0;
+  virtual DEMUX_PACKET* AllocateDemuxPacketFromInputStreamAPI(int dataSize) = 0;
+  virtual DEMUX_PACKET* AllocateEncryptedDemuxPacketFromInputStreamAPI(int dataSize, unsigned int encryptedSubsampleCount) = 0;
+  virtual void FreeDemuxPacketFromInputStreamAPI(DEMUX_PACKET* packet) = 0;
 };
 
 } //namespace ffmpegdirect

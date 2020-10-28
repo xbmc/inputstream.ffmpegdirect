@@ -18,7 +18,6 @@ extern "C"
 }
 
 #include <kodi/tools/StringUtils.h>
-#include <kodi/DemuxCrypto.h>
 
 using namespace ffmpegdirect;
 using namespace kodi::tools;
@@ -62,13 +61,19 @@ TimeshiftSegment::~TimeshiftSegment()
   for (auto& demuxPacket : m_packetBuffer)
   {
     delete[] demuxPacket->pData;
+    if (demuxPacket->cryptoInfo)
+    {
+      delete[] demuxPacket->cryptoInfo->clearBytes;
+      delete[] demuxPacket->cryptoInfo->cipherBytes;
+      delete demuxPacket->cryptoInfo;
+    }
     FreeSideData(demuxPacket);
   }
 }
 
-void TimeshiftSegment::AddPacket(DemuxPacket* packet)
+void TimeshiftSegment::AddPacket(DEMUX_PACKET* packet)
 {
-  std::shared_ptr<DemuxPacket> newPacket = std::make_shared<DemuxPacket>();
+  std::shared_ptr<DEMUX_PACKET> newPacket = std::make_shared<DEMUX_PACKET>();
 
   CopyPacket(packet, newPacket.get(), true);
 
@@ -86,8 +91,8 @@ void TimeshiftSegment::AddPacket(DemuxPacket* packet)
   m_packetBuffer.emplace_back(newPacket);
 
   int secondsSinceStart = 0;
-  if (packet->pts != DVD_NOPTS_VALUE && packet->pts > 0)
-    secondsSinceStart = packet->pts / DVD_TIME_BASE;
+  if (packet->pts != STREAM_NOPTS_VALUE && packet->pts > 0)
+    secondsSinceStart = packet->pts / STREAM_TIME_BASE;
 
   if (secondsSinceStart != m_lastPacketSecondsSinceStart)
   {
@@ -98,7 +103,7 @@ void TimeshiftSegment::AddPacket(DemuxPacket* packet)
   m_currentPacketIndex++;
 }
 
-void TimeshiftSegment::CopyPacket(DemuxPacket* sourcePacket, DemuxPacket* newPacket, bool allocateData)
+void TimeshiftSegment::CopyPacket(DEMUX_PACKET* sourcePacket, DEMUX_PACKET* newPacket, bool allocateData)
 {
   // Note that this is not needed if allocating in kodi
   if (allocateData)
@@ -119,9 +124,30 @@ void TimeshiftSegment::CopyPacket(DemuxPacket* sourcePacket, DemuxPacket* newPac
   newPacket->dispTime = sourcePacket->dispTime;
   newPacket->recoveryPoint = sourcePacket->recoveryPoint;
   newPacket->cryptoInfo = sourcePacket->cryptoInfo;
+
+  if (sourcePacket->cryptoInfo)
+  {
+    if (allocateData)
+    {
+      newPacket->cryptoInfo = new DEMUX_CRYPTO_INFO();
+      newPacket->cryptoInfo->clearBytes = new uint16_t[sourcePacket->cryptoInfo->numSubSamples];
+      newPacket->cryptoInfo->cipherBytes = new uint32_t[sourcePacket->cryptoInfo->numSubSamples];
+    }
+    newPacket->cryptoInfo->numSubSamples = sourcePacket->cryptoInfo->numSubSamples;
+    newPacket->cryptoInfo->flags = sourcePacket->cryptoInfo->flags;
+
+    memcpy(newPacket->cryptoInfo->clearBytes, sourcePacket->cryptoInfo->clearBytes, newPacket->cryptoInfo->numSubSamples * sizeof(uint16_t));
+    memcpy(newPacket->cryptoInfo->cipherBytes, sourcePacket->cryptoInfo->cipherBytes, newPacket->cryptoInfo->numSubSamples * sizeof(uint32_t));
+    memcpy(newPacket->cryptoInfo->iv, sourcePacket->cryptoInfo->iv, sizeof(uint8_t) * 16);
+    memcpy(newPacket->cryptoInfo->kid, sourcePacket->cryptoInfo->kid, sizeof(uint8_t) * 16);
+  }
+  else
+  {
+    newPacket->cryptoInfo = nullptr;
+  }
 }
 
-void TimeshiftSegment::CopySideData(DemuxPacket* sourcePacket, DemuxPacket* newPacket)
+void TimeshiftSegment::CopySideData(DEMUX_PACKET* sourcePacket, DEMUX_PACKET* newPacket)
 {
   newPacket->pSideData = nullptr;
   newPacket->iSideDataElems = 0;
@@ -140,7 +166,7 @@ void TimeshiftSegment::CopySideData(DemuxPacket* sourcePacket, DemuxPacket* newP
   }
 }
 
-void TimeshiftSegment::FreeSideData(std::shared_ptr<DemuxPacket>& packet)
+void TimeshiftSegment::FreeSideData(std::shared_ptr<DEMUX_PACKET>& packet)
 {
   if (packet->iSideDataElems > 0)
   {
@@ -152,7 +178,7 @@ void TimeshiftSegment::FreeSideData(std::shared_ptr<DemuxPacket>& packet)
   }
 }
 
-void TimeshiftSegment::WritePacket(std::shared_ptr<DemuxPacket>& packet)
+void TimeshiftSegment::WritePacket(std::shared_ptr<DEMUX_PACKET>& packet)
 {
   m_fileHandle.Write(&packet->iSize, sizeof(packet->iSize));
   if (packet->iSize > 0)
@@ -215,7 +241,7 @@ void TimeshiftSegment::LoadSegment()
 
     for (int i = 0; i < packetCount; i++)
     {
-      std::shared_ptr<DemuxPacket> newPacket = std::make_shared<DemuxPacket>();
+      std::shared_ptr<DEMUX_PACKET> newPacket = std::make_shared<DEMUX_PACKET>();
       int loadedPacketIndex = LoadPacket(newPacket);
       // Checksum does not match
       if (loadedPacketIndex != i)
@@ -231,7 +257,7 @@ void TimeshiftSegment::LoadSegment()
   }
 }
 
-int TimeshiftSegment::LoadPacket(std::shared_ptr<DemuxPacket>& packet)
+int TimeshiftSegment::LoadPacket(std::shared_ptr<DEMUX_PACKET>& packet)
 {
   //Checksum
   int packetIndex;
@@ -279,10 +305,13 @@ int TimeshiftSegment::LoadPacket(std::shared_ptr<DemuxPacket>& packet)
     int numSubSamples;
     m_fileHandle.Read(&numSubSamples, sizeof(numSubSamples));
 
-    packet->cryptoInfo = new DemuxCryptoInfo(numSubSamples);
+    packet->cryptoInfo = new DEMUX_CRYPTO_INFO();
+
     m_fileHandle.Read(&packet->cryptoInfo->flags, sizeof(packet->cryptoInfo->flags));
     if (numSubSamples > 0)
     {
+      packet->cryptoInfo->clearBytes = new uint16_t[numSubSamples];
+      packet->cryptoInfo->cipherBytes = new uint32_t[numSubSamples];
       m_fileHandle.Read(packet->cryptoInfo->clearBytes, sizeof(uint16_t) * numSubSamples);
       m_fileHandle.Read(packet->cryptoInfo->cipherBytes, sizeof(uint32_t) * numSubSamples);
     }
@@ -325,6 +354,8 @@ void TimeshiftSegment::ClearPackets()
     delete[] demuxPacket->pData;
     if (demuxPacket->cryptoInfo)
     {
+      delete[] demuxPacket->cryptoInfo->clearBytes;
+      delete[] demuxPacket->cryptoInfo->cipherBytes;
       delete demuxPacket->cryptoInfo;
     }
     FreeSideData(demuxPacket);
@@ -376,15 +407,15 @@ int TimeshiftSegment::GetSegmentId()
   return m_segmentId;
 }
 
-DemuxPacket* TimeshiftSegment::ReadPacket()
+DEMUX_PACKET* TimeshiftSegment::ReadPacket()
 {
-  DemuxPacket* packet = nullptr;
+  DEMUX_PACKET* packet = nullptr;
 
   std::lock_guard<std::mutex> lock(m_mutex);
 
   if (m_packetBuffer.size() != 0 && m_readPacketIndex != m_packetBuffer.size())
   {
-    std::shared_ptr<DemuxPacket>& nextPacket = m_packetBuffer[m_readPacketIndex++];
+    std::shared_ptr<DEMUX_PACKET>& nextPacket = m_packetBuffer[m_readPacketIndex++];
 
     packet = m_demuxPacketManager->AllocateDemuxPacketFromInputStreamAPI(nextPacket->iSize);
 
@@ -426,27 +457,27 @@ bool TimeshiftSegment::Seek(double timeMs)
 
 /* For reference */
 
-// typedef struct DemuxPacket
+// typedef struct DEMUX_PACKET
 // {
-//   DemuxPacket() = default;
+//   uint8_t* pData;
+//   int iSize;
+//   int iStreamId;
+//   int64_t demuxerId;
+//   int iGroupId;
 
-//   uint8_t *pData = nullptr;
-//   int iSize = 0;
-//   int iStreamId = -1;
-//   int64_t demuxerId = -1; // id of the demuxer that created the packet
-//   int iGroupId = -1; // the group this data belongs to, used to group data from different streams together
+//   void* pSideData;
+//   int iSideDataElems;
 
-//   void *pSideData = nullptr;
-//   int iSideDataElems = 0;
+//   double pts;
+//   double dts;
+//   double duration;
+//   int dispTime;
+//   bool recoveryPoint;
 
-//   double pts = DVD_NOPTS_VALUE;
-//   double dts = DVD_NOPTS_VALUE;
-//   double duration = 0; // duration in DVD_TIME_BASE if available
-//   int dispTime = 0;
-//   bool recoveryPoint = false;
+//   struct DEMUX_CRYPTO_INFO* cryptoInfo;
 
-//   std::shared_ptr<DemuxCryptoInfo> cryptoInfo;
-// } DemuxPacket;
+//   KODI_HANDLE backendPacket;
+// } DEMUX_PACKET;
 
 // typedef struct AVPacketSideData {
 //     uint8_t *data;

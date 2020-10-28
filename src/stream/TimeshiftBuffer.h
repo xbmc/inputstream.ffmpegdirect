@@ -41,8 +41,8 @@ public:
   TimeshiftBuffer(IManageDemuxPacket* demuxPacketManager);
   ~TimeshiftBuffer();
 
-  void AddPacket(DemuxPacket* packet);
-  DemuxPacket* ReadPacket();
+  void AddPacket(DEMUX_PACKET* packet);
+  DEMUX_PACKET* ReadPacket();
   bool Seek(double timeMs);
   void SetPaused(bool paused);
 
