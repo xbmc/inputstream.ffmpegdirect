@@ -24,9 +24,9 @@ public:
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) = 0;
   virtual void Close() = 0;
-  virtual void GetCapabilities(INPUTSTREAM_CAPABILITIES& caps) = 0;
-  virtual INPUTSTREAM_IDS GetStreamIds() = 0;
-  virtual INPUTSTREAM_INFO GetStream(int streamid) = 0;
+  virtual void GetCapabilities(kodi::addon::InputstreamCapabilities& caps) = 0;
+  virtual bool GetStreamIds(std::vector<unsigned int>& ids) = 0;
+  virtual bool GetStream(int streamid, kodi::addon::InputstreamInfo& info) = 0;
   virtual void EnableStream(int streamid, bool enable) = 0;
   virtual bool OpenStream(int streamid) = 0;
 
@@ -34,7 +34,7 @@ public:
   virtual void DemuxReset() = 0;
   virtual void DemuxAbort() = 0;
   virtual void DemuxFlush() = 0;
-  virtual DemuxPacket* DemuxRead() = 0;
+  virtual DEMUX_PACKET* DemuxRead() = 0;
   virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) = 0;
   virtual void DemuxSetSpeed(int speed) = 0;
   virtual void SetVideoResolution(int width, int height) = 0;
@@ -43,7 +43,7 @@ public:
   virtual int GetTime() = 0;
 
   //New
-  virtual bool GetTimes(INPUTSTREAM_TIMES& times) = 0;
+  virtual bool GetTimes(kodi::addon::InputstreamTimes& times) = 0;
 
   virtual bool PosTime(int ms) = 0;
 

@@ -28,9 +28,9 @@ public:
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
   virtual bool DemuxSeekTime(double timeMs, bool backwards, double& startpts) override;
-  virtual DemuxPacket* DemuxRead() override;
+  virtual DEMUX_PACKET* DemuxRead() override;
   virtual void DemuxSetSpeed(int speed) override;
-  virtual void GetCapabilities(INPUTSTREAM_CAPABILITIES& caps) override;
+  virtual void GetCapabilities(kodi::addon::InputstreamCapabilities& caps) override;
   bool DemuxSeekTime(double timeMs)
   {
     double temp = 0;
@@ -39,7 +39,7 @@ public:
 
   int64_t SeekCatchupStream(double timeMs, bool backwards);
   virtual int64_t LengthStream() override;
-  virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
+  virtual bool GetTimes(kodi::addon::InputstreamTimes& times) override;
   virtual bool IsRealTimeStream() override;
 
 protected:

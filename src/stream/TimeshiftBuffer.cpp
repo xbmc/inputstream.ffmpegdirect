@@ -99,23 +99,23 @@ bool TimeshiftBuffer::Start(const std::string& streamId)
   return true;
 }
 
-void TimeshiftBuffer::AddPacket(DemuxPacket* packet)
+void TimeshiftBuffer::AddPacket(DEMUX_PACKET* packet)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
 
   // Useful for debugging the initial set of packets in a stream
   if (m_readingInitialPackets)
   {
-    Log(LOGLEVEL_DEBUG, "%s - Writing first segment - PTS: %f, DTA: %f, pts sec: %f, dts sec: %f", __FUNCTION__, packet->pts, packet->dts, packet->pts / DVD_TIME_BASE, packet->dts / DVD_TIME_BASE);
+    Log(LOGLEVEL_DEBUG, "%s - Writing first segment - PTS: %f, DTA: %f, pts sec: %f, dts sec: %f", __FUNCTION__, packet->pts, packet->dts, packet->pts / STREAM_TIME_BASE, packet->dts / STREAM_TIME_BASE);
 
     // Note that this is a heuristic for a packet stream stabilising, unknown if it's true of all stream types
-    if (packet->pts != DVD_NOPTS_VALUE && packet->pts == packet->dts)
+    if (packet->pts != STREAM_NOPTS_VALUE && packet->pts == packet->dts)
       m_readingInitialPackets = false;
   }
 
   int secondsSinceStart = 0;
-  if (packet->pts != DVD_NOPTS_VALUE && packet->pts > 0)
-    secondsSinceStart = packet->pts / DVD_TIME_BASE;
+  if (packet->pts != STREAM_NOPTS_VALUE && packet->pts > 0)
+    secondsSinceStart = packet->pts / STREAM_TIME_BASE;
 
   if (secondsSinceStart - m_lastSegmentSecondsSinceStart >= TIMESHIFT_SEGMENT_LENGTH_SECS)
   {
@@ -130,7 +130,7 @@ void TimeshiftBuffer::AddPacket(DemuxPacket* packet)
 
       Log(LOGLEVEL_INFO, "%s - Writing new segment - seconds: %d, last seg seconds: %d, last seg packet count: %d, new seg index: %d, pts %.2f, dts: %.2f, pts sec: %.0f, dts sec: %.0f",
                          __FUNCTION__, secondsSinceStart, m_lastSegmentSecondsSinceStart, m_previousWriteSegment->GetPacketCount(), m_currentSegmentIndex,
-                         packet->pts, packet->dts, packet->pts / DVD_TIME_BASE, packet->dts / DVD_TIME_BASE);
+                         packet->pts, packet->dts, packet->pts / STREAM_TIME_BASE, packet->dts / STREAM_TIME_BASE);
 
       if (m_segmentIndexFileHandle.IsOpen())
       {
@@ -189,10 +189,10 @@ void TimeshiftBuffer::RemoveOldestInMemoryAndOnDiskSegments()
   }
 }
 
-DemuxPacket* TimeshiftBuffer::ReadPacket()
+DEMUX_PACKET* TimeshiftBuffer::ReadPacket()
 {
   std::lock_guard<std::mutex> lock(m_mutex);
-  DemuxPacket* packet = nullptr;
+  DEMUX_PACKET* packet = nullptr;
 
   if (m_readSegment)
   {
@@ -217,8 +217,8 @@ DemuxPacket* TimeshiftBuffer::ReadPacket()
         Log(LOGLEVEL_INFO, "%s - Reading next segment with id: %d, packet count: %d", __FUNCTION__, m_readSegment->GetSegmentId(), m_readSegment->GetPacketCount());
     }
 
-    if (packet && packet->pts != DVD_NOPTS_VALUE && packet->pts > 0)
-      m_currentDemuxTimeIndex = packet->pts / DVD_TIME_BASE;
+    if (packet && packet->pts != STREAM_NOPTS_VALUE && packet->pts > 0)
+      m_currentDemuxTimeIndex = packet->pts / STREAM_TIME_BASE;
   }
   else
   {

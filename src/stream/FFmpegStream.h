@@ -23,7 +23,6 @@
 
 #include <kodi/addon-instance/Inputstream.h>
 #include <kodi/tools/EndTime.h>
-#include <kodi/DemuxCrypto.h>
 
 #ifndef __GNUC__
 #pragma warning(push)
@@ -65,23 +64,23 @@ public:
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
   virtual void Close() override;
-  virtual void GetCapabilities(INPUTSTREAM_CAPABILITIES& caps) override;
-  virtual INPUTSTREAM_IDS GetStreamIds() override;
-  virtual INPUTSTREAM_INFO GetStream(int streamid) override;
+  virtual void GetCapabilities(kodi::addon::InputstreamCapabilities& caps) override;
+  virtual bool GetStreamIds(std::vector<unsigned int>& ids) override;
+  virtual bool GetStream(int streamid, kodi::addon::InputstreamInfo& info) override;
   virtual void EnableStream(int streamid, bool enable) override;
   virtual bool OpenStream(int streamid) override;
 
   virtual void DemuxReset() override;
   virtual void DemuxAbort() override;
   virtual void DemuxFlush() override;
-  virtual DemuxPacket* DemuxRead() override;
+  virtual DEMUX_PACKET* DemuxRead() override;
   virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) override;
   virtual void DemuxSetSpeed(int speed) override;
   virtual void SetVideoResolution(int width, int height) override;
 
   virtual int GetTotalTime() override;// { return 20; }
   virtual int GetTime() override;// { return m_displayTime; }
-  virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
+  virtual bool GetTimes(kodi::addon::InputstreamTimes& times) override;
   virtual bool PosTime(int ms) override;
 
   virtual int GetChapter() override;
@@ -106,7 +105,7 @@ public:
 protected:
   virtual std::string GetStreamCodecName(int iStreamId);
   virtual void UpdateCurrentPTS();
-  bool IsPaused() { return m_speed == DVD_PLAYSPEED_PAUSE; }
+  bool IsPaused() { return m_speed == STREAM_PLAYSPEED_PAUSE; }
   virtual bool CheckReturnEmptyOnPacketResult(int result);
 
   int64_t m_demuxerId;
@@ -126,7 +125,7 @@ private:
   double ConvertTimestamp(int64_t pts, int den, int num);
   unsigned int HLSSelectProgram();
   int GetNrOfStreams() const;
-  int GetNrOfStreams(INPUTSTREAM_INFO::STREAM_TYPE streamType);
+  int GetNrOfStreams(INPUTSTREAM_TYPE streamType);
   int GetNrOfSubtitleStreams();
   std::vector<DemuxStream*> GetDemuxStreams() const;
   DemuxStream* GetDemuxStream(int iStreamId) const;
@@ -143,7 +142,7 @@ private:
   TRANSPORT_STREAM_STATE TransportStreamVideoState();
   bool IsTransportStreamReady();
   bool IsProgramChange();
-  void StoreSideData(DemuxPacket *pkt, AVPacket *src);
+  void StoreSideData(DEMUX_PACKET *pkt, AVPacket *src);
 
   bool StreamsOpened() { return m_streams.size() > 0; }
 

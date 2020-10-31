@@ -34,13 +34,13 @@ public:
 
   virtual bool Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty) override;
   virtual void Close() override;
-  virtual void GetCapabilities(INPUTSTREAM_CAPABILITIES& caps) override;
+  virtual void GetCapabilities(kodi::addon::InputstreamCapabilities& caps) override;
 
-  virtual DemuxPacket* DemuxRead() override;
+  virtual DEMUX_PACKET* DemuxRead() override;
   virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) override;
   virtual void DemuxSetSpeed(int speed) override;
 
-  virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
+  virtual bool GetTimes(kodi::addon::InputstreamTimes& times) override;
 
   virtual int64_t LengthStream() override;
   virtual bool IsRealTimeStream() override;
@@ -58,7 +58,7 @@ private:
   std::condition_variable m_condition;
   std::mutex m_mutex;
 
-  double m_demuxSpeed = DVD_PLAYSPEED_NORMAL;
+  double m_demuxSpeed = STREAM_PLAYSPEED_NORMAL;
 
   TimeshiftBuffer m_timeshiftBuffer{m_demuxPacketManager};
 };

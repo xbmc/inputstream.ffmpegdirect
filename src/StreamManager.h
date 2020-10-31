@@ -44,25 +44,25 @@ public:
   InputStreamFFmpegDirect(KODI_HANDLE instance, const std::string& version);
   ~InputStreamFFmpegDirect();
 
-  virtual bool Open(INPUTSTREAM& props) override;
+  virtual bool Open(const kodi::addon::InputstreamProperty& props) override;
   virtual void Close() override;
-  virtual void GetCapabilities(INPUTSTREAM_CAPABILITIES& caps) override;
-  virtual INPUTSTREAM_IDS GetStreamIds() override;
-  virtual INPUTSTREAM_INFO GetStream(int streamid) override;
+  virtual void GetCapabilities(kodi::addon::InputstreamCapabilities& caps) override;
+  virtual bool GetStreamIds(std::vector<unsigned int>& ids) override;
+  virtual bool GetStream(int streamid, kodi::addon::InputstreamInfo& info) override;
   virtual void EnableStream(int streamid, bool enable) override;
   virtual bool OpenStream(int streamid) override;
 
   virtual void DemuxReset() override;
   virtual void DemuxAbort() override;
   virtual void DemuxFlush() override;
-  virtual DemuxPacket* DemuxRead() override;
+  virtual DEMUX_PACKET* DemuxRead() override;
   virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) override;
   virtual void DemuxSetSpeed(int speed) override;
   virtual void SetVideoResolution(int width, int height) override;
 
   virtual int GetTotalTime() override;
   virtual int GetTime() override;
-  virtual bool GetTimes(INPUTSTREAM_TIMES& times) override;
+  virtual bool GetTimes(kodi::addon::InputstreamTimes& times) override;
   virtual bool PosTime(int ms) override;
 
   virtual int GetChapter() override;
@@ -77,9 +77,9 @@ public:
   virtual int64_t LengthStream() override;
   virtual bool IsRealTimeStream() override; // { return true; }
 
-  DemuxPacket* AllocateDemuxPacketFromInputStreamAPI(int dataSize) override;
-  DemuxPacket* AllocateEncryptedDemuxPacketFromInputStreamAPI(int dataSize, unsigned int encryptedSubsampleCount) override;
-  void FreeDemuxPacketFromInputStreamAPI(DemuxPacket* packet) override;
+  DEMUX_PACKET* AllocateDemuxPacketFromInputStreamAPI(int dataSize) override;
+  DEMUX_PACKET* AllocateEncryptedDemuxPacketFromInputStreamAPI(int dataSize, unsigned int encryptedSubsampleCount) override;
+  void FreeDemuxPacketFromInputStreamAPI(DEMUX_PACKET* packet) override;
 
 protected:
 

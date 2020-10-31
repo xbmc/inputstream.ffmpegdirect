@@ -109,9 +109,9 @@ bool FFmpegCatchupStream::DemuxSeekTime(double timeMs, bool backwards, double& s
   return false;
 }
 
-DemuxPacket* FFmpegCatchupStream::DemuxRead()
+DEMUX_PACKET* FFmpegCatchupStream::DemuxRead()
 {
-  DemuxPacket* pPacket = FFmpegStream::DemuxRead();
+  DEMUX_PACKET* pPacket = FFmpegStream::DemuxRead();
   if (pPacket)
   {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -163,14 +163,14 @@ void FFmpegCatchupStream::DemuxSetSpeed(int speed)
 {
   Log(LOGLEVEL_INFO, "%s - DemuxSetSpeed %d", __FUNCTION__, speed);
 
-  if (IsPaused() && speed != DVD_PLAYSPEED_PAUSE)
+  if (IsPaused() && speed != STREAM_PLAYSPEED_PAUSE)
   {
     // Resume Playback
     Log(LOGLEVEL_DEBUG, "%s - DemuxSetSpeed - Unpause time: %lld", __FUNCTION__, static_cast<long long>(m_pauseStartTime));
     m_lastSeekWasLive = false;
     DemuxSeekTime(m_pauseStartTime);
   }
-  else if (!IsPaused() && speed == DVD_PLAYSPEED_PAUSE)
+  else if (!IsPaused() && speed == STREAM_PLAYSPEED_PAUSE)
   {
     // Pause Playback
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -181,16 +181,16 @@ void FFmpegCatchupStream::DemuxSetSpeed(int speed)
   FFmpegStream::DemuxSetSpeed(speed);
 }
 
-void FFmpegCatchupStream::GetCapabilities(INPUTSTREAM_CAPABILITIES& caps)
+void FFmpegCatchupStream::GetCapabilities(kodi::addon::InputstreamCapabilities& caps)
 {
   Log(LOGLEVEL_DEBUG, "%s - Called", __FUNCTION__);
-  caps.m_mask = INPUTSTREAM_CAPABILITIES::SUPPORTS_IDEMUX |
-    // INPUTSTREAM_CAPABILITIES::SUPPORTS_IDISPLAYTIME |
-    INPUTSTREAM_CAPABILITIES::SUPPORTS_ITIME |
-    // INPUTSTREAM_CAPABILITIES::SUPPORTS_IPOSTIME |
-    INPUTSTREAM_CAPABILITIES::SUPPORTS_SEEK |
-    INPUTSTREAM_CAPABILITIES::SUPPORTS_PAUSE |
-    INPUTSTREAM_CAPABILITIES::SUPPORTS_ICHAPTER;
+  caps.SetMask(INPUTSTREAM_SUPPORTS_IDEMUX |
+    // INPUTSTREAM_SUPPORTS_IDISPLAYTIME |
+    INPUTSTREAM_SUPPORTS_ITIME |
+    // INPUTSTREAM_SUPPORTS_IPOSTIME |
+    INPUTSTREAM_SUPPORTS_SEEK |
+    INPUTSTREAM_SUPPORTS_PAUSE |
+    INPUTSTREAM_SUPPORTS_ICHAPTER);
 }
 
 namespace
@@ -223,7 +223,7 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, bool backwards)
 {
   // The argument timeMs that is supplied will not be in the same units as our m_catchupBufferOffset
   // So we need to divide by 1000 to convert to seconds.
-  // When we return the value we need to convert our seconds to microseconds so multiply by DVD_TIME_BASE
+  // When we return the value we need to convert our seconds to microseconds so multiply by STREAM_TIME_BASE
 
   if (m_catchupBufferStartTime > 0)
   {
@@ -279,7 +279,7 @@ int64_t FFmpegCatchupStream::SeekCatchupStream(double timeMs, bool backwards)
       m_streamUrl = GetUpdatedCatchupUrl();
     }
 
-    return static_cast<int64_t>(m_catchupBufferOffset) * DVD_TIME_BASE;
+    return static_cast<int64_t>(m_catchupBufferOffset) * STREAM_TIME_BASE;
   }
 
   return -1;
@@ -330,9 +330,9 @@ int64_t FFmpegCatchupStream::LengthStream()
   int64_t length = -1;
   if (m_catchupBufferStartTime > 0 && m_catchupBufferEndTime >= m_catchupBufferStartTime)
   {
-    INPUTSTREAM_TIMES times = {0};
-    if (GetTimes(times) && times.ptsEnd >= times.ptsBegin)
-      length = static_cast<int64_t>(times.ptsEnd - times.ptsBegin);
+    kodi::addon::InputstreamTimes times;
+    if (GetTimes(times) && times.GetPtsEnd() >= times.GetPtsBegin())
+      length = static_cast<int64_t>(times.GetPtsEnd() - times.GetPtsBegin());
   }
 
   Log(LOGLEVEL_DEBUG, "%s: %lld", __FUNCTION__, static_cast<long long>(length));
@@ -340,22 +340,21 @@ int64_t FFmpegCatchupStream::LengthStream()
   return length;
 }
 
-bool FFmpegCatchupStream::GetTimes(INPUTSTREAM_TIMES& times)
+bool FFmpegCatchupStream::GetTimes(kodi::addon::InputstreamTimes& times)
 {
   if (m_catchupBufferStartTime == 0)
     return false;
 
-  times = {0};
   const time_t dateTimeNow = time(0);
 
-  times.startTime = m_catchupBufferStartTime;
+  times.SetStartTime(m_catchupBufferStartTime);
   if (m_playbackAsLive)
-    times.ptsEnd = static_cast<double>(dateTimeNow - times.startTime) * DVD_TIME_BASE;
+    times.SetPtsEnd(static_cast<double>(dateTimeNow - times.GetStartTime()) * STREAM_TIME_BASE);
   else // it's like a video
-    times.ptsEnd = static_cast<double>(std::min(dateTimeNow, m_catchupBufferEndTime) - times.startTime) * DVD_TIME_BASE;
+    times.SetPtsEnd(static_cast<double>(std::min(dateTimeNow, m_catchupBufferEndTime) - times.GetStartTime()) * STREAM_TIME_BASE);
 
   Log(LOGLEVEL_DEBUG, "%s - startTime = %ld \tptsStart = %lld \tptsBegin = %lld \tptsEnd = %lld", __FUNCTION__,
-            times.startTime, static_cast<long long>(times.ptsStart), static_cast<long long>(times.ptsBegin), static_cast<long long>(times.ptsEnd));
+            times.GetStartTime(), static_cast<long long>(times.GetPtsStart()), static_cast<long long>(times.GetPtsBegin()), static_cast<long long>(times.GetPtsEnd()));
 
   return true;
 }
@@ -363,7 +362,7 @@ bool FFmpegCatchupStream::GetTimes(INPUTSTREAM_TIMES& times)
 void FFmpegCatchupStream::UpdateCurrentPTS()
 {
   FFmpegStream::UpdateCurrentPTS();
-  if (m_currentPts != DVD_NOPTS_VALUE)
+  if (m_currentPts != STREAM_NOPTS_VALUE)
     m_currentPts += m_seekOffset;
 }
 
