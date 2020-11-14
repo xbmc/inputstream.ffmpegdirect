@@ -1,6 +1,9 @@
+v1.18.1
+- Update: Restore using msys2 repo for mingw packages for windows
+
 v1.18.0
 - Update: inputstream API 3.0.1
-  - Fix wrong flags bit shift
+- Fix wrong flags bit shift
 
 v1.17.0
 - Update: inputstream API 3.0.0
