@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.18.0"
+  version="1.18.1"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -25,7 +25,11 @@
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>
     </assets>
-    <news>v1.18.0
+    <news>
+v1.18.1
+- Update: Bump for release
+
+v1.18.0
 - Update: inputstream API 3.0.1
   - Fix wrong flags bit shift
 
