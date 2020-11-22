@@ -1,3 +1,6 @@
+v1.18.2
+- Update: Bump for beta2 inputstream API change
+
 v1.18.1
 - Update: Add temporary ffmpeg patch for embedded EIT (EPG) data in mepgts streams
 
