@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.18.1"
+  version="1.18.2"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -26,6 +26,9 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.18.2
+- Update: Redact inputstream property URLs when logged
+
 v1.18.1
 - Update: Add temporary ffmpeg patch for embedded EIT (EPG) data in mepgts streams
 
