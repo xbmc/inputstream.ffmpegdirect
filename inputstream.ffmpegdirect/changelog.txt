@@ -1,3 +1,6 @@
+v1.18.3
+- Update: Release bump
+
 v1.18.2
 - Update: Redact inputstream property URLs when logged
 
