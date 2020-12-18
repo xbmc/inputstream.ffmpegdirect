@@ -10,6 +10,7 @@
 
 #include "FFmpegStream.h"
 #include "../utils/HttpProxy.h"
+#include "../utils/TimeUtils.h"
 
 namespace ffmpegdirect
 {
@@ -51,7 +52,7 @@ protected:
   bool TargetDistanceFromLiveSupported(long long secondsFromLive);
   const std::string GetDateTime(time_t time)
   {
-    std::tm timeStruct = *localtime(&time);
+    std::tm timeStruct = SafeLocaltime(time);
     char buffer[32];
     std::strftime(buffer, sizeof(buffer), "%Y-%m-%d.%X", &timeStruct);
 

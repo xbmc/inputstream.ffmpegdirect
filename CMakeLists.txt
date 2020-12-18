@@ -47,6 +47,7 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/utils/FilenameUtils.h
                     src/utils/Log.h
                     src/utils/Properties.h
+                    src/utils/TimeUtils.h
                     src/stream/url/URL.h
                     src/stream/url/UrlOptions.h
                     src/stream/url/Variant.h)
