@@ -54,7 +54,11 @@ if(NOT WIN32)
     list(APPEND EXTRA_CONF --cc=${CMAKE_C_COMPILER} --cxx=${CMAKE_CXX_COMPILER})
   endif()
 
-  if(CMAKE_CROSSCOMPILING)
+  if(CORE_SYSTEM_NAME STREQUAL android OR CORE_SYSTEM_NAME STREQUAL darwin_embedded OR CORE_PLATFORM_NAME STREQUAL rbpi)
+    set(CROSSCOMPILING 1)
+  endif()
+
+  if(CROSSCOMPILING)
     list(APPEND EXTRA_CONF --enable-cross-compile --arch=${CPU})
     list(APPEND EXTRA_CONF --ar=${CMAKE_AR} --strip=${CMAKE_STRIP})
     message(STATUS "CROSS: ${EXTRA_CONF}")

@@ -10,7 +10,6 @@
 
 #include "stream/FFmpegCatchupStream.h"
 #include "stream/TimeshiftStream.h"
-#include "stream/url/URL.h"
 #include "utils/HttpProxy.h"
 #include "utils/Log.h"
 
@@ -68,10 +67,7 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
 
   for (const auto& prop : props.GetProperties())
   {
-    if (StringUtils::StartsWith(prop.second, "http://") || StringUtils::StartsWith(prop.second, "https://"))
-      Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: %s = %s", prop.first.c_str(), CURL::GetRedacted(prop.second).c_str());
-    else
-      Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: %s = %s", prop.first.c_str(), prop.second.c_str());
+    Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect property: %s = %s", prop.first.c_str(), prop.second.c_str());
 
     if (PROGRAM_NUMBER == prop.first)
     {

@@ -21,6 +21,13 @@ set(CATCHUP_SOURCES src/StreamManager.cpp
                     src/stream/FFmpegStream.cpp
                     src/stream/CurlCatchupInput.cpp
                     src/stream/CurlInput.cpp
+                    src/stream/commons/Exception.cpp
+                    src/stream/threads/Atomics.cpp
+                    src/stream/threads/Event.cpp
+                    src/stream/threads/Thread.cpp
+                    src/stream/threads/Timer.cpp
+                    src/stream/threads/TimeUtils.cpp
+                    src/stream/threads/SystemClock.cpp
                     src/stream/TimeshiftBuffer.cpp
                     src/stream/TimeshiftSegment.cpp
                     src/stream/TimeshiftStream.cpp
@@ -39,6 +46,20 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/CurlCatchupInput.h
                     src/stream/CurlInput.h
                     src/stream/IManageDemuxPacket.h
+                    src/stream/commons/Exception.h
+                    src/stream/threads/Atomics.h
+                    src/stream/threads/Condition.h
+                    src/stream/threads/CriticalSection.h
+                    src/stream/threads/Event.h
+                    src/stream/threads/Helpers.h
+                    src/stream/threads/Lockables.h
+                    src/stream/threads/SharedSection.h
+                    src/stream/threads/SingleLock.h
+                    src/stream/threads/SystemClock.h
+                    src/stream/threads/Thread.h
+                    src/stream/threads/Timer.h
+                    src/stream/threads/TimeUtils.h
+                    src/stream/threads/platform/ThreadImpl.h
                     src/stream/TimeshiftBuffer.h
                     src/stream/TimeshiftSegment.h
                     src/stream/TimeshiftStream.h
@@ -50,6 +71,13 @@ set(CATCHUP_HEADERS src/StreamManager.h
                     src/stream/url/URL.h
                     src/stream/url/UrlOptions.h
                     src/stream/url/Variant.h)
+
+if(NOT WIN32)
+  list(APPEND CATCHUP_SOURCES src/stream/platform/posix/XTimeUtils.cpp)
+
+  list(APPEND CATCHUP_HEADERS src/stream/platform/posix/PlatformDefs.h
+                              src/stream/platform/posix/XTimeUtils.h)
+endif()
 
 include_directories(${INCLUDES}
                     ${FFMPEG_INCLUDE_DIRS}

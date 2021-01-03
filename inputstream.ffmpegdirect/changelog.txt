@@ -1,3 +1,6 @@
+v1.19.0
+- Test revert all changes since alpha2
+
 v1.18.2
 - Update: Redact inputstream property URLs when logged
 
