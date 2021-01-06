@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.18.2"
+  version="1.19.0"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -26,6 +26,12 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.19.0
+- Added: FFmpeg patch for satip improvements
+- Added: SafeLocaltime and custom catchup timestamp formats
+- Added: Now timestamp and custom timestamp format for live catchup URL
+- Added: Use curl for mingw package downloads
+
 v1.18.2
 - Update: Redact inputstream property URLs when logged
 

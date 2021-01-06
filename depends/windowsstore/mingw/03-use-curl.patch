@@ -1,0 +1,11 @@
+--- a/etc/pacman.conf	Fri Jul 15 02:58:59 2016
++++ b/etc/pacman.conf	Tue Oct 20 20:36:28 2020
+@@ -15,7 +15,7 @@
+ #LogFile     = /var/log/pacman.log
+ #GPGDir      = /etc/pacman.d/gnupg/
+ HoldPkg      = pacman
+-#XferCommand = /usr/bin/curl -C - -f %u > %o
++XferCommand = /usr/bin/curl -k --retry 5 -L -C - -f %u > %o
+ #XferCommand = /usr/bin/wget --passive-ftp -c -O %o %u
+ #CleanMethod = KeepInstalled
+ #UseDelta    = 0.7
