@@ -5,7 +5,7 @@
  #GPGDir      = /etc/pacman.d/gnupg/
  HoldPkg      = pacman
 -#XferCommand = /usr/bin/curl -C - -f %u > %o
-+XferCommand = /usr/bin/curl -k --retry 5 -L -C - -f %u > %o
++XferCommand = /usr/bin/curl -v -k -L -C - -f %u > %o
  #XferCommand = /usr/bin/wget --passive-ftp -c -O %o %u
  #CleanMethod = KeepInstalled
  #UseDelta    = 0.7
