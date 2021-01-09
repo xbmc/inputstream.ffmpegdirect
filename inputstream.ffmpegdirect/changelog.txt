@@ -1,3 +1,6 @@
+v1.19.1
+- Fixed: Ensure all values in GetTimes() default to zero
+
 v1.19.0
 - Added: FFmpeg patch for satip improvements
 - Added: SafeLocaltime and custom catchup timestamp formats
