@@ -534,6 +534,8 @@ bool FFmpegStream::GetTimes(kodi::addon::InputstreamTimes& times)
   if (!IsRealTimeStream())
   {
     times.SetStartTime(0);
+    times.SetPtsStart(0);
+    times.SetPtsBegin(0);
     times.SetPtsEnd(m_pFormatContext->duration);
 
     return true;
