@@ -349,6 +349,9 @@ bool FFmpegCatchupStream::GetTimes(kodi::addon::InputstreamTimes& times)
   const time_t dateTimeNow = time(0);
 
   times.SetStartTime(m_catchupBufferStartTime);
+  times.SetPtsStart(0);
+  times.SetPtsBegin(0);
+
   if (m_playbackAsLive)
     times.SetPtsEnd(static_cast<double>(dateTimeNow - times.GetStartTime()) * STREAM_TIME_BASE);
   else // it's like a video
@@ -543,7 +546,7 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
     if (offset > (timeNow - m_defaultProgrammeDuration) && !m_catchupUrlNearLiveFormatString.empty())
       urlFormatString = m_catchupUrlNearLiveFormatString;
 
-    Log(LOGLEVEL_DEBUG, "%s - Offset Time - \"%lld\" - %s", __FUNCTION__, static_cast<long long>(offset), CURL::GetRedacted(m_catchupUrlFormatString).c_str());
+    Log(LOGLEVEL_DEBUG, "%s - Offset Time - \"%lld\" - %s", __FUNCTION__, static_cast<long long>(offset), CURL::GetRedacted(urlFormatString).c_str());
 
     std::string catchupUrl = FormatDateTime(offset - m_timezoneShift, duration, urlFormatString);
 
