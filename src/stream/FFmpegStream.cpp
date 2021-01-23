@@ -874,7 +874,7 @@ bool FFmpegStream::OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB&
     if (found != std::string::npos)
     {
       size_t start = found + 3;
-      found = strURL.find("@");
+      found = strURL.find('@');
 
       if (found != std::string::npos && found > start)
       {
