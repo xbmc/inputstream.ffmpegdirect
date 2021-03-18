@@ -1,3 +1,7 @@
+v1.19.3
+- Update: move verbose playback timeshift logging to debug level
+- Update: Update cmakelists to reference FFMPEGDIRECT at build time
+
 v1.19.2
 - Update: Demuxer additions from kodi
 
