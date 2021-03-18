@@ -14,43 +14,43 @@ find_package(FFMPEG REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(BZip2 REQUIRED)
 
-set(CATCHUP_SOURCES src/StreamManager.cpp
-                    src/stream/DemuxStream.cpp
-                    src/stream/FFmpegCatchupStream.cpp
-                    src/stream/FFmpegLog.cpp
-                    src/stream/FFmpegStream.cpp
-                    src/stream/CurlCatchupInput.cpp
-                    src/stream/CurlInput.cpp
-                    src/stream/TimeshiftBuffer.cpp
-                    src/stream/TimeshiftSegment.cpp
-                    src/stream/TimeshiftStream.cpp
-                    src/stream/url/URL.cpp
-                    src/stream/url/UrlOptions.cpp
-                    src/stream/url/Variant.cpp
-                    src/utils/DiskUtils.cpp
-                    src/utils/FilenameUtils.cpp)
+set(FFMPEGDIRECT_SOURCES src/StreamManager.cpp
+                         src/stream/DemuxStream.cpp
+                         src/stream/FFmpegCatchupStream.cpp
+                         src/stream/FFmpegLog.cpp
+                         src/stream/FFmpegStream.cpp
+                         src/stream/CurlCatchupInput.cpp
+                         src/stream/CurlInput.cpp
+                         src/stream/TimeshiftBuffer.cpp
+                         src/stream/TimeshiftSegment.cpp
+                         src/stream/TimeshiftStream.cpp
+                         src/stream/url/URL.cpp
+                         src/stream/url/UrlOptions.cpp
+                         src/stream/url/Variant.cpp
+                         src/utils/DiskUtils.cpp
+                         src/utils/FilenameUtils.cpp)
 
-set(CATCHUP_HEADERS src/StreamManager.h
-                    src/stream/BaseStream.h
-                    src/stream/DemuxStream.h
-                    src/stream/FFmpegCatchupStream.h
-                    src/stream/FFmpegLog.h
-                    src/stream/FFmpegStream.h
-                    src/stream/CurlCatchupInput.h
-                    src/stream/CurlInput.h
-                    src/stream/IManageDemuxPacket.h
-                    src/stream/TimeshiftBuffer.h
-                    src/stream/TimeshiftSegment.h
-                    src/stream/TimeshiftStream.h
-                    src/utils/HttpProxy.h
-                    src/utils/DiskUtils.h
-                    src/utils/FilenameUtils.h
-                    src/utils/Log.h
-                    src/utils/Properties.h
-                    src/utils/TimeUtils.h
-                    src/stream/url/URL.h
-                    src/stream/url/UrlOptions.h
-                    src/stream/url/Variant.h)
+set(FFMPEGDIRECT_HEADERS src/StreamManager.h
+                         src/stream/BaseStream.h
+                         src/stream/DemuxStream.h
+                         src/stream/FFmpegCatchupStream.h
+                         src/stream/FFmpegLog.h
+                         src/stream/FFmpegStream.h
+                         src/stream/CurlCatchupInput.h
+                         src/stream/CurlInput.h
+                         src/stream/IManageDemuxPacket.h
+                         src/stream/TimeshiftBuffer.h
+                         src/stream/TimeshiftSegment.h
+                         src/stream/TimeshiftStream.h
+                         src/utils/HttpProxy.h
+                         src/utils/DiskUtils.h
+                         src/utils/FilenameUtils.h
+                         src/utils/Log.h
+                         src/utils/Properties.h
+                         src/utils/TimeUtils.h
+                         src/stream/url/URL.h
+                         src/stream/url/UrlOptions.h
+                         src/stream/url/Variant.h)
 
 include_directories(${INCLUDES}
                     ${FFMPEG_INCLUDE_DIRS}
@@ -101,10 +101,10 @@ else()
   list(APPEND DEPLIBS ${FFMPEG_LIBRARIES})
 endif()
 
-addon_version(inputstream.ffmpegdirect CATCHUP)
-add_definitions(-DCATCHUP_VERSION=${CATCHUP_VERSION})
+addon_version(inputstream.ffmpegdirect FFMPEGDIRECT)
+add_definitions(-DFFMPEGDIRECT_VERSION=${FFMPEGDIRECT_VERSION})
 
-build_addon(inputstream.ffmpegdirect CATCHUP DEPLIBS)
+build_addon(inputstream.ffmpegdirect FFMPEGDIRECT DEPLIBS)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Due to a bug in CMake and frameworks on OSX we strip them from FFMPEG_LDFLAGS
