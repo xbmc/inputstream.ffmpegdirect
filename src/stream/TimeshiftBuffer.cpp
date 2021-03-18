@@ -128,7 +128,7 @@ void TimeshiftBuffer::AddPacket(DEMUX_PACKET* packet)
       std::shared_ptr<TimeshiftSegment> m_previousWriteSegment = m_writeSegment;
       m_previousWriteSegment->MarkAsComplete();
 
-      Log(LOGLEVEL_INFO, "%s - Writing new segment - seconds: %d, last seg seconds: %d, last seg packet count: %d, new seg index: %d, pts %.2f, dts: %.2f, pts sec: %.0f, dts sec: %.0f",
+      Log(LOGLEVEL_DEBUG, "%s - Writing new segment - seconds: %d, last seg seconds: %d, last seg packet count: %d, new seg index: %d, pts %.2f, dts: %.2f, pts sec: %.0f, dts sec: %.0f",
                          __FUNCTION__, secondsSinceStart, m_lastSegmentSecondsSinceStart, m_previousWriteSegment->GetPacketCount(), m_currentSegmentIndex,
                          packet->pts, packet->dts, packet->pts / STREAM_TIME_BASE, packet->dts / STREAM_TIME_BASE);
 
@@ -176,7 +176,7 @@ void TimeshiftBuffer::RemoveOldestInMemoryAndOnDiskSegments()
       if (kodi::vfs::FileExists(m_timeshiftBufferPath + "/" + segmentFilename))
       {
         kodi::vfs::DeleteFile(m_timeshiftBufferPath + "/" + segmentFilename);
-        Log(LOGLEVEL_INFO, "%s - Removed oldest on disk segment with ID: %d - currentDemuxTimeSeconds: %d, min on disk time: %d", __FUNCTION__, m_earliestOnDiskSegmentId, m_currentDemuxTimeIndex, m_minOnDiskSeekTimeIndex);
+        Log(LOGLEVEL_DEBUG, "%s - Removed oldest on disk segment with ID: %d - currentDemuxTimeSeconds: %d, min on disk time: %d", __FUNCTION__, m_earliestOnDiskSegmentId, m_currentDemuxTimeIndex, m_minOnDiskSeekTimeIndex);
         m_earliestOnDiskSegmentId++;
         m_segmentTotalCount--;
 
@@ -214,7 +214,7 @@ DEMUX_PACKET* TimeshiftBuffer::ReadPacket()
 
       m_previousReadSegment->ClearPackets();
       if (m_readSegment)
-        Log(LOGLEVEL_INFO, "%s - Reading next segment with id: %d, packet count: %d", __FUNCTION__, m_readSegment->GetSegmentId(), m_readSegment->GetPacketCount());
+        Log(LOGLEVEL_DEBUG, "%s - Reading next segment with id: %d, packet count: %d", __FUNCTION__, m_readSegment->GetSegmentId(), m_readSegment->GetPacketCount());
     }
 
     if (packet && packet->pts != STREAM_NOPTS_VALUE && packet->pts > 0)
@@ -248,7 +248,7 @@ bool TimeshiftBuffer::Seek(double timeMs)
     else // Jump to live segment
       m_readSegment = m_segmentTimeIndexMap.rbegin()->second;
 
-    Log(LOGLEVEL_INFO, "%s - Buffer - SegmentID: %d, SeekSeconds: %d", __FUNCTION__, m_readSegment->GetSegmentId(), seekSeconds);
+    Log(LOGLEVEL_DEBUG, "%s - Buffer - SegmentID: %d, SeekSeconds: %d", __FUNCTION__, m_readSegment->GetSegmentId(), seekSeconds);
 
     m_readSegment->LoadSegment();
     if (m_readSegment->Seek(timeMs))
