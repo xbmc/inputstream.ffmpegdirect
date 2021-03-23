@@ -89,7 +89,7 @@ bool FFmpegCatchupStream::DemuxSeekTime(double timeMs, bool backwards, double& s
   if (seekResult >= 0)
   {
     {
-      std::lock_guard<std::mutex> lock(m_mutex);
+      std::lock_guard<std::recursive_mutex> lock(m_mutex);
       m_seekOffset = seekResult;
     }
 
@@ -115,7 +115,7 @@ DEMUX_PACKET* FFmpegCatchupStream::DemuxRead()
   DEMUX_PACKET* pPacket = FFmpegStream::DemuxRead();
   if (pPacket)
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
     pPacket->pts += m_seekOffset;
     pPacket->dts += m_seekOffset;
 
@@ -174,7 +174,7 @@ void FFmpegCatchupStream::DemuxSetSpeed(int speed)
   else if (!IsPaused() && speed == STREAM_PLAYSPEED_PAUSE)
   {
     // Pause Playback
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
     m_pauseStartTime = m_currentDemuxTime;
     Log(LOGLEVEL_DEBUG, "%s - DemuxSetSpeed - Pause time: %lld", __FUNCTION__, static_cast<long long>(m_pauseStartTime));
   }
