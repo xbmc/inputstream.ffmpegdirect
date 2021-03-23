@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.19.3"
+  version="1.19.4"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -26,6 +26,9 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.19.4
+- Fixed: Fix locking on EOF detection of terminating catchup stream by using std:recursive_mutex
+
 v1.19.3
 - Update: move verbose playback timeshift logging to debug level
 - Update: Update cmakelists to reference FFMPEGDIRECT at build time
