@@ -170,7 +170,22 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
         m_mimeType == "application/xml+dash" ||
         manifestType == "hls" || // HLS
         manifestType == "mpd" || // DASH
-        manifestType == "ism") //Smooth Streaming
+        manifestType == "ism" || //Smooth Streaming
+        StringUtils::StartsWithNoCase(m_streamUrl, "rtp://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "rtsp://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "rtsps://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "satip://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "sdp://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "udp://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "tcp://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "mms://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "mmst://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "mmsh://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "rtmp://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "rtmpt://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "rtmpe://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "rtmpte://") ||
+        StringUtils::StartsWithNoCase(m_streamUrl, "rtmps://"))
       properties.m_openMode = OpenMode::FFMPEG;
     else
       properties.m_openMode = OpenMode::CURL;
