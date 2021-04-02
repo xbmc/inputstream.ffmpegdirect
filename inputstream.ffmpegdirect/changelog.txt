@@ -1,3 +1,7 @@
+v1.20.0
+- Update: FFmpeg to 4.3.2
+- Added: If open_mode is default make sure the right protocols default to open with ffmpeg
+
 v1.19.4
 - Fixed: Fix locking on EOF detection of terminating catchup stream by using std:recursive_mutex
 
