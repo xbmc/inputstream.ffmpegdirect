@@ -80,6 +80,8 @@ bool CurlInput::Open(const std::string& filename, const std::string& mimeType, u
       content == "video/x-matroska-3d")
     flags |= ADDON_READ_MULTI_STREAM;
 
+  m_pFile->CURLAddOption(ADDON_CURL_OPTION_OPTION, "CURLOPT_IGNORE_CONTENT_LENGTH", "1L");
+
   // open file in binary mode
   if (!m_pFile->OpenFile(m_filename, flags))
   {
