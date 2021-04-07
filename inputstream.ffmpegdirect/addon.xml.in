@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.19.4"
+  version="1.20.0"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -26,6 +26,10 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.20.0
+- Update: FFmpeg to 4.3.2
+- Added: If open_mode is default make sure the right protocols default to open with ffmpeg
+
 v1.19.4
 - Fixed: Fix locking on EOF detection of terminating catchup stream by using std:recursive_mutex
 
