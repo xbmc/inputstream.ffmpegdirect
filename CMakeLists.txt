@@ -104,12 +104,6 @@ endif()
 addon_version(inputstream.ffmpegdirect FFMPEGDIRECT)
 add_definitions(-DFFMPEGDIRECT_VERSION=${FFMPEGDIRECT_VERSION})
 
-if(CORE_SYSTEM_NAME STREQUAL windowsstore)
-  # TODO: This is required so FFmpeg's av_init_packet() deprecation does not break windows store builds
-  #       Once this function is no longer used this can and should be removed.
-  add_compile_options(/wd4996)
-endif()
-
 build_addon(inputstream.ffmpegdirect FFMPEGDIRECT DEPLIBS)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
