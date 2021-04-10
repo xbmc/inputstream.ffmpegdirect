@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.21.0"
+  version="1.21.1"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -26,6 +26,10 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.21.1
+- Fixed: remove workaround for ffmpeg deprecated function on windowsstore
+- Fixed: Replace deprecated av_init_packet() from ffmpeg
+
 v1.21.0
 - Update: FFmpeg to 4.4
 - Update: Update gas preprocessor for ffmpeg4.4
