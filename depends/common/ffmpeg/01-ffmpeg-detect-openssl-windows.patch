@@ -1,7 +1,8 @@
-diff -ur FFmpeg-n4.3/configure FFmpeg-n4.3-01/configure
---- FFmpeg-n4.3/configure	2020-06-15 19:41:15.000000000 +0100
-+++ FFmpeg-n4.3-01/configure	2020-06-18 09:00:30.000000000 +0100
-@@ -6468,6 +6468,8 @@
+diff --git a/configure b/configure
+index d7a3f507e8..c3ebef869c 100755
+--- a/configure
++++ b/configure
+@@ -6529,6 +6529,8 @@ enabled openssl           && { check_pkg_config openssl openssl openssl/ssl.h OP
                                 check_lib openssl openssl/ssl.h SSL_library_init -lssl -lcrypto ||
                                 check_lib openssl openssl/ssl.h SSL_library_init -lssl32 -leay32 ||
                                 check_lib openssl openssl/ssl.h SSL_library_init -lssl -lcrypto -lws2_32 -lgdi32 ||

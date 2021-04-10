@@ -2,4 +2,4 @@ All patches are required for windows and allow both static building
 and openssl. Note there is no impact to applying these to other platforms
 as openssl is not used (gnutls is used for non-windows).
 
-Last update and patches refreshed for FFmpeg-n4.2.2
+Last update and patches refreshed for FFmpeg-n4.4

@@ -1,3 +1,8 @@
+v1.21.0
+- Update: FFmpeg to 4.4
+- Update: Update gas preprocessor for ffmpeg4.4
+- Fixed: Ignore deprecation warning as errors for ffmpeg's av_init_packet() for windowsstore
+
 v1.20.1
 - Fixed: release version fix
 
