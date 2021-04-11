@@ -147,22 +147,54 @@ void TimeshiftSegment::CopyPacket(DEMUX_PACKET* sourcePacket, DEMUX_PACKET* newP
   }
 }
 
+
+namespace
+{
+
+AVPacket* AllocateAvPacketButNotSideData()
+{
+  AVPacket* avPacket = av_packet_alloc();
+  if (!avPacket)
+  {
+    Log(LOGLEVEL_ERROR, "TimeshiftSegment::{} - av_packet_alloc failed: {}", __FUNCTION__, strerror(errno));
+  }
+
+  return avPacket;
+}
+
+void FreeAvPacketButNotSideData(AVPacket* avPacket)
+{
+  // Now clear the packet but leave the side data alone
+  av_buffer_unref(&avPacket->buf);
+  av_free(avPacket);
+}
+
+} // unnamed namespace
+
 void TimeshiftSegment::CopySideData(DEMUX_PACKET* sourcePacket, DEMUX_PACKET* newPacket)
 {
   newPacket->pSideData = nullptr;
   newPacket->iSideDataElems = 0;
   if (sourcePacket->iSideDataElems > 0)
   {
-    AVPacket srcAvPacket;
-    av_init_packet(&srcAvPacket);
-    srcAvPacket.side_data = static_cast<AVPacketSideData*>(sourcePacket->pSideData);
-    srcAvPacket.side_data_elems = sourcePacket->iSideDataElems;
+    AVPacket* srcAvPacket = AllocateAvPacketButNotSideData();
+    if (srcAvPacket)
+    {
+      srcAvPacket->side_data = static_cast<AVPacketSideData*>(sourcePacket->pSideData);
+      srcAvPacket->side_data_elems = sourcePacket->iSideDataElems;
 
-    AVPacket newAvPacket;
-    av_init_packet(&newAvPacket);
-    av_packet_copy_props(&newAvPacket, &srcAvPacket);
-    newPacket->pSideData = newAvPacket.side_data;
-    newPacket->iSideDataElems = newAvPacket.side_data_elems;
+      AVPacket* newAvPacket = AllocateAvPacketButNotSideData();
+      if (newAvPacket)
+      {
+        av_packet_copy_props(newAvPacket, srcAvPacket);
+        newPacket->pSideData = newAvPacket->side_data;
+        newPacket->iSideDataElems = newAvPacket->side_data_elems;
+
+        FreeAvPacketButNotSideData(newAvPacket);
+      }
+
+      FreeAvPacketButNotSideData(srcAvPacket);
+    }
   }
 }
 
@@ -170,11 +202,19 @@ void TimeshiftSegment::FreeSideData(std::shared_ptr<DEMUX_PACKET>& packet)
 {
   if (packet->iSideDataElems > 0)
   {
-    AVPacket avPacket;
-    av_init_packet(&avPacket);
-    avPacket.side_data = (AVPacketSideData*) packet->pSideData;
-    avPacket.side_data_elems = packet->iSideDataElems;
-    av_packet_unref(&avPacket);
+    AVPacket* avPkt = AllocateAvPacketButNotSideData();
+    if (avPkt)
+    {
+      avPkt->side_data = static_cast<AVPacketSideData*>(packet->pSideData);
+      avPkt->side_data_elems = packet->iSideDataElems;
+
+      //! @todo: properly handle avpkt side_data. this works around our inproper use of the side_data
+      // as we pass pointers to ffmpeg allocated memory for the side_data. we should really be allocating
+      // and storing our own AVPacket. This will require some extensive changes.
+
+      // here we make use of ffmpeg to free the side_data, we shouldn't have to allocate an intermediate AVPacket though
+      av_packet_free(&avPkt);
+    }
   }
 }
 
@@ -277,20 +317,24 @@ int TimeshiftSegment::LoadPacket(std::shared_ptr<DEMUX_PACKET>& packet)
   m_fileHandle.Read(&packet->iSideDataElems, sizeof(packet->iSideDataElems));
   if (packet->iSideDataElems > 0)
   {
-    AVPacket avPacket;
-    av_init_packet(&avPacket);
-    enum AVPacketSideDataType type;
-    int size;
-    for (int i = 0; i < packet->iSideDataElems; i++)
+    AVPacket* avPacket = AllocateAvPacketButNotSideData();
+    if (avPacket)
     {
-      m_fileHandle.Read(&type, sizeof(type));
-      m_fileHandle.Read(&size, sizeof(size));
+      enum AVPacketSideDataType type;
+      int size;
+      for (int i = 0; i < packet->iSideDataElems; i++)
+      {
+        m_fileHandle.Read(&type, sizeof(type));
+        m_fileHandle.Read(&size, sizeof(size));
 
-      uint8_t* data = av_packet_new_side_data(&avPacket, type, size);
-      m_fileHandle.Read(data, size);
+        uint8_t* data = av_packet_new_side_data(avPacket, type, size);
+        m_fileHandle.Read(data, size);
+      }
+
+      packet->pSideData = avPacket->side_data;
+
+      FreeAvPacketButNotSideData(avPacket);
     }
-
-    packet->pSideData = avPacket.side_data;
   }
 
   m_fileHandle.Read(&packet->pts, sizeof(packet->pts));
