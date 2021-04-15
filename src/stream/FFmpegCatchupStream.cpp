@@ -503,10 +503,10 @@ std::string FormatDateTime(time_t timeStart, time_t duration, const std::string 
   return formattedUrl;
 }
 
-std::string FormatDateTimeNowOnly(const std::string &urlFormatString)
+std::string FormatDateTimeNowOnly(const std::string &urlFormatString, int timezoneShiftSecs)
 {
   std::string formattedUrl = urlFormatString;
-  const time_t timeNow = std::time(0);
+  const time_t timeNow = std::time(0) - timezoneShiftSecs;
   std::tm dateTimeNow = SafeLocaltime(timeNow);
 
   FormatUtc("{lutc}", timeNow, formattedUrl);
@@ -562,5 +562,5 @@ std::string FFmpegCatchupStream::GetUpdatedCatchupUrl() const
   }
 
   Log(LOGLEVEL_DEBUG, "%s - Default URL: %s", __FUNCTION__, CURL::GetRedacted(m_defaultUrl).c_str());
-  return FormatDateTimeNowOnly(m_defaultUrl);
+  return FormatDateTimeNowOnly(m_defaultUrl, m_timezoneShift);
 }
