@@ -1,3 +1,6 @@
+v1.21.2
+Fixed: Allow timezone shift when live URLs have placeholders
+
 v1.21.1
 - Fixed: remove workaround for ffmpeg deprecated function on windowsstore
 - Fixed: Replace deprecated av_init_packet() from ffmpeg
