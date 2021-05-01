@@ -165,6 +165,8 @@ void TimeshiftBuffer::RemoveOldestInMemoryAndOnDiskSegments()
   m_minInMemorySeekTimeIndex = m_segmentTimeIndexMap.cbegin()->first;
 
   Log(LOGLEVEL_DEBUG, "%s - Removed oldest in memory segment with ID: %d", __FUNCTION__, oldFirstSegment->GetSegmentId());
+  Log(LOGLEVEL_DEBUG, "%s - Removed oldest on disk segment CHECK enabled: %d, paused: %d - segmentTotalCount: %d, maxOnDiskSegments: %d, currentDemuxTimeIndex: %d, minOnDiskSeekTimeIndex: %d", __FUNCTION__,
+                      m_enableOnDiskSegmentLimit, m_paused, m_segmentTotalCount, m_maxOnDiskSegments, m_currentDemuxTimeIndex, m_minOnDiskSeekTimeIndex);
 
   if (m_enableOnDiskSegmentLimit && !m_paused &&
       m_segmentTotalCount > m_maxOnDiskSegments &&
