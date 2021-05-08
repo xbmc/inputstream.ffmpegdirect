@@ -75,85 +75,85 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
 
     if (PROGRAM_NUMBER == prop.first)
     {
-      properties.m_programProperty = prop.second;
+      m_properties.m_programProperty = prop.second;
     }
     else if (IS_REALTIME_STREAM == prop.first)
     {
-      properties.m_isRealTimeStream = StringUtils::EqualsNoCase(prop.second, "true");
+      m_properties.m_isRealTimeStream = StringUtils::EqualsNoCase(prop.second, "true");
     }
     else if (STREAM_MODE == prop.first)
     {
       if (StringUtils::EqualsNoCase(prop.second, "catchup"))
-        properties.m_streamMode = StreamMode::CATCHUP;
+        m_properties.m_streamMode = StreamMode::CATCHUP;
       else if (StringUtils::EqualsNoCase(prop.second, "timeshift"))
-        properties.m_streamMode = StreamMode::TIMESHIFT;
+        m_properties.m_streamMode = StreamMode::TIMESHIFT;
     }
     else if (OPEN_MODE == prop.first)
     {
       if (StringUtils::EqualsNoCase(prop.second, "ffmpeg"))
-        properties.m_openMode = OpenMode::FFMPEG;
+        m_properties.m_openMode = OpenMode::FFMPEG;
       else if (StringUtils::EqualsNoCase(prop.second, "curl"))
-        properties.m_openMode = OpenMode::CURL;
+        m_properties.m_openMode = OpenMode::CURL;
     }
     else if (MANIFEST_TYPE == prop.first)
     {
-      properties.m_manifestType = prop.second;
+      m_properties.m_manifestType = prop.second;
     }
     else if (DEFAULT_URL == prop.first)
     {
-      properties.m_defaultUrl = prop.second;
+      m_properties.m_defaultUrl = prop.second;
     }
     else if (PLAYBACK_AS_LIVE == prop.first)
     {
-      properties.m_playbackAsLive = StringUtils::EqualsNoCase(prop.second, "true");
+      m_properties.m_playbackAsLive = StringUtils::EqualsNoCase(prop.second, "true");
     }
     else if (PROGRAMME_START_TIME == prop.first)
     {
-      properties.m_programmeStartTime = static_cast<time_t>(std::stoll(prop.second));
+      m_properties.m_programmeStartTime = static_cast<time_t>(std::stoll(prop.second));
     }
     else if (PROGRAMME_END_TIME == prop.first)
     {
-      properties.m_programmeEndTime = static_cast<time_t>(std::stoll(prop.second));
+      m_properties.m_programmeEndTime = static_cast<time_t>(std::stoll(prop.second));
     }
     else if (CATCHUP_URL_FORMAT_STRING == prop.first)
     {
-      properties.m_catchupUrlFormatString = prop.second;
+      m_properties.m_catchupUrlFormatString = prop.second;
     }
     else if (CATCHUP_URL_NEAR_LIVE_FORMAT_STRING == prop.first)
     {
-      properties.m_catchupUrlNearLiveFormatString = prop.second;
+      m_properties.m_catchupUrlNearLiveFormatString = prop.second;
     }
     else if (CATCHUP_BUFFER_START_TIME == prop.first)
     {
-      properties.m_catchupBufferStartTime = static_cast<time_t>(std::stoll(prop.second));
+      m_properties.m_catchupBufferStartTime = static_cast<time_t>(std::stoll(prop.second));
     }
     else if (CATCHUP_BUFFER_END_TIME == prop.first)
     {
-      properties.m_catchupBufferEndTime = static_cast<time_t>(std::stoll(prop.second));
+      m_properties.m_catchupBufferEndTime = static_cast<time_t>(std::stoll(prop.second));
     }
     else if (CATCHUP_BUFFER_OFFSET == prop.first)
     {
-      properties.m_catchupBufferOffset = std::stoll(prop.second);
+      m_properties.m_catchupBufferOffset = std::stoll(prop.second);
     }
     else if (CATCHUP_TERMINATES == prop.first)
     {
-      properties.m_catchupTerminates = StringUtils::EqualsNoCase(prop.second, "true");
+      m_properties.m_catchupTerminates = StringUtils::EqualsNoCase(prop.second, "true");
     }
     else if (CATCHUP_GRANULARITY == prop.first)
     {
-      properties.m_catchupGranularity = std::stoi(prop.second);
+      m_properties.m_catchupGranularity = std::stoi(prop.second);
     }
     else if (TIMEZONE_SHIFT == prop.first)
     {
-      properties.m_timezoneShiftSecs = std::stoi(prop.second);
+      m_properties.m_timezoneShiftSecs = std::stoi(prop.second);
     }
     else if (DEFAULT_PROGRAMME_DURATION == prop.first)
     {
-      properties.m_defaultProgrammeDurationSecs = std::stoi(prop.second);
+      m_properties.m_defaultProgrammeDurationSecs = std::stoi(prop.second);
     }
     else if (PROGRAMME_CATCHUP_ID == prop.first)
     {
-      properties.m_programmeCatchupId = prop.second;
+      m_properties.m_programmeCatchupId = prop.second;
     }
   }
 
@@ -162,8 +162,8 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
 
   Log(LOGLEVEL_INFO, "Stream mimetype: %s", m_mimeType.c_str());
 
-  const std::string& manifestType = properties.m_manifestType;
-  if (properties.m_openMode == OpenMode::DEFAULT)
+  const std::string& manifestType = m_properties.m_manifestType;
+  if (m_properties.m_openMode == OpenMode::DEFAULT)
   {
     if (m_mimeType == "application/x-mpegURL" || // HLS
         m_mimeType == "application/vnd.apple.mpegurl" || //HLS
@@ -186,9 +186,9 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
         StringUtils::StartsWithNoCase(m_streamUrl, "rtmpe://") ||
         StringUtils::StartsWithNoCase(m_streamUrl, "rtmpte://") ||
         StringUtils::StartsWithNoCase(m_streamUrl, "rtmps://"))
-      properties.m_openMode = OpenMode::FFMPEG;
+      m_properties.m_openMode = OpenMode::FFMPEG;
     else
-      properties.m_openMode = OpenMode::CURL;
+      m_properties.m_openMode = OpenMode::CURL;
   }
 
   HttpProxy httpProxy;
@@ -208,16 +208,16 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
     httpProxy.SetProxyPassword(kodi::GetSettingString("httpProxyPassword"));
   }
 
-  if (properties.m_streamMode == StreamMode::CATCHUP)
-    m_stream = std::make_shared<FFmpegCatchupStream>(static_cast<IManageDemuxPacket*>(this), properties, httpProxy);
-  else if (properties.m_streamMode == StreamMode::TIMESHIFT)
-    m_stream = std::make_shared<TimeshiftStream>(static_cast<IManageDemuxPacket*>(this), properties, httpProxy);
+  if (m_properties.m_streamMode == StreamMode::CATCHUP)
+    m_stream = std::make_shared<FFmpegCatchupStream>(static_cast<IManageDemuxPacket*>(this), m_properties, httpProxy);
+  else if (m_properties.m_streamMode == StreamMode::TIMESHIFT)
+    m_stream = std::make_shared<TimeshiftStream>(static_cast<IManageDemuxPacket*>(this), m_properties, httpProxy);
   else
-    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), properties, httpProxy);
+    m_stream = std::make_shared<FFmpegStream>(static_cast<IManageDemuxPacket*>(this), m_properties, httpProxy);
 
   m_stream->SetVideoResolution(m_videoWidth, m_videoHeight);
 
-  m_opened = m_stream->Open(m_streamUrl, m_mimeType, properties.m_isRealTimeStream, properties.m_programProperty);
+  m_opened = m_stream->Open(m_streamUrl, m_mimeType, m_properties.m_isRealTimeStream, m_properties.m_programProperty);
 
   return m_opened;
 }
