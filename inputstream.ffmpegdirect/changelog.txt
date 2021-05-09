@@ -1,5 +1,8 @@
+v1.21.3
+- Fixed: fix hls bitrate selection
+
 v1.21.2
-Fixed: Allow timezone shift when live URLs have placeholders
+- Fixed: Allow timezone shift when live URLs have placeholders
 
 v1.21.1
 - Fixed: remove workaround for ffmpeg deprecated function on windowsstore
