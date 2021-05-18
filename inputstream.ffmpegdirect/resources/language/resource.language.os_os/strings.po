@@ -4,121 +4,125 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"Language: de_DE\n"
+"PO-Revision-Date: 2021-05-18 13:46+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Ossetian <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/os_os/>\n"
+"Language: os_os\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.6.2\n"
 
 #. settings labels
 #. label-category: Network
 msgctxt "#30000"
 msgid "Network"
-msgstr "Netzwerk"
+msgstr "Хыз"
 
 #. label-group: Network - httpProxy
 msgctxt "#30001"
 msgid "HTTP proxy"
-msgstr "HTTP-Proxy"
+msgstr ""
 
 #. label: Network - useHttpProxy
 msgctxt "#30002"
 msgid "Use HTTP proxy when opening with FFmpeg"
-msgstr "Verwenden Sie beim Öffnen mit FFmpeg den HTTP-Proxy"
+msgstr ""
 
 #. label-option: Network - httpProxyHost
 msgctxt "#30003"
 msgid "Server"
-msgstr "Server"
+msgstr ""
 
 #. label-option: Network - httpProxyPort
 msgctxt "#30004"
 msgid "Port"
-msgstr "Port"
+msgstr ""
 
 #. label-option: Network - httpProxyUser
 msgctxt "#30005"
 msgid "Username"
-msgstr "Benutzername"
+msgstr ""
 
 #. label-option: Network - httpProxyPassword
 msgctxt "#30006"
 msgid "Password"
-msgstr "Passwort"
+msgstr ""
 
 #. label-group: Network - Bandwidth
 msgctxt "#30007"
 msgid "Bandwidth"
-msgstr "Bandbreite"
+msgstr ""
 
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
-msgstr "Stream-Auswahlbandbreite"
+msgstr ""
 
 # empty strings from id 30009 to 30019
 #. label-category: timeshift
 #. label-group: Timeshift - Timeshift
 msgctxt "#30020"
 msgid "Timeshift"
-msgstr "Timeshift"
+msgstr ""
 
 #. label: Timeshift - timeshiftBufferPath
 msgctxt "#30021"
 msgid "Timeshift buffer path"
-msgstr "Timeshift-Pufferpfad"
+msgstr ""
 
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr "Timeshift-Limit aktivieren"
+msgstr ""
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr "Maximale Länge des Timeshift-Puffers"
+msgstr ""
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
 msgid "{0:.2f} hours"
-msgstr "{0:.2f} Stunden"
+msgstr ""
 
 # empty strings from id 30025 to 30039
 #. label-category: advanced
 msgctxt "#30040"
 msgid "Advanced"
-msgstr "Fortgeschritten"
+msgstr ""
 
 #. label-category: advanced
 #. label-group: Advanced - Logging
 msgctxt "#30041"
 msgid "FFmpeg"
-msgstr "FFmpeg"
+msgstr ""
 
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr "FFmpeg-Protokollierung zulassen"
+msgstr ""
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
 msgid "Probe for FPS"
-msgstr "Prüfe FPS"
+msgstr ""
 
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr "Videotext aktivieren"
+msgstr ""
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
 msgid "Use fast open for streams using a manifest file"
-msgstr "Benutzte schnelles Öffnen von Streams mit Manifestdatei"
+msgstr ""
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr "Für \"Catch Up\"-Streams ist der Berichtsstrom nicht in Echtzeit"
+msgstr ""
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -128,88 +132,88 @@ msgstr "Für \"Catch Up\"-Streams ist der Berichtsstrom nicht in Echtzeit"
 #. help-category: Network
 msgctxt "#30600"
 msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
-msgstr "Diese Kategorie enthält die Einstellungen für die Netzwerkkonfiguration, z. B. FFmpeg-Proxy und Bandbreitenbeschränkungen."
+msgstr ""
 
 #. help: Network - useHttpProxy
 msgctxt "#30601"
 msgid "Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used."
-msgstr "Gibt an, ob beim Öffnen mit FFmpeg ein Proxy verwendet werden soll. Beachten Sie, dass beim Öffnen mit Curl Kodi die Proxy-Einstellungen verwendet werden."
+msgstr ""
 
 #. help: Network - httpProxyHost
 msgctxt "#30602"
 msgid "Configure the proxy server address."
-msgstr "Konfiguriert die Proxy-Server-Adresse."
+msgstr ""
 
 #. help: Network- httpProxyPort
 msgctxt "#30603"
 msgid "Configure the proxy server port."
-msgstr "Konfiguriert den Proxyserver-Port."
+msgstr ""
 
 #. help: Network - httpProxyUser
 msgctxt "#30604"
 msgid "Configure the proxy server username."
-msgstr "Konfiguriert den Benutzernamen des Proxyservers."
+msgstr ""
 
 #. help: Network - httpProxyPassword
 msgctxt "#30605"
 msgid "Configure the proxy server password."
-msgstr "Konfiguriert das Proxy-Server-Passwort."
+msgstr ""
 
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
-msgstr "Verwenden Sie diesen Wert maximal, wenn Sie den zu verwendenden HLS-Stream auswählen."
+msgstr ""
 
 # empty strings from id 30607 to 30619
 #. help info - Timeshift
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr "Diese Kategorie enthält die Einstellungen für die Zeitverschiebung. Mit Timeshifting können Sie das Live-Fernsehen anhalten und sich von Ihrer aktuellen Position aus vorwärts und rückwärts bewegen, ähnlich wie bei der Wiedergabe einer Aufnahme."
+msgstr ""
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] property is passed to the addon."
-msgstr "Der Pfad zum Speichern des Timeshift-Puffers. Der Standardwert ist der Ordner [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] in den Benutzerdaten. Beachten Sie, dass dieser Ordner beim Kodi-Start von Timeshift-Dateien befreit wird. Nur relevant, wenn die Eigenschaft [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] an das Addon übergeben wird"
+msgstr ""
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
 msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
-msgstr "Aktivieren Sie diese Option, um die Länge des Timeshift-Puffers zu begrenzen. Wenn deaktiviert, wächst der Puffer für immer, bis die Wiedergabe gestoppt wird. Unabhängig von dieser Einstellung wächst der Puffer auch für immer, wenn er angehalten wird."
+msgstr ""
 
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr "Die Länge des Timeshift-Puffers in Stunden. Sobald der Wert erreicht ist, werden die älteren Pufferdaten gelöscht, um sicherzustellen, dass das Limit nicht überschritten wird. Beachten Sie, dass der Speicherplatz für Ihr Gerät ausreichen sollte, damit der Puffer auf seine maximale Länge anwachsen kann (andernfalls entspricht dies dem Deaktivieren dieser Option). Eine gute Heuristik für die Videogröße sind 130 MB pro Minute 1080p-Video und 375 MB pro Minute 4K-Video."
+msgstr ""
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
 #. help-category: advanced
 msgctxt "#30640"
 msgid "Advanced settings"
-msgstr "Erweiterte Einstellungen"
+msgstr ""
 
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
-msgstr "Wenn aktiviert, protokolliert das Addon alle FFmpeg-Protokolle im Kodi-Protokoll."
+msgstr ""
 
 #. help: Advanced - probeForFps
 msgctxt "#30642"
 msgid "Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used."
-msgstr "Prüfe für Bilder pro Sekunde. Standard aktiviert. Wenn deaktiviert, wird der vom Codec zurückgegebene Wert verwendet."
+msgstr ""
 
 #. help: Advanced - enableTeletext
 msgctxt "#30643"
 msgid "Allow teletext. Default enabled."
-msgstr "Videotext zulassen. Standard aktiviert."
+msgstr ""
 
 #. help: Advanced - useFastOpenForManifestStreams
 msgctxt "#30644"
 msgid "Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled."
-msgstr "Streams mit einer Manifestdatei (z.B. HLD/DASH/Smooth Streaming) können mit FFmpeg mit aktivierter Option schneller geöffnet werden."
+msgstr ""
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
 msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] to the M3U entry in question. This setting should not be left enabled for all streams."
-msgstr "Bei bestimmten \"Catch Up\"-Streams wie HLS kann die Meldung, dass ein Live-Stream nicht live ist, die Öffnungszeiten des Streams verbessern. Wenn das Testen dieser Option für einen Catchup-Stream/Anbieter funktioniert, fügen Sie dem betreffenden M3U-Eintrag ein [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] hinzu. Diese Einstellung sollte nicht für alle Streams aktiviert bleiben"
+msgstr ""
