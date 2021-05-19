@@ -264,7 +264,7 @@ void FFmpegStream::DemuxReset()
 
 void FFmpegStream::DemuxAbort()
 {
-  m_timeout.SetExpired();
+  m_timeout = std::chrono::milliseconds(0);
 }
 
 void FFmpegStream::DemuxFlush()
@@ -307,9 +307,10 @@ DEMUX_PACKET* FFmpegStream::DemuxRead()
       m_pkt.pkt.data = NULL;
 
       // timeout reads after 100ms
-      m_timeout.Set(20000);
+      m_start = std::chrono::steady_clock::now();
+      m_timeout = std::chrono::milliseconds(20000);
       m_pkt.result = av_read_frame(m_pFormatContext, &m_pkt.pkt);
-      m_timeout.SetInfinite();
+      m_timeout = std::chrono::milliseconds(std::numeric_limits<std::chrono::milliseconds::rep>::max());
     }
 
     m_lastPacketResult = m_pkt.result;
@@ -650,7 +651,13 @@ void FFmpegStream::DisposeStreams()
 
 bool FFmpegStream::Aborted()
 {
-  if (m_timeout.IsTimePast())
+  if (m_timeout == std::chrono::milliseconds(std::numeric_limits<std::chrono::milliseconds::rep>::max()))
+    return false;
+
+  if (m_timeout == std::chrono::milliseconds(0))
+    return true;
+
+  if (std::chrono::steady_clock::now() - m_start > m_timeout)
     return true;
 
   return false;
@@ -695,7 +702,8 @@ bool FFmpegStream::Open(bool fileinfo)
   m_pFormatContext->interrupt_callback = int_cb;
 
   // try to abort after 30 seconds
-  m_timeout.Set(30000);
+  m_start = std::chrono::steady_clock::now();
+  m_timeout = std::chrono::milliseconds(30000);
 
   if (m_openMode == OpenMode::FFMPEG)
   {
@@ -780,7 +788,7 @@ bool FFmpegStream::Open(bool fileinfo)
   }
 
   // reset any timeout
-  m_timeout.SetInfinite();
+  m_timeout = std::chrono::milliseconds(std::numeric_limits<std::chrono::milliseconds::rep>::max());
 
   // if format can be nonblocking, let's use that
   m_pFormatContext->flags |= AVFMT_FLAG_NONBLOCK;
@@ -1464,7 +1472,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
 
   if (m_checkTransportStream)
   {
-    kodi::tools::CEndTime timer(1000);
+    const auto start = std::chrono::steady_clock::now();
 
     while (!IsTransportStreamReady())
     {
@@ -1476,7 +1484,10 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
       m_pkt.result = -1;
       av_packet_unref(&m_pkt.pkt);
 
-      if (timer.IsTimePast())
+      const auto end = std::chrono::steady_clock::now();
+      const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+      if (duration.count() > 1000)
       {
         Log(LOGLEVEL_ERROR, "CDVDDemuxFFmpeg::%s - Timed out waiting for video to be ready", __FUNCTION__);
         return false;
