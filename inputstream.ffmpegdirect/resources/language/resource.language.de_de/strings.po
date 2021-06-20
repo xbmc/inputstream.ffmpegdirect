@@ -2,15 +2,18 @@
 # Addon Name: Inputstream.ffmpegdirect
 # Addon id: inputstream.ffmpegdirect
 # Addon Provider: phunkyfish
+
 msgid ""
 msgstr ""
-"Language: de_DE\n"
+
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. settings labels
+
 #. label-category: Network
 msgctxt "#30000"
 msgid "Network"
@@ -56,7 +59,8 @@ msgctxt "#30008"
 msgid "Stream selection bandwidth"
 msgstr "Stream-Auswahlbandbreite"
 
-# empty strings from id 30009 to 30019
+#empty strings from id 30009 to 30019
+
 #. label-category: timeshift
 #. label-group: Timeshift - Timeshift
 msgctxt "#30020"
@@ -83,7 +87,8 @@ msgctxt "#30024"
 msgid "{0:.2f} hours"
 msgstr "{0:.2f} Stunden"
 
-# empty strings from id 30025 to 30039
+#empty strings from id 30025 to 30039
+
 #. label-category: advanced
 msgctxt "#30040"
 msgid "Advanced"
@@ -120,11 +125,14 @@ msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
 msgstr "Für \"Catch Up\"-Streams ist der Berichtsstrom nicht in Echtzeit"
 
-# empty strings from id 30047 to 30599
+#empty strings from id 30047 to 30599
+
 #. ############
 #. help info #
 #. ############
+
 #. help info - HTTP Proxy
+
 #. help-category: Network
 msgctxt "#30600"
 msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
@@ -160,8 +168,10 @@ msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
 msgstr "Verwenden Sie diesen Wert maximal, wenn Sie den zu verwendenden HLS-Stream auswählen."
 
-# empty strings from id 30607 to 30619
+#empty strings from id 30607 to 30619
+
 #. help info - Timeshift
+
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
@@ -182,8 +192,10 @@ msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
 msgstr "Die Länge des Timeshift-Puffers in Stunden. Sobald der Wert erreicht ist, werden die älteren Pufferdaten gelöscht, um sicherzustellen, dass das Limit nicht überschritten wird. Beachten Sie, dass der Speicherplatz für Ihr Gerät ausreichen sollte, damit der Puffer auf seine maximale Länge anwachsen kann (andernfalls entspricht dies dem Deaktivieren dieser Option). Eine gute Heuristik für die Videogröße sind 130 MB pro Minute 1080p-Video und 375 MB pro Minute 4K-Video."
 
-# empty strings from id 30624 to 30639
+#empty strings from id 30624 to 30639
+
 #. help info - Advanced
+
 #. help-category: advanced
 msgctxt "#30640"
 msgid "Advanced settings"
