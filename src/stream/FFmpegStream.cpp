@@ -792,14 +792,9 @@ bool FFmpegStream::Open(bool fileinfo)
 
   // select the correct program if requested
   m_initialProgramNumber = UINT_MAX;
-  CVariant programProp;
-  if (!m_programProperty.empty())
-  {
-    CVariant programProp(m_programProperty);
-
-    if (!programProp.isNull() && programProp.isInteger())
-      m_initialProgramNumber = static_cast<int>(programProp.asInteger());
-  }
+  CVariant programProp(m_programProperty);
+  if (!programProp.isNull())
+    m_initialProgramNumber = static_cast<int>(programProp.asInteger());
 
   // in case of mpegts and we have not seen pat/pmt, defer creation of streams
   if (!skipCreateStreams || m_pFormatContext->nb_programs > 0)
@@ -1420,27 +1415,11 @@ std::string FFmpegStream::ConvertCodecToInternalStereoMode(const std::string &mo
 
 void FFmpegStream::StoreSideData(DEMUX_PACKET *pkt, AVPacket *src)
 {
-  AVPacket* avPkt = av_packet_alloc();
-  if (!avPkt)
-  {
-    Log(LOGLEVEL_ERROR, "FFmpegStream::{} - av_packet_alloc failed: {}", __FUNCTION__, strerror(errno));
-  }
-  else
-  {
-    // here we make allocate an intermediate AVPacket to allow ffmpeg to allocate the side_data
-    // via the copy below. we then reference this allocated memory in the DemuxPacket. this behaviour
-    // is bad and will require a larger rework.
-    av_packet_copy_props(avPkt, src);
-    pkt->pSideData = avPkt->side_data;
-    pkt->iSideDataElems = avPkt->side_data_elems;
-
-    //! @todo: properly handle avpkt side_data. this works around our inproper use of the side_data
-    // as we pass pointers to ffmpeg allocated memory for the side_data. we should really be allocating
-    // and storing our own AVPacket. This will require some extensive changes.
-    // tl;dr: it frees the packet but not the side data.
-    av_buffer_unref(&avPkt->buf);
-    av_free(avPkt);
-  }
+  AVPacket avPkt;
+  av_init_packet(&avPkt);
+  av_packet_copy_props(&avPkt, src);
+  pkt->pSideData = avPkt.side_data;
+  pkt->iSideDataElems = avPkt.side_data_elems;
 }
 
 bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
