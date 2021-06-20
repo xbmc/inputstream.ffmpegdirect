@@ -1,8 +1,7 @@
-diff --git a/configure b/configure
-index c3ebef869c..56aa5281e1 100755
---- a/configure
-+++ b/configure
-@@ -7627,6 +7627,9 @@ print_config CONFIG_ "$config_files" $CONFIG_LIST       \
+diff -ur FFmpeg-n4.3-01/configure FFmpeg-n4.3-02/configure
+--- FFmpeg-n4.3-01/configure	2020-06-18 09:00:30.000000000 +0100
++++ FFmpeg-n4.3-02/configure	2020-06-18 09:05:33.000000000 +0100
+@@ -7555,6 +7555,9 @@
                                       $CONFIG_EXTRA      \
                                       $ALL_COMPONENTS    \
 
