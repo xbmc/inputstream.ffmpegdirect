@@ -89,7 +89,7 @@ private:
   std::string m_streamUrl;
   std::string m_mimeType;
 
-  ffmpegdirect::Properties m_properties;
+  ffmpegdirect::Properties properties;
 
   int m_videoWidth;
   int m_videoHeight;
