@@ -131,6 +131,7 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Propert
 FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Properties& props, std::shared_ptr<CurlInput> curlInput, const HttpProxy& httpProxy)
   : BaseStream(demuxPacketManager),
     m_openMode(props.m_openMode),
+    m_streamMode(props.m_streamMode),
     m_manifestType(props.m_manifestType),
     m_curlInput(curlInput),
     m_httpProxy(httpProxy),
@@ -836,6 +837,11 @@ bool FFmpegStream::Open(bool fileinfo)
             }
           }
         }
+
+        // We appear to need this hack for catchup, not sure why and can't be arsed trying to find out
+        // Without it a seek is interpreted as a program change and the stream will stall infinitely.
+        if (m_streamMode == StreamMode::CATCHUP && m_initialProgramNumber == UINT_MAX)
+          m_initialProgramNumber = 0;
       }
     }
     CreateStreams(nProgram);

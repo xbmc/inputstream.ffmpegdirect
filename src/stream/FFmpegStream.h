@@ -195,6 +195,7 @@ private:
 
   HttpProxy m_httpProxy;
   OpenMode m_openMode;
+  StreamMode m_streamMode;
 };
 
 } //namespace ffmpegdirect
