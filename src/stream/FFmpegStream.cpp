@@ -792,14 +792,9 @@ bool FFmpegStream::Open(bool fileinfo)
 
   // select the correct program if requested
   m_initialProgramNumber = UINT_MAX;
-  CVariant programProp;
-  if (!m_programProperty.empty())
-  {
-    CVariant programProp(m_programProperty);
-
-    if (!programProp.isNull() && programProp.isInteger())
-      m_initialProgramNumber = static_cast<int>(programProp.asInteger());
-  }
+  CVariant programProp(m_programProperty.empty() ? CVariant::VariantTypeNull : CVariant(m_programProperty));
+  if (!programProp.isNull())
+    m_initialProgramNumber = static_cast<int>(programProp.asInteger());
 
   // in case of mpegts and we have not seen pat/pmt, defer creation of streams
   if (!skipCreateStreams || m_pFormatContext->nb_programs > 0)
