@@ -4,15 +4,15 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-18 13:46+0000\n"
-"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"PO-Revision-Date: 2021-07-05 07:29+0000\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew (Israel) <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/he_il/>\n"
 "Language: he_il\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.7.1\n"
 
 #. settings labels
 #. label-category: Network
@@ -23,12 +23,12 @@ msgstr "רשת"
 #. label-group: Network - httpProxy
 msgctxt "#30001"
 msgid "HTTP proxy"
-msgstr "פרוקסי HTTP"
+msgstr "מתווך HTTP"
 
 #. label: Network - useHttpProxy
 msgctxt "#30002"
 msgid "Use HTTP proxy when opening with FFmpeg"
-msgstr ""
+msgstr "להשתמש במתווך HTTP בפתיחה עם FFmpeg"
 
 #. label-option: Network - httpProxyHost
 msgctxt "#30003"
@@ -38,7 +38,7 @@ msgstr "שרת"
 #. label-option: Network - httpProxyPort
 msgctxt "#30004"
 msgid "Port"
-msgstr "פורט"
+msgstr "פתחה"
 
 #. label-option: Network - httpProxyUser
 msgctxt "#30005"
@@ -53,12 +53,12 @@ msgstr "סיסמה"
 #. label-group: Network - Bandwidth
 msgctxt "#30007"
 msgid "Bandwidth"
-msgstr ""
+msgstr "רוחב פס"
 
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
-msgstr ""
+msgstr "רוחב פס לבחירת תזרים"
 
 # empty strings from id 30009 to 30019
 #. label-category: timeshift
@@ -70,22 +70,22 @@ msgstr "הסט זמן"
 #. label: Timeshift - timeshiftBufferPath
 msgctxt "#30021"
 msgid "Timeshift buffer path"
-msgstr "נתיב חוצץ טיימשיפט"
+msgstr "נתיב חוצץ הזחת זמן"
 
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr ""
+msgstr "הפעלת מגבלת הזחת זמן"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr ""
+msgstr "אורך חוצץ הזחת זמן מרבי"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
 msgid "{0:.2f} hours"
-msgstr ""
+msgstr "{0:.2f} שעות"
 
 # empty strings from id 30025 to 30039
 #. label-category: advanced
@@ -97,27 +97,27 @@ msgstr "מתקדם"
 #. label-group: Advanced - Logging
 msgctxt "#30041"
 msgid "FFmpeg"
-msgstr ""
+msgstr "FFmpeg"
 
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr ""
+msgstr "הפעלת תיעוד של FFmpeg"
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
 msgid "Probe for FPS"
-msgstr ""
+msgstr "תחקור תמוניות לשנייה"
 
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr ""
+msgstr "הפעלת טלטקסט"
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
 msgid "Use fast open for streams using a manifest file"
-msgstr ""
+msgstr "להשתמש בפתיחה מהירה של תזרימים בעזרת קובץ מניפסט"
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"

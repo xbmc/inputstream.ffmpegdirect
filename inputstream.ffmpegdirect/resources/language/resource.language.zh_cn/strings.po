@@ -4,15 +4,15 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-03-18 02:28+0000\n"
-"Last-Translator: Meano  Lee <meanocat@gmail.com>\n"
+"PO-Revision-Date: 2021-07-05 07:29+0000\n"
+"Last-Translator: Meano Lee <meanocat@gmail.com>\n"
 "Language-Team: Chinese (China) <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/zh_cn/>\n"
 "Language: zh_cn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.1\n"
+"X-Generator: Weblate 4.7.1\n"
 
 #. settings labels
 #. label-category: Network
@@ -132,37 +132,37 @@ msgstr "报告回放流为非实时的"
 #. help-category: Network
 msgctxt "#30600"
 msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
-msgstr ""
+msgstr "此类目包含网络配置的设置，比如FFmpeg代理和带宽限制。"
 
 #. help: Network - useHttpProxy
 msgctxt "#30601"
 msgid "Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used."
-msgstr ""
+msgstr "当使用 FFmpeg 打开时是否使用代理。注意，若使用 curl 打开，会使用 kodi 的代理设置。"
 
 #. help: Network - httpProxyHost
 msgctxt "#30602"
 msgid "Configure the proxy server address."
-msgstr ""
+msgstr "配置代理服务器地址。"
 
 #. help: Network- httpProxyPort
 msgctxt "#30603"
 msgid "Configure the proxy server port."
-msgstr ""
+msgstr "配置代理服务器端口。"
 
 #. help: Network - httpProxyUser
 msgctxt "#30604"
 msgid "Configure the proxy server username."
-msgstr ""
+msgstr "配置代理服务器用户名。"
 
 #. help: Network - httpProxyPassword
 msgctxt "#30605"
 msgid "Configure the proxy server password."
-msgstr ""
+msgstr "配置代理服务器密码。"
 
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
-msgstr ""
+msgstr "当选择要使用的 HLS 流时，将此值作为最大值。"
 
 # empty strings from id 30607 to 30619
 #. help info - Timeshift
