@@ -1,3 +1,8 @@
+v1.21.4
+- Workaround/hack for incorrect program change detection for catchup streams
+- Simplify program number property logic
+- Language update from Weblate
+
 v1.21.3
 - Fixed: fix hls bitrate selection
 

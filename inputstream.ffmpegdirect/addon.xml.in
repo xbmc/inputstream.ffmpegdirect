@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.21.3"
+  version="1.21.4"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -26,6 +26,10 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.21.4
+- Workaround/hack for incorrect program change detection for catchup streams
+- Simplify program number property logic
+
 v1.21.3
 - Fixed: fix hls bitrate selection
 
