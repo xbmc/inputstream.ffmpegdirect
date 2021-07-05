@@ -1,3 +1,7 @@
+v1.21.5
+- Translations updates from Weblate
+	- he_il, zh_cn
+
 v1.21.4
 - Workaround/hack for incorrect program change detection for catchup streams
 - Simplify program number property logic
