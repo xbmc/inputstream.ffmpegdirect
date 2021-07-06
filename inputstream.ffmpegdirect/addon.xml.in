@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.21.5"
+  version="1.21.6"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -26,6 +26,10 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v1.21.6
+- Translations updates from Weblate
+	- da_dk
+
 v1.21.5
 Translations updates from Weblate
 	- he_il, zh_cn
