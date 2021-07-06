@@ -4,7 +4,7 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-18 13:46+0000\n"
+"PO-Revision-Date: 2021-07-05 23:00+0000\n"
 "Last-Translator: Christian Gade <gade@kodi.tv>\n"
 "Language-Team: Danish <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/da_dk/>\n"
 "Language: da_dk\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.7.1\n"
 
 #. settings labels
 #. label-category: Network
@@ -75,7 +75,7 @@ msgstr "Stien til tidsforskydningsbuffer"
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr ""
+msgstr "Aktiver begrænsning for tidsforskydning"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
