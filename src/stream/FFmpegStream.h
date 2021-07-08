@@ -14,6 +14,7 @@
 #include "DemuxStream.h"
 #include "CurlInput.h"
 
+#include <chrono>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -22,7 +23,6 @@
 #include <sstream>
 
 #include <kodi/addon-instance/Inputstream.h>
-#include <kodi/tools/EndTime.h>
 
 #ifndef __GNUC__
 #pragma warning(push)
@@ -169,7 +169,8 @@ private:
   unsigned int m_initialProgramNumber;
   int m_seekStream;
 
-  kodi::tools::CEndTime  m_timeout;
+  std::chrono::steady_clock::time_point m_start;
+  std::chrono::milliseconds m_timeout;
 
   // Due to limitations of ffmpeg, we only can detect a program change
   // with a packet. This struct saves the packet for the next read and
