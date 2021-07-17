@@ -8,8 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && "
-"n % 100 <= 19) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
@@ -65,7 +64,7 @@ msgctxt "#30008"
 msgid "Stream selection bandwidth"
 msgstr ""
 
-#empty strings from id 30009 to 30019
+# empty strings from id 30009 to 30019
 #. label-category: timeshift
 #. label-group: Timeshift - Timeshift
 msgctxt "#30020"
@@ -92,7 +91,7 @@ msgctxt "#30024"
 msgid "{0:.2f} hours"
 msgstr ""
 
-#empty strings from id 30025 to 30039
+# empty strings from id 30025 to 30039
 #. label-category: advanced
 msgctxt "#30040"
 msgid "Advanced"
@@ -129,7 +128,7 @@ msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
 msgstr ""
 
-#empty strings from id 30047 to 30599
+# empty strings from id 30047 to 30599
 #. ############
 #. help info #
 #. ############
@@ -169,7 +168,7 @@ msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
 msgstr ""
 
-#empty strings from id 30607 to 30619
+# empty strings from id 30607 to 30619
 #. help info - Timeshift
 #. help-category: timeshift
 msgctxt "#30620"
@@ -191,7 +190,7 @@ msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
 msgstr ""
 
-#empty strings from id 30624 to 30639
+# empty strings from id 30624 to 30639
 #. help info - Advanced
 #. help-category: advanced
 msgctxt "#30640"
