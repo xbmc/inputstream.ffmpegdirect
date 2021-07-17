@@ -1,3 +1,7 @@
+v1.21.7
+- Translations updates from Weblate
+	- de_de, pl_pl
+
 v1.21.6
 - Translations updates from Weblate
 	- da_dk
