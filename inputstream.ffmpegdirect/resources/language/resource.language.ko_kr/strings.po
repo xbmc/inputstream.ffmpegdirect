@@ -4,23 +4,24 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-18 13:46+0000\n"
-"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"PO-Revision-Date: 2021-08-21 08:41+0000\n"
+"Last-Translator: Minho Park <parkmino@gmail.com>\n"
 "Language-Team: Korean <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/ko_kr/>\n"
 "Language: ko_kr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.7.2\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
-msgstr ""
+msgstr "FFmpeg 스트림용 InputStream 클라이언트(libavformat)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr ""
+msgstr "FFmpeg의 libavformat 또는 Kodi의 cURL로 열 수 있는 스트림용 InputStream 클라이언트. 일반 TS, HLS 및 DASH(DRM 제외)와 같은 일반적인 스트림 형식은 물론 다른 많은 형식도 지원됩니다.[CR][CR]이 애드온은 재생 창(보통 며칠)이 있는 아카이브/따라잡기 서비스도 지원합니다. 해당 범위에서 타임시프트할 수 있습니다.[CR][CR]문서를 보려면 https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md를 방문하세요"
 
 #. settings labels
 #. label-category: Network
@@ -36,7 +37,7 @@ msgstr "HTTP 프록시"
 #. label: Network - useHttpProxy
 msgctxt "#30002"
 msgid "Use HTTP proxy when opening with FFmpeg"
-msgstr ""
+msgstr "FFmpeg로 열 때 HTTP 프록시 사용"
 
 #. label-option: Network - httpProxyHost
 msgctxt "#30003"
@@ -61,12 +62,12 @@ msgstr "비밀번호"
 #. label-group: Network - Bandwidth
 msgctxt "#30007"
 msgid "Bandwidth"
-msgstr ""
+msgstr "대역폭"
 
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
-msgstr ""
+msgstr "스트림 선택 대역폭"
 
 # empty strings from id 30009 to 30019
 #. label-category: timeshift
@@ -83,12 +84,12 @@ msgstr "타임시프트 버퍼 경로"
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr ""
+msgstr "시간이동 제한 사용함"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr ""
+msgstr "최대 시간이동 버퍼 길이"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
@@ -105,32 +106,32 @@ msgstr "고급"
 #. label-group: Advanced - Logging
 msgctxt "#30041"
 msgid "FFmpeg"
-msgstr ""
+msgstr "FFmpeg"
 
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr ""
+msgstr "FFmpeg 로그 허용"
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
 msgid "Probe for FPS"
-msgstr ""
+msgstr "FPS 탐색"
 
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr ""
+msgstr "텔레텍스트 사용함"
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
 msgid "Use fast open for streams using a manifest file"
-msgstr ""
+msgstr "선언 파일을 이용하여 스트림 빠른 열기 사용"
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr ""
+msgstr "따라잡기 스트림의 경우 스트림 보고서가 실시간이 아님"
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -140,12 +141,12 @@ msgstr ""
 #. help-category: Network
 msgctxt "#30600"
 msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
-msgstr ""
+msgstr "이 범주에는 FFmpeg 프록시 및 대역폭 제한과 같은 네트워크 구성에 대한 설정이 포함됩니다."
 
 #. help: Network - useHttpProxy
 msgctxt "#30601"
 msgid "Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used."
-msgstr ""
+msgstr "FFmpeg로 열 때 프록시를 사용해야 하는지 여부입니다. curl을 이용해서 열면 kodi의 프록시 설정이 사용됩니다."
 
 #. help: Network - httpProxyHost
 msgctxt "#30602"
@@ -170,29 +171,29 @@ msgstr "프록시 서버 비밀번호를 설정합니다."
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
-msgstr ""
+msgstr "사용할 HLS 스트림을 선택할 때 이 값을 최대값으로 사용하십시오."
 
 # empty strings from id 30607 to 30619
 #. help info - Timeshift
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr ""
+msgstr "이 범주에는 시간이동에 대한 설정이 포함되어 있습니다. 시간이동을 사용하면 라이브 TV를 일시 중지하고 녹화를 재생하는 것과 유사하게 현재 위치에서 앞뒤로 이동할 수 있습니다."
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] property is passed to the addon."
-msgstr ""
+msgstr "시간이동 버퍼를 저장하는 데 사용되는 경로입니다. 기본값은 userdata의 [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] 폴더입니다. 이 폴더는 Kodi 시작 시 시간이동 파일에서 지워집니다. [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] 속성이 애드온에 전달된 경우에만 관련이 있습니다."
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
 msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
-msgstr ""
+msgstr "시간이동 버퍼의 길이를 제한하려면 이 옵션을 사용합니다. 사용하지 않으면 재생이 중지될 때까지 버퍼가 무한히 커집니다. 이 설정에 관계없이 버퍼는 일시 중지된 경우에도 무한히 커집니다."
 
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr ""
+msgstr "시간이동 버퍼의 길이(시간)입니다. 값에 도달하면 제한이 위반되지 않도록 이전 버퍼 데이터가 삭제됩니다. 장치의 저장소는 버퍼가 최대 길이까지 증가할 수 있을 만큼 충분해야 합니다(그렇지 않으면 이 옵션을 비활성화하는 것과 같습니다). 비디오 크기에 대한 좋은 경험적 방법은 1080p 비디오의 경우 분당 130MB이고 4K 비디오의 경우 분당 375MB입니다."
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
@@ -204,24 +205,24 @@ msgstr "고급 설정"
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
-msgstr ""
+msgstr "사용하면 애드온은 Kodi 로그에 FFmpeg 로그를 기록합니다."
 
 #. help: Advanced - probeForFps
 msgctxt "#30642"
 msgid "Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used."
-msgstr ""
+msgstr "초당 프레임 수를 탐색합니다. 기본 사용함. 사용하지 않으면 코덱에서 반환된 값이 사용됩니다."
 
 #. help: Advanced - enableTeletext
 msgctxt "#30643"
 msgid "Allow teletext. Default enabled."
-msgstr ""
+msgstr "텔레텍스트를 허용합니다. 기본 사용함."
 
 #. help: Advanced - useFastOpenForManifestStreams
 msgctxt "#30644"
 msgid "Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled."
-msgstr ""
+msgstr "선언 파일(예: HLD/DASH/부드러운 스트리밍)이 있는 스트림은 이 옵션이 활성화된 FFmpeg를 사용하여 더 빠르게 열 수 있습니다."
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
 msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] to the M3U entry in question. This setting should not be left enabled for all streams."
-msgstr ""
+msgstr "라이브 스트림이 라이브가 아니라고 보고하는 HLS와 같은 특정 따라잡기 스트림의 경우 스트림 열기 횟수를 개선할 수 있습니다. 따라잡기 스트림/제공자에 대해 이 옵션을 시험하는 경우, 문제의 M3U 항목에 [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I]를 추가하십시오. 이 설정은 모든 스트림에 사용해서는 안 됩니다."
