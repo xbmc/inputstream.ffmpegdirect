@@ -1,6 +1,6 @@
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%20v2+-blue.svg)](LICENSE.md)
-[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.inputstream.ffmpegdirect?branchName=Matrix)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=30&branchName=Matrix)
-[![Build Status](https://jenkins.kodi.tv/view/Addons/job/xbmc/job/inputstream.ffmpegdirect/job/Matrix/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/xbmc%2Finputstream.ffmpegdirect/branches/)
+[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.inputstream.ffmpegdirect?branchName=Nexus)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=30&branchName=Nexus)
+[![Build Status](https://jenkins.kodi.tv/view/Addons/job/xbmc/job/inputstream.ffmpegdirect/job/Nexus/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/xbmc%2Finputstream.ffmpegdirect/branches/)
 
 # inputstream.ffmpegdirect addon for Kodi
 

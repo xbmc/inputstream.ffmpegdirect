@@ -4,7 +4,7 @@ variables:
 trigger:
   branches:
     include:
-    - Matrix
+    - Nexus
     - releases/*
   paths:
     include:
