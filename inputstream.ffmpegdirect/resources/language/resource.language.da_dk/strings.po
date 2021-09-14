@@ -4,7 +4,8 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-07-05 23:00+0000\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"PO-Revision-Date: 2021-09-10 09:50+0000\n"
 "Last-Translator: Christian Gade <gade@kodi.tv>\n"
 "Language-Team: Danish <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/da_dk/>\n"
 "Language: da_dk\n"
@@ -12,21 +13,21 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.1\n"
+"X-Generator: Weblate 4.8\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
-msgstr ""
+msgstr "InputStream-klient til FFmpeg-streams (libavformat)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr ""
+msgstr "InputStream-klient til streams, der kan åbnes af enten FFmpeg's libavformat eller Kodi's cURL. Almindelige streamformater som f.eks. almindelig TS, HLS og DASH (uden DRM) understøttes såvel som mange andre.[CR][CR]Add-on'et har også understøttelse af Arkiv-/Catchup-tjenester, hvor der er et afspilningsvindue (normalt i dage) og kan tidsforskyde på tværs af dette spænd.[CR][CR]For dokumentation besøg: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
 msgctxt "#30000"
 msgid "Network"
-msgstr "Nerværk"
+msgstr "Netværk"
 
 #. label-group: Network - httpProxy
 msgctxt "#30001"
@@ -88,7 +89,7 @@ msgstr "Aktiver begrænsning for tidsforskydning"
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr ""
+msgstr "Maksimal længde på tidsforskydningsbuffer"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
@@ -110,7 +111,7 @@ msgstr "FFmpeg"
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr ""
+msgstr "Tillad logføring af FFmpeg"
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
@@ -160,7 +161,7 @@ msgstr "Konfigurér proxyserverport."
 #. help: Network - httpProxyUser
 msgctxt "#30604"
 msgid "Configure the proxy server username."
-msgstr "Konfigurér proxyserver brugernavn."
+msgstr "Konfigurér proxyserverens brugernavn."
 
 #. help: Network - httpProxyPassword
 msgctxt "#30605"
