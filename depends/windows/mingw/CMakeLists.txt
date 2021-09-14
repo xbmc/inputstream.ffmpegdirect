@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(mingw)
 
-# Currently unused (our mirrors bring some download problems for Msys2)
-if(1)
+# Currently unused (our mirrors not have newest)
+if(0)
   foreach(repo msys mingw32 mingw64)
     if(${repo} STREQUAL msys)
       file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/etc/pacman.d/mirrorlist.${repo} "Server = http://mirrors.kodi.tv/build-deps/win32/msys2/repos/${repo}2/$arch\n")
@@ -21,10 +21,13 @@ else()
    set(MINGW_PATH "mingw32")
 endif()
 
-execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe --login -c
-    "pacman-key --init" ERROR_QUIET)
-execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe --login -c
-    "pacman --noconfirm -S mingw-w64-cross-binutils \
+execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe -lc
+    " " ERROR_QUIET)
+execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe -lc
+    "pacman --noconfirm -Syuu")
+execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe -lc
+    "pacman --noconfirm -Syuu \
+                           mingw-w64-cross-binutils \
                            ${HOST}-gcc ${HOST}-lua \
                            ${HOST}-headers \
                            make \
