@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="1.21.8"
+  version="19.0.0"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
@@ -22,6 +22,12 @@
       <fanart>fanart.jpg</fanart>
     </assets>
     <news>
+v19.0.0
+- Changed test builds to released 'Kodi 19 Matrix'
+- Increased version to 19.0.0
+  - With start of Kodi 20 Nexus, takes addon as major the same version number as Kodi.
+    This done to know easier to which Kodi the addon works.
+
 v1.21.8
 Translations updates from Weblate
 	- am_et, bs_ba, cy_gb, es_ar, eu_es, fa_ir, ml_in, mn_mn, mt_mt, my_mm, ro_md, si_lk, ta_in, tg_tj, uk_ua, uz_uz
