@@ -1,1 +1,1 @@
-buildPlugin(version: "Matrix", UBUNTU_DISTS: ['focal'])
+buildPlugin(version: "Nexus", UBUNTU_DISTS: ['focal'])
