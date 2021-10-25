@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2021-10-12 20:38+0000\n"
+"PO-Revision-Date: 2021-10-25 09:22+0000\n"
 "Last-Translator: Christian Gade <gade@kodi.tv>\n"
 "Language-Team: Danish <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/da_dk/>\n"
 "Language: da_dk\n"
@@ -57,7 +57,7 @@ msgstr "Brugernavn"
 #. label-option: Network - httpProxyPassword
 msgctxt "#30006"
 msgid "Password"
-msgstr "Kodeord"
+msgstr "Adgangskode"
 
 #. label-group: Network - Bandwidth
 msgctxt "#30007"
@@ -178,7 +178,7 @@ msgstr "Brug denne værdi som maksimum, når du vælger, hvilken HLS-stream der 
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr "Kategori indeholdende indstillingerne for tidsforskydning. Tidsforskydning giver dig mulighed for at sætte live-tv på pause samt gå tilbage og fremad fra din nuværende position på samme måde som afspilning af en optagelse."
+msgstr "Kategori indeholdende indstillingerne for tidsforskydning. Tidsforskydning giver dig mulighed for at sætte direkte tv på pause samt gå tilbage og fremad fra din nuværende position på samme måde som afspilning af en optagelse."
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
