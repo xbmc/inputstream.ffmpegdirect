@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2021-10-25 09:22+0000\n"
+"PO-Revision-Date: 2021-11-14 14:13+0000\n"
 "Last-Translator: Christian Gade <gade@kodi.tv>\n"
 "Language-Team: Danish <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/da_dk/>\n"
 "Language: da_dk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8\n"
+"X-Generator: Weblate 4.9\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
@@ -116,7 +116,7 @@ msgstr "Tillad logføring af FFmpeg"
 #. label: Advanced - probeForFps
 msgctxt "#30043"
 msgid "Probe for FPS"
-msgstr ""
+msgstr "Led efter FPS"
 
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
@@ -131,7 +131,7 @@ msgstr "Brug hurtig åbning til streams ved hjælp af en manifestfil"
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr ""
+msgstr "For catch-up-streams er rapportstream ikke i realtid"
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -193,7 +193,7 @@ msgstr "Aktiver denne indstilling for at begrænse længden af tidforskydnings-b
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr ""
+msgstr "Længden af tidsforskydnings-bufferen i timer. Når værdien er nået, vil de ældre bufferdata blive slettet for at sikre, at grænsen ikke overskrides. Bemærk, at lagerpladsen til din enhed skal være tilstrækkelig for at tillade bufferen at vokse til sin maksimale længde (ellers svarer det til at deaktivere denne mulighed). En god regel for videostørrelse er 130MB pr. minut af 1080p-video og 375MB pr. minut af 4K-video."
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
@@ -205,12 +205,12 @@ msgstr "Avancerede indstillinger"
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
-msgstr ""
+msgstr "Ved aktivering vil add-on'et logføre enhver FFmpeg-logføring til Kodi-loggen."
 
 #. help: Advanced - probeForFps
 msgctxt "#30642"
 msgid "Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used."
-msgstr ""
+msgstr "Led efter billeder per sekund. Aktiveret som standard. Ved deaktivering vil den værdi, der returneres af codec'et, blive brugt."
 
 #. help: Advanced - enableTeletext
 msgctxt "#30643"
@@ -220,9 +220,9 @@ msgstr "Tillad tekst-tv. Aktiveret som standard."
 #. help: Advanced - useFastOpenForManifestStreams
 msgctxt "#30644"
 msgid "Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled."
-msgstr ""
+msgstr "Streams der har en manifestfil (f.eks. HLD/DASH/Smooth Streaming) kan åbnes hurtigere med FFmpeg med denne mulighed aktiveret."
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
 msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] to the M3U entry in question. This setting should not be left enabled for all streams."
-msgstr ""
+msgstr "For visse catch-up-streams, såsom HLS, kan rapportering om at en livestream ikke er direkte, forbedre tiden streamen er åben. Hvis test af denne mulighed virker for en catchup-stream/udbyder, skal du tilføje en [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] til den pågældende M3U-post. Denne indstilling bør ikke aktiveres for alle streams."
