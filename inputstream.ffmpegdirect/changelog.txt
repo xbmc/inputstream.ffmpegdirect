@@ -1,3 +1,9 @@
+v20.0.1
+- Fixed build about global Kodi API version 1.3.1
+  - Lower versions also still usable.
+- Removed changelog text within addon.xml
+  - Now done by read of changelog.txt within addon.
+
 v20.0.0
 - Changed test builds to 'Kodi 20 Nexus'
 - Increased version to 20.0.0
