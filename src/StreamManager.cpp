@@ -49,7 +49,7 @@ void Log(const LogLevel logLevel, const char* format, ...)
   va_start(args, format);
   vsprintf(buffer, format, args);
   va_end(args);
-  ::kodi::addon::CAddonBase::m_interface->toKodi->addon_log_msg(::kodi::addon::CAddonBase::m_interface->toKodi->kodiBase, addonLevel, buffer);
+  kodi::Log(addonLevel, buffer);
 }
 
 InputStreamFFmpegDirect::InputStreamFFmpegDirect(KODI_HANDLE instance, const std::string& version)
