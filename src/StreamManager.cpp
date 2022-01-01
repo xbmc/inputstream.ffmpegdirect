@@ -24,24 +24,24 @@ using namespace kodi::tools;
 
 void Log(const LogLevel logLevel, const char* format, ...)
 {
-  AddonLog addonLevel;
+  ADDON_LOG addonLevel;
 
   switch (logLevel)
   {
     case LogLevel::LOGLEVEL_FATAL:
-      addonLevel = AddonLog::ADDON_LOG_FATAL;
+      addonLevel = ADDON_LOG::ADDON_LOG_FATAL;
       break;
     case LogLevel::LOGLEVEL_ERROR:
-      addonLevel = AddonLog::ADDON_LOG_ERROR;
+      addonLevel = ADDON_LOG::ADDON_LOG_ERROR;
       break;
     case LogLevel::LOGLEVEL_WARNING:
-      addonLevel = AddonLog::ADDON_LOG_WARNING;
+      addonLevel = ADDON_LOG::ADDON_LOG_WARNING;
       break;
     case LogLevel::LOGLEVEL_INFO:
-      addonLevel = AddonLog::ADDON_LOG_INFO;
+      addonLevel = ADDON_LOG::ADDON_LOG_INFO;
       break;
     default:
-      addonLevel = AddonLog::ADDON_LOG_DEBUG;
+      addonLevel = ADDON_LOG::ADDON_LOG_DEBUG;
   }
 
   char buffer[16384];
@@ -52,7 +52,7 @@ void Log(const LogLevel logLevel, const char* format, ...)
   kodi::Log(addonLevel, buffer);
 }
 
-InputStreamFFmpegDirect::InputStreamFFmpegDirect(KODI_HANDLE instance, const std::string& version)
+InputStreamFFmpegDirect::InputStreamFFmpegDirect(const kodi::addon::IInstanceInfo& instance)
   : CInstanceInputStream(instance)
 {
 }
@@ -192,19 +192,19 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
 
   HttpProxy httpProxy;
 
-  bool useHttpProxy = kodi::GetSettingBoolean("useHttpProxy");
+  bool useHttpProxy = kodi::addon::GetSettingBoolean("useHttpProxy");
   if (useHttpProxy)
   {
-    httpProxy.SetProxyHost(kodi::GetSettingString("httpProxyHost"));
+    httpProxy.SetProxyHost(kodi::addon::GetSettingString("httpProxyHost"));
     kodi::Log(ADDON_LOG_INFO, "HttpProxy host set: '%s'", httpProxy.GetProxyHost().c_str());
 
-    httpProxy.SetProxyPort(static_cast<uint16_t>(kodi::GetSettingInt("httpProxyPort")));
+    httpProxy.SetProxyPort(static_cast<uint16_t>(kodi::addon::GetSettingInt("httpProxyPort")));
     kodi::Log(ADDON_LOG_INFO, "HttpProxy port set: %d", static_cast<int>(httpProxy.GetProxyPort()));
 
-    httpProxy.SetProxyUser(kodi::GetSettingString("httpProxyUser"));
+    httpProxy.SetProxyUser(kodi::addon::GetSettingString("httpProxyUser"));
     kodi::Log(ADDON_LOG_INFO, "HttpProxy user set: '%s'", httpProxy.GetProxyUser().c_str());
 
-    httpProxy.SetProxyPassword(kodi::GetSettingString("httpProxyPassword"));
+    httpProxy.SetProxyPassword(kodi::addon::GetSettingString("httpProxyPassword"));
   }
 
   if (m_properties.m_streamMode == StreamMode::CATCHUP)
@@ -382,20 +382,17 @@ void InputStreamFFmpegDirect::FreeDemuxPacketFromInputStreamAPI(DEMUX_PACKET* pa
 
 /*****************************************************************************************************/
 
-class ATTRIBUTE_HIDDEN CMyAddon
+class ATTR_DLL_LOCAL CMyAddon
   : public kodi::addon::CAddonBase
 {
 public:
-  CMyAddon() { }
-  virtual ADDON_STATUS CreateInstance(int instanceType,
-                                      const std::string& instanceID,
-                                      KODI_HANDLE instance,
-                                      const std::string& version,
-                                      KODI_HANDLE& addonInstance) override
+  CMyAddon() = default;
+  ADDON_STATUS CreateInstance(const kodi::addon::IInstanceInfo& instance,
+                              KODI_ADDON_INSTANCE_HDL& hdl) override
   {
-    if (instanceType == ADDON_INSTANCE_INPUTSTREAM)
+    if (instance.IsType(ADDON_INSTANCE_INPUTSTREAM))
     {
-      addonInstance = new InputStreamFFmpegDirect(instance, version);
+      hdl = new InputStreamFFmpegDirect(instance);
       return ADDON_STATUS_OK;
     }
     return ADDON_STATUS_NOT_IMPLEMENTED;

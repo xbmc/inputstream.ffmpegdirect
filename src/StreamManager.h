@@ -36,11 +36,11 @@ static const std::string TIMEZONE_SHIFT = "inputstream.ffmpegdirect.timezone_shi
 static const std::string DEFAULT_PROGRAMME_DURATION = "inputstream.ffmpegdirect.default_programme_duration";
 static const std::string PROGRAMME_CATCHUP_ID = "inputstream.ffmpegdirect.programme_catchup_id";
 
-class ATTRIBUTE_HIDDEN InputStreamFFmpegDirect
+class ATTR_DLL_LOCAL InputStreamFFmpegDirect
   : public kodi::addon::CInstanceInputStream, ffmpegdirect::IManageDemuxPacket
 {
 public:
-  InputStreamFFmpegDirect(KODI_HANDLE instance, const std::string& version);
+  InputStreamFFmpegDirect(const kodi::addon::IInstanceInfo& instance);
   ~InputStreamFFmpegDirect();
 
   virtual bool Open(const kodi::addon::InputstreamProperty& props) override;

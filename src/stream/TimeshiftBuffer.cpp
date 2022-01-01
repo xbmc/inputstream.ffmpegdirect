@@ -20,7 +20,7 @@ using namespace kodi::tools;
 TimeshiftBuffer::TimeshiftBuffer(IManageDemuxPacket* demuxPacketManager)
   : m_demuxPacketManager(demuxPacketManager)
 {
-  m_timeshiftBufferPath = kodi::GetSettingString("timeshiftBufferPath");
+  m_timeshiftBufferPath = kodi::addon::GetSettingString("timeshiftBufferPath");
   if (m_timeshiftBufferPath.empty())
   {
     m_timeshiftBufferPath = DEFAULT_TIMESHIFT_BUFFER_PATH;
@@ -34,9 +34,9 @@ TimeshiftBuffer::TimeshiftBuffer(IManageDemuxPacket* demuxPacketManager)
   if (!kodi::vfs::DirectoryExists(m_timeshiftBufferPath))
     kodi::vfs::CreateDirectory(m_timeshiftBufferPath);
 
-  if (!kodi::CheckSettingBoolean("timeshiftEnableLimit", m_enableOnDiskSegmentLimit))
+  if (!kodi::addon::CheckSettingBoolean("timeshiftEnableLimit", m_enableOnDiskSegmentLimit))
     m_enableOnDiskSegmentLimit = true;
-  float onDiskTotalLengthHours = kodi::GetSettingFloat("timeshiftOnDiskLength");
+  float onDiskTotalLengthHours = kodi::addon::GetSettingFloat("timeshiftOnDiskLength");
   if (onDiskTotalLengthHours <= 0.0f)
     onDiskTotalLengthHours = DEFAULT_TIMESHIFT_SEGMENT_ON_DISK_LENGTH_HOURS;
   int onDiskTotalLengthSeconds = onDiskTotalLengthHours * 60 * 60;
