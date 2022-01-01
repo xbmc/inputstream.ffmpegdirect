@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2021-09-04 11:29+0000\n"
+"PO-Revision-Date: 2021-10-25 09:22+0000\n"
 "Last-Translator: Dmitry Petrov <dimakrm361@gmail.com>\n"
 "Language-Team: Russian <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/ru_ru/>\n"
 "Language: ru_ru\n"
@@ -21,7 +21,7 @@ msgstr "InputStream клиент для FFmpeg потоков (libavformat)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr ""
+msgstr "Клиент InputStream для потоков, которые можно открыть с помощью libavformat от FFmpeg или с помощью Kodi cURL. Поддерживаются основные форматы потоков такие, как простой TS, HLS, DASH (без DRM) и многие другие.[CR][CR]Дополнение также имеет поддержку служб Архива/Перемотки, где есть окна воспроизведения (обычно в днях), которые могут сдвигаться по времени в течение этого промежутка.[CR][CR]Для документации посетите: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
@@ -67,40 +67,40 @@ msgstr "Пропускная способность"
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
-msgstr ""
+msgstr "Пропускная способность для выбора потока"
 
 # empty strings from id 30009 to 30019
 #. label-category: timeshift
 #. label-group: Timeshift - Timeshift
 msgctxt "#30020"
 msgid "Timeshift"
-msgstr ""
+msgstr "Таймшифт"
 
 #. label: Timeshift - timeshiftBufferPath
 msgctxt "#30021"
 msgid "Timeshift buffer path"
-msgstr ""
+msgstr "Путь к буферу таймшифт"
 
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr ""
+msgstr "Включить ограничение таймшифт"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr ""
+msgstr "Максимальная длина буфера таймшифт"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
 msgid "{0:.2f} hours"
-msgstr ""
+msgstr "{0:.2f} часов"
 
 # empty strings from id 30025 to 30039
 #. label-category: advanced
 msgctxt "#30040"
 msgid "Advanced"
-msgstr ""
+msgstr "Расширенные"
 
 #. label-category: advanced
 #. label-group: Advanced - Logging
@@ -111,7 +111,7 @@ msgstr "FFmpeg"
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr ""
+msgstr "Включить журнал FFmpeg"
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
@@ -121,7 +121,7 @@ msgstr ""
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr ""
+msgstr "Включить телетекст"
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
@@ -141,7 +141,7 @@ msgstr ""
 #. help-category: Network
 msgctxt "#30600"
 msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
-msgstr ""
+msgstr "Эта категория содержит настройки сети такие, как ограничение пропускной способности или прокси-сервер FFmpeg."
 
 #. help: Network - useHttpProxy
 msgctxt "#30601"
@@ -178,34 +178,34 @@ msgstr ""
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr ""
+msgstr "Эта категория содержит настройки таймшифт (timeshift). Таймшифт позволяет ставить на паузу ТВ и перемещаться вперёд и назад, что похоже на перемотку видео записей."
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] property is passed to the addon."
-msgstr ""
+msgstr "Путь, используемый для хранения буфера таймшифт. По умолчанию это папка [I]\"userdata/addon_data/inputstream.ffmpegdirect/timeshift\"[/I]. Обратите внимание, что папка будет очищаться при каждом запуске Kodi. Актуально только тогда, когда свойство [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] передаётся дополнению."
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
 msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
-msgstr ""
+msgstr "Включите эту опцию, чтобы ограничить длину буфера таймшифт. Если выключено, буфер будет расти до тех пор, пока воспроизведение не будет остановлено. Независимо от этого параметра, буфер также будет постоянно расти, если воспроизведение приостановлено."
 
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr ""
+msgstr "Длина буфера таймшифт в часах. При достижении указанного значения, старые данные буфера, будут удалены, чтобы гарантировать, что лимит не нарушен. Обратите внимание, что хранилища вашего устройства должно быть достаточно, чтобы буфер увеличился до максимальной длины (в противном случае это эквивалентно отключению этой опции). Наблюдаемые значения для видео: 130 МБ в минуту для 1080p и 375 МБ в минуту для 4K."
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
 #. help-category: advanced
 msgctxt "#30640"
 msgid "Advanced settings"
-msgstr ""
+msgstr "Расширенные настройки"
 
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
-msgstr ""
+msgstr "Если включен, дополнение будет записывать журнал FFmpeg, в журнал Kodi."
 
 #. help: Advanced - probeForFps
 msgctxt "#30642"

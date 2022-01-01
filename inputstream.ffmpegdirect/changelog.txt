@@ -1,3 +1,7 @@
+v20.1.0
+- Translation updates by Weblate
+- Kodi main API update to version 2.0.0
+
 v20.0.1
 - Fixed build about global Kodi API version 1.3.1
   - Lower versions also still usable.

@@ -151,7 +151,7 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Propert
   m_dtsAtDisplayTime = STREAM_NOPTS_VALUE;
 
   FFmpegLog::SetLogLevel(AV_LOG_INFO);
-  FFmpegLog::SetEnabled(kodi::GetSettingBoolean("allowFFmpegLogging"));
+  FFmpegLog::SetEnabled(kodi::addon::GetSettingBoolean("allowFFmpegLogging"));
   av_log_set_callback(ff_avutil_log);
 }
 
@@ -181,7 +181,7 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
     FFmpegLog::SetEnabled(true);
     av_dump_format(m_pFormatContext, 0, CURL::GetRedacted(streamUrl).c_str(), 0);
   }
-  FFmpegLog::SetEnabled(kodi::GetSettingBoolean("allowFFmpegLogging"));
+  FFmpegLog::SetEnabled(kodi::addon::GetSettingBoolean("allowFFmpegLogging"));
 
   return m_opened;
 }
@@ -709,7 +709,7 @@ bool FFmpegStream::Open(bool fileinfo)
   }
 
   // Avoid detecting framerate if our advanced settings says so
-  if (!kodi::GetSettingBoolean("probeForFps"))
+  if (!kodi::addon::GetSettingBoolean("probeForFps"))
     m_pFormatContext->fps_probe_size = 0;
 
   // analyse very short to speed up mjpeg playback start
@@ -924,7 +924,7 @@ bool FFmpegStream::OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB&
   if (result < 0)
   {
     // We only process this condition for manifest streams when this setting is disabled
-    if (!kodi::GetSettingBoolean("useFastOpenForManifestStreams") || m_manifestType.empty())
+    if (!kodi::addon::GetSettingBoolean("useFastOpenForManifestStreams") || m_manifestType.empty())
     {
       m_pFormatContext->flags |= AVFMT_FLAG_PRIV_OPT;
       if (avformat_open_input(&m_pFormatContext, strFile.c_str(), iformat, &options) < 0)
@@ -1244,7 +1244,7 @@ unsigned int FFmpegStream::HLSSelectProgram()
 {
   unsigned int prog = UINT_MAX;
 
-  int bandwidth = kodi::GetSettingInt("streamBandwidth") * 1000;
+  int bandwidth = kodi::addon::GetSettingInt("streamBandwidth") * 1000;
   if (bandwidth <= 0)
     bandwidth = INT_MAX;
 
@@ -1907,7 +1907,7 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
       // }
       case AVMEDIA_TYPE_SUBTITLE:
       {
-        if (pStream->codecpar->codec_id == AV_CODEC_ID_DVB_TELETEXT && kodi::GetSettingBoolean("enableTeletext"))
+        if (pStream->codecpar->codec_id == AV_CODEC_ID_DVB_TELETEXT && kodi::addon::GetSettingBoolean("enableTeletext"))
         {
           DemuxStreamTeletext* st = new DemuxStreamTeletext();
           stream = st;

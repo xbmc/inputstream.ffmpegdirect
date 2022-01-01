@@ -371,7 +371,7 @@ void FFmpegCatchupStream::UpdateCurrentPTS()
 
 bool FFmpegCatchupStream::IsRealTimeStream()
 {
-  if (kodi::GetSettingBoolean("forceRealtimeOffCatchup"))
+  if (kodi::addon::GetSettingBoolean("forceRealtimeOffCatchup"))
     return false;
 
   return m_isRealTimeStream && m_pFormatContext->duration <= 0;

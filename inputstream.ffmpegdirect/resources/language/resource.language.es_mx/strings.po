@@ -4,23 +4,24 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-18 13:46+0000\n"
-"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"PO-Revision-Date: 2021-10-02 17:30+0000\n"
+"Last-Translator: Edson Armando <edsonarmando78@outlook.com>\n"
 "Language-Team: Spanish (Mexico) <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/es_mx/>\n"
 "Language: es_mx\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.8\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
-msgstr ""
+msgstr "Cliente InputStream para flujos FFmpeg (libavformat)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr ""
+msgstr "Cliente InputStream para flujos de datos que pueden abrirse con libavformat de FFmpeg o cURL integrado en Kodi. Formatos de flujo comunes tales como TS simple, HLS y DASH (sin DRM) también están soportados, al igual que muchos otros.[CR][CR]El complemento también soporta servicios Archive/Catchup donde hay un espacio de repetición (usualmente en días) y se puede mover a través del tiempo de dicho espacio.[CR][CR]Para documentación visita: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
