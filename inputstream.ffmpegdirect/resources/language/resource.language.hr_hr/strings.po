@@ -4,23 +4,24 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-18 13:46+0000\n"
-"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"PO-Revision-Date: 2022-02-09 16:18+0000\n"
+"Last-Translator: gogogogi <trebelnik2@gmail.com>\n"
 "Language-Team: Croatian <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/hr_hr/>\n"
 "Language: hr_hr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.10.1\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
-msgstr ""
+msgstr "InputStream klijent za FFmpeg strujanja (libavformat)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr ""
+msgstr "InputStream klijent za strujanja koja se mogu otvoriti ili FFmpeg libavformatom ili Kodijevim cURL-om. Uobičajeni formati strujanja poput običnog TS, HLS i DASH (bez DRM zaštite sadržaja) formata su podržani kao i mnogi drugi.[CR][CR]Dodatak ima još podršku za Arhive/Hvatanje usluga gdje postoji prozor ponovne raprodukcije (uobičajeno u danima) i može se vremenski premotavati u zadanom vremenskom razdoblju.[CR][CR]Za dokumentaciju posjetite: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
@@ -31,12 +32,12 @@ msgstr "Mreža"
 #. label-group: Network - httpProxy
 msgctxt "#30001"
 msgid "HTTP proxy"
-msgstr ""
+msgstr "HTTP proxy"
 
 #. label: Network - useHttpProxy
 msgctxt "#30002"
 msgid "Use HTTP proxy when opening with FFmpeg"
-msgstr ""
+msgstr "Koristi HTTP proxy pri otvaranju s FFmpegom"
 
 #. label-option: Network - httpProxyHost
 msgctxt "#30003"
@@ -61,12 +62,12 @@ msgstr "Lozinka"
 #. label-group: Network - Bandwidth
 msgctxt "#30007"
 msgid "Bandwidth"
-msgstr ""
+msgstr "Brzina prijenosa"
 
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
-msgstr ""
+msgstr "Brzina prijenosa odabira strujanja"
 
 # empty strings from id 30009 to 30019
 #. label-category: timeshift
@@ -78,22 +79,22 @@ msgstr "Vremensko premotavanje"
 #. label: Timeshift - timeshiftBufferPath
 msgctxt "#30021"
 msgid "Timeshift buffer path"
-msgstr "Putanja međuspremnika premotavanja u vremenu"
+msgstr "Putanja međuspremnika vremenskog premotavanja"
 
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr ""
+msgstr "Omogući ograničenje vremenskog premotavanja"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr ""
+msgstr "Najveća duljina međuspremnika vremenskog premotavanja"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
 msgid "{0:.2f} hours"
-msgstr "{0:.2f} sata"
+msgstr "{0:.2f} sat(a)"
 
 # empty strings from id 30025 to 30039
 #. label-category: advanced
@@ -105,32 +106,32 @@ msgstr "Napredno"
 #. label-group: Advanced - Logging
 msgctxt "#30041"
 msgid "FFmpeg"
-msgstr ""
+msgstr "FFmpeg"
 
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr ""
+msgstr "Dopusti FFmpeg zapisivanje"
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
 msgid "Probe for FPS"
-msgstr ""
+msgstr "Ispitaj sl/sek (FPS)"
 
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr ""
+msgstr "Omogući teletekst"
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
 msgid "Use fast open for streams using a manifest file"
-msgstr ""
+msgstr "Koristi brzo otvaranje za strujanja pomoću manifest datoteke"
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr ""
+msgstr "Za strujanja s mogućnošću hvatanja prijavljeno strujanje nije u stvarnom vremenu"
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -140,59 +141,59 @@ msgstr ""
 #. help-category: Network
 msgctxt "#30600"
 msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
-msgstr ""
+msgstr "Ova kategorija sadrži postavke za mrežno podešavanje poput FFmpeg proxya i ograničenja brzine prijenosa."
 
 #. help: Network - useHttpProxy
 msgctxt "#30601"
 msgid "Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used."
-msgstr ""
+msgstr "Treba li se proxy koristiti pri FFmpeg otvaranju. Zapamtite da će se pri otvaranju s curl-om koristiti Kodijeve proxy postavke."
 
 #. help: Network - httpProxyHost
 msgctxt "#30602"
 msgid "Configure the proxy server address."
-msgstr "Prilagodite adresu proxy poslužitelja."
+msgstr "Podesi adresu proxy poslužitelja."
 
 #. help: Network- httpProxyPort
 msgctxt "#30603"
 msgid "Configure the proxy server port."
-msgstr "Prilagodite ulaz proxy poslužitelja."
+msgstr "Podesi ulaz proxy poslužitelja."
 
 #. help: Network - httpProxyUser
 msgctxt "#30604"
 msgid "Configure the proxy server username."
-msgstr "Prilagodite korisničko ime proxy poslužitelja."
+msgstr "Podesi korisničko ime proxy poslužitelja."
 
 #. help: Network - httpProxyPassword
 msgctxt "#30605"
 msgid "Configure the proxy server password."
-msgstr "Prilagodite lozinku proxy poslužitelja."
+msgstr "Podesi lozinku proxy poslužitelja."
 
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
-msgstr ""
+msgstr "Koristi ovu vrijednost kao maksimum pri odabiru HLS strujanja."
 
 # empty strings from id 30607 to 30619
 #. help info - Timeshift
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr ""
+msgstr "Ova kategorija sadrži postavke za vremensko premotavanje. Vremensko premotavanje omogućuje vam pauziranje TV emitiranja uživo i premotavanje unaprijed i unatrag, slično kao i pri reprodukciji video snimke."
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] property is passed to the addon."
-msgstr ""
+msgstr "Putanja korištena za međuspremnik vremenskog premotavanja. Zadana je [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] mapa u userdata mapi. Zapamtite da će iz te mape biti uklonjene  datoteke vremenskog premotavanja pri Kodi pokretanju. Bitno je samo kada [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] svojstvo je proslijeđeno u dodatak."
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
 msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
-msgstr ""
+msgstr "Omogućite ovu mogućnost za ograničenje duljine međuspremnika vremenskog premotavanja. Ako je onemogućeno međuspremnik će rasti bez ograničenja sve dok se reprodukcija ne zaustavi. Unatoč ovoj mogućnosti međuspremnik će isto rasti bez ograničenja ako je reprodukcija pauzirana."
 
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr ""
+msgstr "Duljina međuspremnika vremenskog premotavanja u satima. Jednom kada se vrijednost dostigne, stariji podaci međuspremnika biti će obrisani kako bi se osiguralo da se ograničenje ne prekorači. Zapamtite da pohrana vašeg uređaja mora biti dostatna kako bi se mogao dopustiti rast do najvećeg ograničenja (u suprotnome je onemogućena ova mogućnost). Dobra heuristika za veličinu videa je 130 MB po minuti za 1080p video i 375 MB po minuti za 4K video."
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
@@ -204,24 +205,24 @@ msgstr "Napredne postavke"
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
-msgstr ""
+msgstr "Ako je omogućeno dodatak će bilježiti svaki FFmpeg događaj u Kodi zapis."
 
 #. help: Advanced - probeForFps
 msgctxt "#30642"
 msgid "Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used."
-msgstr ""
+msgstr "Ispitivanje sličica u sekundi. Po zadanome je omogućeno. Ako je onemogućeno koristit će se vrijednost iz kôdeka."
 
 #. help: Advanced - enableTeletext
 msgctxt "#30643"
 msgid "Allow teletext. Default enabled."
-msgstr ""
+msgstr "Dopusti teletekst. Po zadanome je omogućeno."
 
 #. help: Advanced - useFastOpenForManifestStreams
 msgctxt "#30644"
 msgid "Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled."
-msgstr ""
+msgstr "Strujanja koja imaju manifest datoteku (npr. HLD/DASH/Smooth Streaming ) mogu se otvoriti brže s FFmpegom kada je ova mogućnost omogućena."
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
 msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] to the M3U entry in question. This setting should not be left enabled for all streams."
-msgstr ""
+msgstr "Za određena strujanja s mogućnosti hvatanja poput HLS prijave da strujanje nije aktivno može poboljšati vrijeme otvaranja strujanja. Ako testiranje ove mogućnosti radi za hvatanje strujanja/pružatelja usluga, tada dodajte [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] u pitanje M3U unosa. Ova mogućnost ne bi trebala biti omogućena za sva strujanja."
