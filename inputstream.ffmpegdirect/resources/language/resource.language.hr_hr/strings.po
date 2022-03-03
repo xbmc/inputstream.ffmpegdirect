@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2022-02-09 16:18+0000\n"
+"PO-Revision-Date: 2022-02-10 10:45+0000\n"
 "Last-Translator: gogogogi <trebelnik2@gmail.com>\n"
 "Language-Team: Croatian <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/hr_hr/>\n"
 "Language: hr_hr\n"
@@ -89,7 +89,7 @@ msgstr "Omogući ograničenje vremenskog premotavanja"
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr "Najveća duljina međuspremnika vremenskog premotavanja"
+msgstr "Najveća duljina međuspremnika vrem. premotavanja"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
@@ -131,7 +131,7 @@ msgstr "Koristi brzo otvaranje za strujanja pomoću manifest datoteke"
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr "Za strujanja s mogućnošću hvatanja prijavljeno strujanje nije u stvarnom vremenu"
+msgstr "Za strujanja s mogućnošću hvatanja, prijavljeno strujanje nije u stvarnom vremenu"
 
 # empty strings from id 30047 to 30599
 #. ############
