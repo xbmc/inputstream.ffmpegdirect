@@ -5,15 +5,15 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2021-12-04 17:13+0000\n"
-"Last-Translator: G0mez82 <jalehto_99@hotmail.com>\n"
+"PO-Revision-Date: 2022-03-24 18:13+0000\n"
+"Last-Translator: Oskari Lavinto <olavinto@protonmail.com>\n"
 "Language-Team: Finnish <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/fi_fi/>\n"
 "Language: fi_fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 4.11.2\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
@@ -52,7 +52,7 @@ msgstr "Portti"
 #. label-option: Network - httpProxyUser
 msgctxt "#30005"
 msgid "Username"
-msgstr "Käyttäjänimi"
+msgstr "Käyttäjätunnus"
 
 #. label-option: Network - httpProxyPassword
 msgctxt "#30006"
@@ -79,17 +79,17 @@ msgstr "Ajansiirto"
 #. label: Timeshift - timeshiftBufferPath
 msgctxt "#30021"
 msgid "Timeshift buffer path"
-msgstr "Ajansiirtopuskurin polku"
+msgstr "Ajansiirtopuskurin sijainti"
 
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr "Ota aikasiirtoraja käyttöön"
+msgstr "Rajoita ajansiirtoa"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr "Aikasiirtopuskurin enimmäispituus"
+msgstr "Aikasiirrossa puskuroitava enimmäispituus"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
@@ -111,7 +111,7 @@ msgstr "FFmpeg"
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr "Salli FFmpeg lokikirjaus"
+msgstr "Käytä FFmpeg-lokikirjausta"
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
@@ -121,17 +121,17 @@ msgstr "FPS Tutkain"
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr "Ota teksti-TV käyttöön"
+msgstr "Käytä teksti-TV:tä"
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
 msgid "Use fast open for streams using a manifest file"
-msgstr "Käytä nopeaa avaamista suoratoistoille käyttäen manifestitiedostoa"
+msgstr "Käytä manifestitiedostoa käyttäville mediavirroille nopeaa avausta"
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr "Catchup suoratoistoissa ilmoita että suoratoisto ei ole reaaliaikainen"
+msgstr "Ilmoita toistettaessa kiinniottomediavirrotoja, ettei suoratoisto ole reaaliaikainen"
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -141,12 +141,12 @@ msgstr "Catchup suoratoistoissa ilmoita että suoratoisto ei ole reaaliaikainen"
 #. help-category: Network
 msgctxt "#30600"
 msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
-msgstr "Tämä luokka sisältää verkkomäärityksen asetukset, kuten FFmpeg-välityspalvelimen ja kaistanleveysrajoitukset."
+msgstr "Tämä luokka sisältää verkkoyhteyden määritykset, kuten FFmpeg-välityspalvelimen asetukset ja kaistanleveyden rajoitukset."
 
 #. help: Network - useHttpProxy
 msgctxt "#30601"
 msgid "Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used."
-msgstr "Määrittää pitäisikö välityspalvelinta käyttää avattaessa FFmpegillä. Huomaa, että jos avataan käyttäen curl:a, Kodin välityspalvelinasetuksia käytetään."
+msgstr "Määrittää, käytetäänkö FFmpeg-toistossa välityspalvelinta. Huomioi, että curl-komennoilla suoritetut avaukset käyttävät aina Kodin välityspalvelinasetuksia."
 
 #. help: Network - httpProxyHost
 msgctxt "#30602"
@@ -171,29 +171,29 @@ msgstr "Määritä välityspalveimen salasana."
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
-msgstr "Käytä tätä enimmäisarvoa, kun valitset käytettävää HLS suoratoistoa."
+msgstr "Tämä arvo toimii enimmäisarvona valittaessa käytettävää HLS-mediavirtaa."
 
 # empty strings from id 30607 to 30619
 #. help info - Timeshift
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr "Tämä kategoria sisältää ajansiirron asetukset. Ajansiirto toiminnolla voit keskeyttää suoran TV-lähetyksen sekä siirtyä taaksepäin ja eteenpäin nykyisestä kohdasta samalla tavalla kuin toistat tallennetta."
+msgstr "Tämä luokka sisältää ajansiirron asetukset. Ajansiirto mahdollistaa suoran televisiolähetyksen tauotuksen ja toistokohdan siirron taakse- ja eteenpäin tallenteiden ja muiden videoiden toiston tapaan."
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] property is passed to the addon."
-msgstr "Polku, jota käytetään ajansiirtopuskurin tallentamiseen. Oletus on [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] userdata kansiossa. Huomaa, että tämä kansio tyhjennetään ajansiirtotiedostoista Kodin käynnistyksen yhteydessä. Olennainen pelkästään kun [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] ominaisuus välitetään lisäosalle."
+msgstr "Tiedostosijainti, jonne ajansiirtopuskuri tallennetaan. Oletus on [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] Kodi-asennuksen \"userdata\" -kansiossa. Huomioi, että kansio tyhjennetään ajansiirtotiedostoista Kodin käynnistyksen yhteydessä. Olennainen vain silloin, kun lisäosalle välitetään [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] tietue."
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
 msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
-msgstr "Ota tämä vaihtoehto käyttöön rajoittaaksesi ajansiirtopuskurin pituutta. Jos se on poistettu käytöstä, puskuri kasvaa ikuisesti, kunnes toisto lopetetaan. Tästä asetuksesta huolimatta puskuri kasvaa ikuisesti, jos ohjelma pistetään tauolle."
+msgstr "Tämä asetus mahdollistaa ajansiirtopuskurin pituuden rajoituksen. Jollei se ole käytössä, puskuri kasvaa ikuisesti, kunnes toisto lopetetaan. Puskuri kuitenkin kasvaa tästä asetuksesta riippumatta ikuisesti, kun toisto tauotetaan."
 
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr "Ajansiirtopuskurin pituus tunteina. Kun arvo saavutetaan, vanhat puskuritiedot poistetaan, jotta rajaa ei rikota. Huomaa, että laitteesi tallennustilan tulee olla riittävä, jotta puskuri voi kasvaa maksimipituuteensa (muuten se vastaa tämän vaihtoehdon poistamista käytöstä). Hyvä heuristinen videokoko on 130 Mt/min 1080p-videota ja 375 Mt/min 4K-videota."
+msgstr "Ajansiirtopuskurin pituus tunteina. Kun arvo saavutetaan, puskurin vanhempi sisältö poistetaan, jotta rajoitusta ei rikota. Huomioi, että laitteesi tallennustilan on riitettettävä puskurin enimmäispituudelle (jollei näöin ole, vastaa se tämän vaihtoehdon käytöstä poistoa). Hyvä heuristinen videokoko on 130 Mt/min 1080p-videota ja 375 Mt/min 4K-videota."
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
@@ -205,7 +205,7 @@ msgstr "Lisäasetukset"
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
-msgstr "Mikäli käytössä, lisäosa kirjaa kaikki FFmpeg kirjaukset Kodin lokitiedostoon."
+msgstr "Jos käytössä, lisäosa tallentaa kaikki FFmpeg-lokit Kodin lokitiedostoon."
 
 #. help: Advanced - probeForFps
 msgctxt "#30642"
@@ -220,7 +220,7 @@ msgstr "Salli teksti-TV. Oletuksena käytössä."
 #. help: Advanced - useFastOpenForManifestStreams
 msgctxt "#30644"
 msgid "Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled."
-msgstr "Suoratoistot, joilla on manifestitiedosto (esim. HLD/DASH/Smooth Streaming), voidaan avata nopeammin FFmpegillä, kun tämä vaihtoehto on käytössä."
+msgstr "Asetuksen käyttö mahdollistaa manifestitiedoston sisältävien mediavirtojen (esim. HLD/DASH/Smooth Streaming) nopeamman FFmpeg-avauksen."
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
