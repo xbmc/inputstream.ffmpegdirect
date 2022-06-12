@@ -1,3 +1,6 @@
+v19.0.2
+- Update source URL to kodi mirror
+
 v19.0.1
 - Translations updates from Weblate
 
