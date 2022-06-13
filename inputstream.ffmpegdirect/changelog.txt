@@ -1,3 +1,7 @@
+v20.2.2
+- Update source URL to kodi mirror
+- Exclude osx-arm64 from Jenkins builds
+
 v20.2.1
 - Update azure windows image to windows-2019 that uses VS201
 - Fix ffmpeg configure option for Android
