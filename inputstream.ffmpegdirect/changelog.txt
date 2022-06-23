@@ -1,3 +1,6 @@
+v20.2.3
+- Revert: Update source URL to kodi mirror
+
 v20.2.2
 - Update source URL to kodi mirror
 - Exclude osx-arm64 from Jenkins builds
