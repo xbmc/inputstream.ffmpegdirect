@@ -311,7 +311,7 @@ Full changelog here: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matri
     <summary lang="en_GB">InputStream Client for FFmpeg streams (libavformat)</summary>
     <summary lang="es_ES">Cliente de InputStream para flujos FFmpeg (libavformat)</summary>
     <summary lang="es_MX">Cliente InputStream para flujos FFmpeg (libavformat)</summary>
-    <summary lang="fi_FI">InputStream asiakasohjelma FFmpeg suoratoistoille (libavformat)</summary>
+    <summary lang="fi_FI">InputStream-asiakas FFmpeg-mediavirroille (libavformat)</summary>
     <summary lang="fr_FR">Client InputStream pour les flux FFmpeg (format libav)</summary>
     <summary lang="hr_HR">InputStream klijent za FFmpeg strujanja (libavformat)</summary>
     <summary lang="ko_KR">FFmpeg 스트림용 InputStream 클라이언트(libavformat)</summary>
