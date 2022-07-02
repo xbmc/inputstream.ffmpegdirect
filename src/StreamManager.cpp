@@ -285,7 +285,7 @@ void InputStreamFFmpegDirect::DemuxSetSpeed(int speed)
   m_stream->DemuxSetSpeed(speed);
 }
 
-void InputStreamFFmpegDirect::SetVideoResolution(int width, int height)
+void InputStreamFFmpegDirect::SetVideoResolution(unsigned int width, unsigned int height)
 {
   Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect: SetVideoResolution()");
 

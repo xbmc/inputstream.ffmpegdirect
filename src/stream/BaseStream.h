@@ -36,7 +36,7 @@ public:
   virtual DEMUX_PACKET* DemuxRead() = 0;
   virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) = 0;
   virtual void DemuxSetSpeed(int speed) = 0;
-  virtual void SetVideoResolution(int width, int height) = 0;
+  virtual void SetVideoResolution(unsigned int width, unsigned int height) = 0;
 
   virtual int GetTotalTime() = 0;
   virtual int GetTime() = 0;
