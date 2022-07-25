@@ -1,3 +1,6 @@
+v20.4.0
+- Support osx-arm64, i.e. OSX on Apple Silicon
+
 v20.3.0
 - Support ${duration} format specifier
 
