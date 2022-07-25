@@ -1,1 +1,0 @@
-libpng http://mirrors.kodi.tv/build-deps/sources/libpng-1.6.37.tar.xz
