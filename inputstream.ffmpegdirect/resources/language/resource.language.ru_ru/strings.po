@@ -5,15 +5,15 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2021-10-25 09:22+0000\n"
-"Last-Translator: Dmitry Petrov <dimakrm361@gmail.com>\n"
+"PO-Revision-Date: 2022-07-30 16:14+0000\n"
+"Last-Translator: vgbsd <vg72i@protonmail.com>\n"
 "Language-Team: Russian <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/ru_ru/>\n"
 "Language: ru_ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.8\n"
+"X-Generator: Weblate 4.13\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
@@ -116,7 +116,7 @@ msgstr "Включить журнал FFmpeg"
 #. label: Advanced - probeForFps
 msgctxt "#30043"
 msgid "Probe for FPS"
-msgstr ""
+msgstr "Проверка FPS"
 
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
@@ -126,12 +126,12 @@ msgstr "Включить телетекст"
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
 msgid "Use fast open for streams using a manifest file"
-msgstr ""
+msgstr "Использовать быстрое открытие потоков с помощью файла манифеста"
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr ""
+msgstr "Для догоняющих потоков отчётный поток не является потоком реального времени"
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -146,7 +146,7 @@ msgstr "Эта категория содержит настройки сети �
 #. help: Network - useHttpProxy
 msgctxt "#30601"
 msgid "Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used."
-msgstr ""
+msgstr "Должен ли использоваться прокси при открытии с помощью FFmpeg. Обратите внимание, что при открытии с помощью curl будут использованы настройки прокси в kodi."
 
 #. help: Network - httpProxyHost
 msgctxt "#30602"
@@ -171,7 +171,7 @@ msgstr "Настройте пароль для прокси сервера."
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
-msgstr ""
+msgstr "Использовать это значение как максимальное при выборе потока HLS."
 
 # empty strings from id 30607 to 30619
 #. help info - Timeshift
@@ -210,7 +210,7 @@ msgstr "Если включен, дополнение будет записыв�
 #. help: Advanced - probeForFps
 msgctxt "#30642"
 msgid "Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used."
-msgstr ""
+msgstr "Проверка количества кадров в секунду. По умолчанию включено. Если отключено, будет использоваться значение, возвращаемое кодеком."
 
 #. help: Advanced - enableTeletext
 msgctxt "#30643"
@@ -225,4 +225,4 @@ msgstr "Трансляции которые имеют файл манифест
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
 msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] to the M3U entry in question. This setting should not be left enabled for all streams."
-msgstr ""
+msgstr "Для некоторых догоняющих потоков, таких как HLS, сообщение о том, что прямой поток не является прямым, может улучшить время открытия потока. Если тестирование этой опции работает для догоняющего потока/провайдера, добавьте [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] к соответствующей записи M3U. Этот параметр не следует оставлять включенным для всех потоков."
