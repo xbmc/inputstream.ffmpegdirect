@@ -57,7 +57,7 @@ public:
   virtual DEMUX_PACKET* DemuxRead() override;
   virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) override;
   virtual void DemuxSetSpeed(int speed) override;
-  virtual void SetVideoResolution(int width, int height) override;
+  virtual void SetVideoResolution(unsigned int width, unsigned int height) override;
 
   virtual int GetTotalTime() override;
   virtual int GetTime() override;
@@ -90,8 +90,8 @@ private:
 
   ffmpegdirect::Properties m_properties;
 
-  int m_videoWidth;
-  int m_videoHeight;
+  unsigned int m_videoWidth;
+  unsigned int m_videoHeight;
 
   std::shared_ptr<ffmpegdirect::BaseStream> m_stream;
 };

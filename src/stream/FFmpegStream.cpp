@@ -536,7 +536,7 @@ void FFmpegStream::DemuxSetSpeed(int speed)
   }
 }
 
-void FFmpegStream::SetVideoResolution(int width, int height)
+void FFmpegStream::SetVideoResolution(unsigned int width, unsigned int height)
 {
 
 }
