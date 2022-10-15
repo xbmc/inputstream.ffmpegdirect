@@ -462,7 +462,14 @@ DEMUX_PACKET* FFmpegStream::DemuxRead()
     // we already check for a valid m_streams[pPacket->iStreamId] above
     else if (stream->type == INPUTSTREAM_TYPE_AUDIO)
     {
-      if (static_cast<DemuxStreamAudio*>(stream)->iChannels != m_pFormatContext->streams[pPacket->iStreamId]->codecpar->channels ||
+#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
+    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
+      int codecparChannels =
+          m_pFormatContext->streams[pPacket->iStreamId]->codecpar->ch_layout.nb_channels;
+#else
+      int codecparChannels = m_pFormatContext->streams[pPacket->iStreamId]->codecpar->channels;
+#endif
+      if (static_cast<DemuxStreamAudio*>(stream)->iChannels != codecparChannels ||
           static_cast<DemuxStreamAudio*>(stream)->iSampleRate != m_pFormatContext->streams[pPacket->iStreamId]->codecpar->sample_rate)
       {
         // content has changed
@@ -658,7 +665,7 @@ bool FFmpegStream::Aborted()
 
 bool FFmpegStream::Open(bool fileinfo)
 {
-  AVInputFormat* iformat = NULL;
+  FFMPEG_FMT_CONST AVInputFormat* iformat = nullptr;
   std::string strFile;
   m_streaminfo = !m_isRealTimeStream && !m_reopen;;
   m_currentPts = STREAM_NOPTS_VALUE;
@@ -729,6 +736,8 @@ bool FFmpegStream::Open(bool fileinfo)
     m_streaminfo = true;
   }
 
+  // https://github.com/FFmpeg/FFmpeg/blob/56450a0ee4/doc/APIchanges#L18-L26
+#if LIBAVFORMAT_BUILD < AV_VERSION_INT(59, 0, 100)
   if (iformat && (strcmp(iformat->name, "mov,mp4,m4a,3gp,3g2,mj2") == 0))
   {
     CURL url(m_streamUrl);
@@ -736,6 +745,7 @@ bool FFmpegStream::Open(bool fileinfo)
     if (!url.GetProtocol().empty() && !url.IsProtocol("file"))
       m_pFormatContext->iformat->flags |= AVFMT_NOGENSEARCH;
   }
+#endif
 
   // we need to know if this is matroska, avi or sup later
   m_bMatroska = strncmp(m_pFormatContext->iformat->name, "matroska", 8) == 0;	// for "matroska.webm"
@@ -785,8 +795,11 @@ bool FFmpegStream::Open(bool fileinfo)
   // if format can be nonblocking, let's use that
   m_pFormatContext->flags |= AVFMT_FLAG_NONBLOCK;
 
-  // deprecated, will be always set in future versions
+  // https://github.com/FFmpeg/FFmpeg/blob/d682ae70b4/doc/APIchanges#L18-L21
+#if LIBAVFORMAT_BUILD < AV_VERSION_INT(57, 66, 105) && \
+    LIBAVCODEC_BUILD < AV_VERSION_INT(57, 83, 101)
   m_pFormatContext->flags |= AVFMT_FLAG_KEEP_SIDE_DATA;
+#endif
 
   UpdateCurrentPTS();
 
@@ -828,12 +841,23 @@ bool FFmpegStream::Open(bool fileinfo)
           {
             int idx = m_pFormatContext->programs[i]->stream_index[j];
             AVStream* st = m_pFormatContext->streams[idx];
+#if LIBAVFORMAT_BUILD >= AV_VERSION_INT(59, 3, 100)
+            // Related to https://patchwork.ffmpeg.org/project/ffmpeg/patch/20210429143825.53040-1-jamrial@gmail.com/
+            // has been replaced with AVSTREAM_EVENT_FLAG_NEW_PACKETS.
+            if ((st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO && (st->event_flags & AVSTREAM_EVENT_FLAG_NEW_PACKETS)) ||
+                (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO && st->codecpar->sample_rate > 0))
+            {
+              nProgram = i;
+              break;
+            }
+#else
             if ((st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO && st->codec_info_nb_frames > 0) ||
                 (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO && st->codecpar->sample_rate > 0))
             {
               nProgram = i;
               break;
             }
+#endif
           }
         }
 
@@ -870,7 +894,7 @@ bool FFmpegStream::Open(bool fileinfo)
   return true;
 }
 
-bool FFmpegStream::OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB& int_cb)
+bool FFmpegStream::OpenWithFFmpeg(FFMPEG_FMT_CONST AVInputFormat* iformat, const AVIOInterruptCB& int_cb)
 {
   Log(LOGLEVEL_INFO, "%s - IO handled by FFmpeg's AVFormat", __FUNCTION__);
 
@@ -959,7 +983,7 @@ bool FFmpegStream::OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB&
   return true;
 }
 
-bool FFmpegStream::OpenWithCURL(AVInputFormat* iformat)
+bool FFmpegStream::OpenWithCURL(FFMPEG_FMT_CONST AVInputFormat* iformat)
 {
   Log(LOGLEVEL_INFO, "%s - IO handled by Kodi's cURL", __FUNCTION__);
 
@@ -1039,8 +1063,7 @@ bool FFmpegStream::OpenWithCURL(AVInputFormat* iformat)
         // is present, we assume it is PCM audio.
         // AC3 is always wrapped in iec61937 (ffmpeg "spdif"), while DTS
         // may be just padded.
-        AVInputFormat* iformat2;
-        iformat2 = av_find_input_format("spdif");
+        FFMPEG_FMT_CONST AVInputFormat* iformat2 = av_find_input_format("spdif");
 
         if (iformat2 && iformat2->read_probe(&pd) > AVPROBE_SCORE_MAX / 4)
         {
@@ -1147,11 +1170,19 @@ void FFmpegStream::UpdateCurrentPTS()
   if (idx >= 0)
   {
     AVStream* stream = m_pFormatContext->streams[idx];
+#if LIBAVFORMAT_BUILD >= AV_VERSION_INT(59, 3, 100)
+    if (stream && m_pkt.pkt.dts != (int64_t)AV_NOPTS_VALUE)
+    {
+      double ts = ConvertTimestamp(m_pkt.pkt.dts, stream->time_base.den, stream->time_base.num);
+      m_currentPts = ts;
+    }
+#else
     if (stream && stream->cur_dts != (int64_t)AV_NOPTS_VALUE)
     {
       double ts = ConvertTimestamp(stream->cur_dts, stream->time_base.den, stream->time_base.num);
       m_currentPts = ts;
     }
+#endif
   }
 }
 
@@ -1230,9 +1261,15 @@ bool FFmpegStream::IsProgramChange()
       return true;
     if (m_pFormatContext->streams[idx]->codecpar->codec_id != stream->codec)
       return true;
+#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
+    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
+      int codecparChannels =
+          m_pFormatContext->streams[idx]->codecpar->ch_layout.nb_channels;
+#else
+      int codecparChannels = m_pFormatContext->streams[idx]->codecpar->channels;
+#endif
     if (m_pFormatContext->streams[idx]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO &&
-        m_pFormatContext->streams[idx]->codecpar->channels !=
-            static_cast<DemuxStreamAudio*>(stream)->iChannels)
+        codecparChannels != static_cast<DemuxStreamAudio*>(stream)->iChannels)
       return true;
     if (m_pFormatContext->streams[idx]->codecpar->extradata_size != static_cast<int>(stream->ExtraSize))
       return true;
@@ -1564,7 +1601,7 @@ void FFmpegStream::ParsePacket(AVPacket* pkt)
 
       parser->second->m_parserCtx = av_parser_init(st->codecpar->codec_id);
 
-      AVCodec* codec = avcodec_find_decoder(st->codecpar->codec_id);
+      FFMPEG_FMT_CONST AVCodec* codec = avcodec_find_decoder(st->codecpar->codec_id);
       if (codec == nullptr)
       {
         Log(LOGLEVEL_ERROR, "%s - can't find decoder", __FUNCTION__);
@@ -1641,7 +1678,11 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamAudioState()
         {
           if (!m_startTime)
           {
+#if LIBAVFORMAT_BUILD >= AV_VERSION_INT(59, 3, 100)
+            m_startTime = av_rescale(m_pkt.pkt.dts, st->time_base.num, st->time_base.den) - 0.000001;
+#else
             m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
+#endif
             m_seekStream = idx;
           }
           return TRANSPORT_STREAM_STATE::READY;
@@ -1661,7 +1702,11 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamAudioState()
         {
           if (!m_startTime)
           {
+#if LIBAVFORMAT_BUILD >= AV_VERSION_INT(59, 3, 100)
+            m_startTime = av_rescale(m_pkt.pkt.dts, st->time_base.num, st->time_base.den) - 0.000001;
+#else
             m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
+#endif
             m_seekStream = i;
           }
           return TRANSPORT_STREAM_STATE::READY;
@@ -1694,7 +1739,11 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamVideoState()
         {
           if (!m_startTime)
           {
+#if LIBAVFORMAT_BUILD >= AV_VERSION_INT(59, 3, 100)
+            m_startTime = av_rescale(m_pkt.pkt.dts, st->time_base.num, st->time_base.den) - 0.000001;
+#else
             m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
+#endif
             m_seekStream = idx;
           }
           return TRANSPORT_STREAM_STATE::READY;
@@ -1714,7 +1763,11 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamVideoState()
         {
           if (!m_startTime)
           {
+#if LIBAVFORMAT_BUILD >= AV_VERSION_INT(59, 3, 100)
+            m_startTime = av_rescale(m_pkt.pkt.dts, st->time_base.num, st->time_base.den) - 0.000001;
+#else
             m_startTime = av_rescale(st->cur_dts, st->time_base.num, st->time_base.den) - 0.000001;
+#endif
             m_seekStream = i;
           }
           return TRANSPORT_STREAM_STATE::READY;
@@ -1824,14 +1877,31 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
       {
         DemuxStreamAudioFFmpeg* st = new DemuxStreamAudioFFmpeg(pStream);
         stream = st;
-        st->iChannels = pStream->codecpar->channels;
+#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
+    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
+        int codecparChannels = pStream->codecpar->ch_layout.nb_channels;
+        int codecparChannelLayout = pStream->codecpar->ch_layout.u.mask;
+#else
+        int codecparChannels = pStream->codecpar->channels;
+        int codecparChannelLayout = pStream->codecpar->channel_layout;
+#endif
+        st->iChannels = codecparChannels;
+        st->iChannelLayout = codecparChannelLayout;
         st->iSampleRate = pStream->codecpar->sample_rate;
         st->iBlockAlign = pStream->codecpar->block_align;
         st->iBitRate = static_cast<int>(pStream->codecpar->bit_rate);
         st->iBitsPerSample = pStream->codecpar->bits_per_raw_sample;
-        st->iChannelLayout = pStream->codecpar->channel_layout;
         char buf[32] = { 0 };
+        // https://github.com/FFmpeg/FFmpeg/blob/6ccc3989d15/doc/APIchanges#L50-L53
+#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
+    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
+        AVChannelLayout layout = {};
+        av_channel_layout_from_mask(&layout, st->iChannelLayout);
+        av_channel_layout_describe(&layout, buf, sizeof(buf));
+        av_channel_layout_uninit(&layout);
+#else
         av_get_channel_layout_string(buf, 31, st->iChannels, st->iChannelLayout);
+#endif
         st->m_channelLayoutName = buf;
         if (st->iBitsPerSample == 0)
           st->iBitsPerSample = pStream->codecpar->bits_per_coded_sample;
@@ -2070,7 +2140,7 @@ std::string FFmpegStream::GetStreamCodecName(int iStreamId)
       return strName;
     }
 
-    AVCodec* codec = avcodec_find_decoder(stream->codec);
+    FFMPEG_FMT_CONST AVCodec* codec = avcodec_find_decoder(stream->codec);
     if (codec)
       strName = codec->name;
   }

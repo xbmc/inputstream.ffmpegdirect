@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "../utils/FFmpegCompat.h"
 #include "../utils/HttpProxy.h"
 #include "../utils/Properties.h"
 #include "BaseStream.h"
@@ -33,6 +34,7 @@ extern "C"
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/mastering_display_metadata.h>
+#include <libavutil/version.h>
 }
 
 #ifndef __GNUC__
@@ -117,8 +119,8 @@ protected:
 
 private:
   bool Open(bool fileinfo);
-  bool OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB& int_cb);
-  bool OpenWithCURL(AVInputFormat* iformat);
+  bool OpenWithFFmpeg(FFMPEG_FMT_CONST AVInputFormat* iformat, const AVIOInterruptCB& int_cb);
+  bool OpenWithCURL(FFMPEG_FMT_CONST AVInputFormat* iformat);
   AVDictionary* GetFFMpegOptionsFromInput();
   void ResetVideoStreams();
   double ConvertTimestamp(int64_t pts, int den, int num);
