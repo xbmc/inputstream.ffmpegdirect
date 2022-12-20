@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2022-08-19 07:14+0000\n"
+"PO-Revision-Date: 2022-12-20 14:15+0000\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/it_it/>\n"
 "Language: it_it\n"
@@ -13,15 +13,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13\n"
+"X-Generator: Weblate 4.15\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
-msgstr "Client InputStream per flussi FFmpeg (libavformat)"
+msgstr "Client InputStream per stream FFmpeg (libavformat)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr "Client InputStream per flussi che possono essere aperti da libavformat di FFmpeg o cURL di Kodi. Sono supportati formati di flusso comuni come TS, HLS e DASH (senza DRM) e molti altri.[CR][CR]L'addon ha anche il supporto per i servizi Archivio/Recupero in cui è presente una finestra di riproduzione (di solito in giorni) e può passare attraverso tale intervallo.[CR][CR]Per la documentazione visita: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
+msgstr "Client InputStream per stream che possono essere aperti da libavformat di FFmpeg o cURL di Kodi. Sono supportati formati di stream comuni come TS, HLS e DASH (senza DRM) e molti altri.[CR][CR]L'Add-on ha anche il supporto per i servizi Archivio/Recupero in cui è presente una finestra di riproduzione (di solito in giorni) e può passare attraverso tale intervallo.[CR][CR]Per la documentazione visita: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
@@ -67,7 +67,7 @@ msgstr "Larghezza banda"
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
-msgstr "Seleziona larghezza di banda del flusso"
+msgstr "Seleziona larghezza di banda dello stream"
 
 # empty strings from id 30009 to 30019
 #. label-category: timeshift
@@ -79,17 +79,17 @@ msgstr "Timeshift"
 #. label: Timeshift - timeshiftBufferPath
 msgctxt "#30021"
 msgid "Timeshift buffer path"
-msgstr "Percorso buffer timeshift"
+msgstr "Percorso buffer Timeshift"
 
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr "Abilita limite timeshift"
+msgstr "Abilita limite Timeshift"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr "Durata massima del buffer timeshift"
+msgstr "Durata massima del buffer Timeshift"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
@@ -111,7 +111,7 @@ msgstr "FFmpeg"
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr "Consenti registro FFmpeg"
+msgstr "Consenti logging FFmpeg"
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
@@ -121,17 +121,17 @@ msgstr "Test per FPS"
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr "Abilita televideo"
+msgstr "Abilita Televideo"
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
 msgid "Use fast open for streams using a manifest file"
-msgstr "Usa apertura rapida per i flussi utilizzando un file manifest"
+msgstr "Usa apertura rapida per gli stream utilizzando un file manifest"
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr "Per i flussi di recupero, il flusso del rapporto non è in tempo reale"
+msgstr "Per gli stream di recupero, lo stream del rapporto non è in tempo reale"
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -171,29 +171,29 @@ msgstr "Configura password del server proxy."
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
-msgstr "Usa questo valore come massimo quando selezioni quale flusso HLS utilizzare."
+msgstr "Usa questo valore come massimo quando selezioni quale stream HLS utilizzare."
 
 # empty strings from id 30607 to 30619
 #. help info - Timeshift
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr "Questa categoria contiene le impostazioni per il timeshift. Il timeshift ti consente di mettere in pausa la TV in diretta e di spostarti avanti e indietro dalla posizione attuale in modo simile alla riproduzione di una registrazione."
+msgstr "Questa categoria contiene le impostazioni per il Timeshift. Il Timeshift ti consente di mettere in pausa la TV in diretta e di spostarti avanti e indietro dalla posizione attuale in modo simile alla riproduzione di una registrazione."
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] property is passed to the addon."
-msgstr "Il percorso utilizzato per memorizzare il buffer timeshift. L'impostazione predefinita è la cartella [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] in userdata. Nota che questa cartella verrà cancellata dai file timeshift all'avvio di Kodi. Rilevante solo quando la proprietà [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] viene passata all'addon."
+msgstr "Il percorso utilizzato per memorizzare il buffer Timeshift. L'impostazione predefinita è la cartella [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] in userdata. Nota che questa cartella verrà cancellata dai file Timeshift all'avvio di Kodi. Rilevante solo quando la proprietà [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] viene passata all'Add-on."
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
 msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
-msgstr "Abilita questa opzione per limitare la lunghezza del buffer timeshift. Se disabilitato, il buffer aumenterà per sempre fino a quando la riproduzione non verràinterrotta. Indipendentemente da questa impostazione, anche il buffer aumenterà per sempre se messo in pausa."
+msgstr "Abilita questa opzione per limitare la lunghezza del buffer Timeshift. Se disabilitato, il buffer aumenterà per sempre fino a quando la riproduzione non verrà interrotta. Indipendentemente da questa impostazione, anche il buffer aumenterà per sempre se messo in pausa."
 
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr "La lunghezza del buffer timeshift in ore. Una volta raggiunto il valore, i dati del buffer più vecchi verranno eliminati per garantire che il limite non venga violato. Tieni presente che lo spazio di archiviazione per il tuo dispositivo dovrebbe essere sufficiente per consentire al buffer di crescere fino alla sua lunghezza massima (altrimenti equivale a disabilitare questa opzione). La stima per la dimensione è 130 MB al minuto per video 1080p e 375 MB al minuto per video 4K."
+msgstr "La lunghezza del buffer Timeshift in ore. Una volta raggiunto il valore, i dati del buffer più vecchi verranno eliminati per garantire che il limite non venga violato. Tieni presente che lo spazio di archiviazione per il tuo dispositivo dovrebbe essere sufficiente per consentire al buffer di crescere fino alla sua lunghezza massima (altrimenti equivale a disabilitare questa opzione). La stima per la dimensione è 130 MB al minuto per video 1080p e 375 MB al minuto per video 4K."
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
@@ -205,7 +205,7 @@ msgstr "Impostazioni avanzate"
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
-msgstr "Se abilitato, l'addon scriverà qualsiasi evento FFmpeg nel registro di Kodi."
+msgstr "Se abilitato, l'Add-on scriverà qualsiasi evento FFmpeg nel registro di Kodi."
 
 #. help: Advanced - probeForFps
 msgctxt "#30642"
@@ -215,14 +215,14 @@ msgstr "Test per fotogrammi al secondo. Predefinito abilitato. Se disabilitato v
 #. help: Advanced - enableTeletext
 msgctxt "#30643"
 msgid "Allow teletext. Default enabled."
-msgstr "Consenti televideo. Predefinito abilitato."
+msgstr "Consenti Televideo. Predefinito abilitato."
 
 #. help: Advanced - useFastOpenForManifestStreams
 msgctxt "#30644"
 msgid "Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled."
-msgstr "I flussi che hanno un file manifest (ad es. HLD/DASH/Smooth Streaming) possono essere aperti più rapidamente con FFmpeg con questa opzione abilitata."
+msgstr "Gli stream che hanno un file manifest (ad es. HLD/DASH/Smooth Streaming) possono essere aperti più rapidamente con FFmpeg con questa opzione abilitata."
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
 msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] to the M3U entry in question. This setting should not be left enabled for all streams."
-msgstr "Per alcuni flussi con recupero come HLS, la segnalazione di uno stream live anche se non è in diretta può migliorare i tempi di apertura dello stream. Se questa opzione funziona per uno stream o provider con recupero, aggiungi [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] alla voce M3U in questione. Questa impostazione non deve essere lasciata abilitata per tutti gli stream."
+msgstr "Per alcuni stream con recupero come HLS, la segnalazione di uno stream live anche se non è in diretta può migliorare i tempi di apertura dello stream. Se questa opzione funziona per uno stream o provider con recupero, aggiungi [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] alla voce M3U in questione. Questa impostazione non deve essere lasciata abilitata per tutti gli stream."
