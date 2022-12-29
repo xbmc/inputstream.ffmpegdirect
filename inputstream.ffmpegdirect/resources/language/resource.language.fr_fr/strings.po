@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2022-06-06 14:14+0000\n"
+"PO-Revision-Date: 2022-12-26 21:15+0000\n"
 "Last-Translator: skypichat <skypichat@hotmail.fr>\n"
 "Language-Team: French (France) <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/fr_fr/>\n"
 "Language: fr_fr\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.12.2\n"
+"X-Generator: Weblate 4.15\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
@@ -21,7 +21,7 @@ msgstr "Client InputStream pour les flux FFmpeg (format libav)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr "InputStream Client pour les flux pouvant être ouverts soit par le libavformat de FFmpeg, soit par le cURL de Kodi. Les formats de flux courants tels que TS, HLS et DASH (sans DRM) sont pris en charge ainsi que bien d'autres. et peut être décalé dans le temps dans la période.[CR][CR]Pour la documentation, visitez : https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
+msgstr "InputStream Client pour les flux pouvant être ouverts soit par le libavformat de FFmpeg, soit par le cURL de Kodi. Les formats de flux courants tels que TS, HLS et DASH (sans DRM) sont pris en charge ainsi que bien d'autres. et peut être décalé dans le temps dans la période.[CR][CR]Pour la documentation, visitez : https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
@@ -84,12 +84,12 @@ msgstr "Chemin du tampon pour le différé"
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr "Activer la limite de timeshift"
+msgstr "Activer la limite du différé"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr "Décalage maximale du timeshift"
+msgstr "Décalage maximale du différé"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
@@ -178,22 +178,22 @@ msgstr "Utiliser cette valeur au maximum lors de la sélection du flux HLS à ut
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr "Cette catégorie contient les paramètres de timeshift. Le timeshift vous permet de mettre en pause la télévision en direct ainsi que d'avancer et de reculer à partir de votre position actuelle, comme pour la lecture d'un enregistrement."
+msgstr "Cette catégorie contient les paramètres du différé. Le différé vous permet de mettre en pause la télévision en direct ainsi que d'avancer et de reculer à partir de votre position actuelle, comme pour la lecture d'un enregistrement."
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] property is passed to the addon."
-msgstr "Le chemin utilisé pour stocker le tampon de décalage temporel. La valeur par défaut est le dossier [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] dans userdata. Notez que ce dossier sera vidé des fichiers Timeshift au démarrage de Kodi. Uniquement lorsque la propriété [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] est transmise à l'addon."
+msgstr "Le chemin utilisé pour stocker le tampon de décalage temporel. La valeur par défaut est le dossier [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] dans userdata. Notez que ce dossier sera vidé des fichiers du différé au démarrage de Kodi. Uniquement lorsque la propriété [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] est transmise à l'addon."
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
 msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
-msgstr "Activez cette option pour limiter la longueur du tampon du timeshift. S'il est désactivé, le tampon s'agrandit indéfiniment jusqu'à ce que la lecture soit arrêtée. Indépendamment de ce paramètre, le tampon augmentera également indéfiniment s'il est mis en pause."
+msgstr "Activez cette option pour limiter la longueur du tampon du différé. S'il est désactivé, le tampon s'agrandit indéfiniment jusqu'à ce que la lecture soit arrêtée. Indépendamment de ce paramètre, le tampon augmentera également indéfiniment s'il est mis en pause."
 
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr "La durée de la mémoire tampon du timeshift en heures. Une fois la valeur atteinte, les anciennes données du tampon seront supprimées pour s'assurer que la limite n'est pas dépassée. Notez que le stockage de votre appareil doit être suffisant pour permettre au tampon d'atteindre sa longueur maximale (sinon cela équivaut à désactiver cette option). Une bonne heuristique pour la taille de la vidéo est de 130 Mo par minute de vidéo 1080p et de 375 Mo par minute de vidéo 4K."
+msgstr "La durée de la mémoire tampon du différé en heures. Une fois la valeur atteinte, les anciennes données du tampon seront supprimées pour s'assurer que la limite n'est pas dépassée. Notez que le stockage de votre appareil doit être suffisant pour permettre au tampon d'atteindre sa longueur maximale (sinon cela équivaut à désactiver cette option). Une bonne heuristique pour la taille de la vidéo est de 130 Mo par minute de vidéo 1080p et de 375 Mo par minute de vidéo 4K."
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
