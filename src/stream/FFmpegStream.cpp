@@ -2230,7 +2230,7 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
       // set any of these ffmpeg options
       if (name == "seekable" || name == "reconnect" || name == "reconnect_at_eof" ||
           name == "reconnect_streamed" || name == "reconnect_delay_max" ||
-          name == "icy" || name == "icy_metadata_headers" || name == "icy_metadata_packet")
+          name == "icy" || name == "icy_metadata_headers" || name == "icy_metadata_packet" || name == "cenc_decryption_key")
       {
         Log(LOGLEVEL_DEBUG,
                   "CDVDDemuxFFmpeg::GetFFMpegOptionsFromInput() adding ffmpeg option '%s: %s'",
