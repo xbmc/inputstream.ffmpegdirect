@@ -90,8 +90,8 @@ void TimeshiftSegment::AddPacket(DEMUX_PACKET* packet)
   m_packetBuffer.emplace_back(newPacket);
 
   int secondsSinceStart = 0;
-  if (packet->pts != STREAM_NOPTS_VALUE && packet->pts > 0)
-    secondsSinceStart = packet->pts / STREAM_TIME_BASE;
+  if (newPacket->pts != STREAM_NOPTS_VALUE && newPacket->pts > 0)
+    secondsSinceStart = newPacket->pts / STREAM_TIME_BASE;
 
   if (secondsSinceStart != m_lastPacketSecondsSinceStart)
   {
