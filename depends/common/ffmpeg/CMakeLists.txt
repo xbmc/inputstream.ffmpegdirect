@@ -110,7 +110,6 @@ if(NOT WIN32)
     else()
       list(APPEND EXTRA_CONF "--as=${CMAKE_INSTALL_PREFIX}/bin/gas-preprocessor.pl -arch aarch64 -- ${CMAKE_C_COMPILER}")
       list(APPEND EXTRA_CONF --arch=aarch64)
-      list(APPEND EXTRA_CONF --disable-filter=yadif_videotoolbox)
     endif()
     list(APPEND EXTRA_CONF --disable-decoder=mpeg_xvmc --disable-crystalhd --enable-videotoolbox
                            --target-os=darwin)

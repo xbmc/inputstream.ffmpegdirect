@@ -33,7 +33,6 @@ extern "C"
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/mastering_display_metadata.h>
-#include <libavutil/version.h>
 }
 
 #ifndef __GNUC__
@@ -108,8 +107,6 @@ protected:
   bool IsPaused() { return m_speed == STREAM_PLAYSPEED_PAUSE; }
   virtual bool CheckReturnEmptyOnPacketResult(int result);
 
-  int GetPacketExtradata(const AVPacket* pkt, const AVCodecParserContext* parserCtx, AVCodecContext* codecCtx, uint8_t **p_extradata);
-
   int64_t m_demuxerId;
   mutable std::recursive_mutex m_mutex;
   double m_currentPts; // used for stream length estimation
@@ -120,8 +117,8 @@ protected:
 
 private:
   bool Open(bool fileinfo);
-  bool OpenWithFFmpeg(const AVInputFormat* iformat, const AVIOInterruptCB& int_cb);
-  bool OpenWithCURL(const AVInputFormat* iformat);
+  bool OpenWithFFmpeg(AVInputFormat* iformat, const AVIOInterruptCB& int_cb);
+  bool OpenWithCURL(AVInputFormat* iformat);
   AVDictionary* GetFFMpegOptionsFromInput();
   void ResetVideoStreams();
   double ConvertTimestamp(int64_t pts, int den, int num);
