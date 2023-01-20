@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="inputstream.ffmpegdirect"
-  version="20.5.0"
+  version="20.5.1"
   name="Inputstream FFmpeg Direct"
   provider-name="Ross Nicholson">
   <requires>@ADDON_DEPENDS@</requires>
