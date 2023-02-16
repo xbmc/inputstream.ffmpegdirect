@@ -4,23 +4,24 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-18 13:46+0000\n"
-"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"PO-Revision-Date: 2022-03-29 22:18+0000\n"
+"Last-Translator: Kryštof Černý <cleverline1mc@gmail.com>\n"
 "Language-Team: Czech <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/cs_cz/>\n"
 "Language: cs_cz\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.11.2\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
-msgstr ""
+msgstr "Klient toků FFmpeg (libavformat) protokolu InputStream"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr ""
+msgstr "Klient protokolu InputStream pro toky, které mohou být otevřeny pomocí FFmpeg libavformat nebo Kodi cURL.Běžné formáty toků jako prosté TS, HLS, DASH (bez DRM) a mnoho dalších jsou podporovány.[CR][CR]Doplněk má též podporu pro služby Archive/Catchup, které mají dobu pro opětovné přehrání (obvykle ve dnech) a mohou mít v tomto období časový posun.[CR][CR]Pro dokumentaci navštivte: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
@@ -31,22 +32,22 @@ msgstr "Síť"
 #. label-group: Network - httpProxy
 msgctxt "#30001"
 msgid "HTTP proxy"
-msgstr ""
+msgstr "Proxy HTTP"
 
 #. label: Network - useHttpProxy
 msgctxt "#30002"
 msgid "Use HTTP proxy when opening with FFmpeg"
-msgstr ""
+msgstr "Používat proxy HTTP při otevírání s FFmpeg"
 
 #. label-option: Network - httpProxyHost
 msgctxt "#30003"
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #. label-option: Network - httpProxyPort
 msgctxt "#30004"
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #. label-option: Network - httpProxyUser
 msgctxt "#30005"
@@ -61,12 +62,12 @@ msgstr "Heslo"
 #. label-group: Network - Bandwidth
 msgctxt "#30007"
 msgid "Bandwidth"
-msgstr ""
+msgstr "Šířka pásma"
 
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
-msgstr ""
+msgstr "Šířka pásma proudu"
 
 # empty strings from id 30009 to 30019
 #. label-category: timeshift
@@ -83,12 +84,12 @@ msgstr "Cesta k vyrovnávací paměti časového posunu"
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr ""
+msgstr "Povolit limit časového posunu"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr ""
+msgstr "Maximální velikost vyrovnávací paměti časového posunu"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
@@ -105,12 +106,12 @@ msgstr "Rozšířené"
 #. label-group: Advanced - Logging
 msgctxt "#30041"
 msgid "FFmpeg"
-msgstr ""
+msgstr "FFmpeg"
 
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr ""
+msgstr "Povolit protokolování FFmpeg"
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
@@ -120,7 +121,7 @@ msgstr ""
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr ""
+msgstr "Povolit teletext"
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"

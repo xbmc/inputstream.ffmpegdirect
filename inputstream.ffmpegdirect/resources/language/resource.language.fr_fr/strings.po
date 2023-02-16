@@ -4,23 +4,24 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-18 13:46+0000\n"
-"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"PO-Revision-Date: 2022-12-26 21:15+0000\n"
+"Last-Translator: skypichat <skypichat@hotmail.fr>\n"
 "Language-Team: French (France) <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/fr_fr/>\n"
 "Language: fr_fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.15\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
-msgstr ""
+msgstr "Client InputStream pour les flux FFmpeg (format libav)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr ""
+msgstr "InputStream Client pour les flux pouvant être ouverts soit par le libavformat de FFmpeg, soit par le cURL de Kodi. Les formats de flux courants tels que TS, HLS et DASH (sans DRM) sont pris en charge ainsi que bien d'autres. et peut être décalé dans le temps dans la période.[CR][CR]Pour la documentation, visitez : https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
@@ -36,7 +37,7 @@ msgstr "Proxy HTTP"
 #. label: Network - useHttpProxy
 msgctxt "#30002"
 msgid "Use HTTP proxy when opening with FFmpeg"
-msgstr ""
+msgstr "Utiliser le proxy HTTP lors de l'ouverture avec FFmpeg"
 
 #. label-option: Network - httpProxyHost
 msgctxt "#30003"
@@ -61,12 +62,12 @@ msgstr "Mot de passe"
 #. label-group: Network - Bandwidth
 msgctxt "#30007"
 msgid "Bandwidth"
-msgstr ""
+msgstr "Bande passante"
 
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
-msgstr ""
+msgstr "Bande passante de flux sélectionné"
 
 # empty strings from id 30009 to 30019
 #. label-category: timeshift
@@ -83,12 +84,12 @@ msgstr "Chemin du tampon pour le différé"
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr ""
+msgstr "Activer la limite du différé"
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr ""
+msgstr "Décalage maximale du différé"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
@@ -105,32 +106,32 @@ msgstr "Avancé"
 #. label-group: Advanced - Logging
 msgctxt "#30041"
 msgid "FFmpeg"
-msgstr ""
+msgstr "FFmpeg"
 
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr ""
+msgstr "Autoriser la journalisation FFmpeg"
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
 msgid "Probe for FPS"
-msgstr ""
+msgstr "Sonde pour FPS"
 
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr ""
+msgstr "Activer le télétexte"
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
 msgid "Use fast open for streams using a manifest file"
-msgstr ""
+msgstr "Utiliser l'ouverture rapide pour les flux à l'aide d'un fichier manifest"
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr ""
+msgstr "Pour les flux de rattrapage, le flux de rapport n'est pas en temps réel"
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -140,12 +141,12 @@ msgstr ""
 #. help-category: Network
 msgctxt "#30600"
 msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
-msgstr ""
+msgstr "Cette catégorie contient les paramètres de configuration réseau tels que le proxy FFmpeg et les limites de bande passante."
 
 #. help: Network - useHttpProxy
 msgctxt "#30601"
 msgid "Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used."
-msgstr ""
+msgstr "Si oui ou non un proxy doit être utilisé lors de l'ouverture avec FFmpeg. Noter que s'il est ouvert à l'aide de curl kodi, il sera utilisé avec des paramètres de proxy."
 
 #. help: Network - httpProxyHost
 msgctxt "#30602"
@@ -170,29 +171,29 @@ msgstr "Configure le mot de passe du serveur proxy."
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
-msgstr ""
+msgstr "Utiliser cette valeur au maximum lors de la sélection du flux HLS à utiliser."
 
 # empty strings from id 30607 to 30619
 #. help info - Timeshift
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr ""
+msgstr "Cette catégorie contient les paramètres du différé. Le différé vous permet de mettre en pause la télévision en direct ainsi que d'avancer et de reculer à partir de votre position actuelle, comme pour la lecture d'un enregistrement."
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] property is passed to the addon."
-msgstr ""
+msgstr "Le chemin utilisé pour stocker le tampon de décalage temporel. La valeur par défaut est le dossier [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] dans userdata. Notez que ce dossier sera vidé des fichiers du différé au démarrage de Kodi. Uniquement lorsque la propriété [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] est transmise à l'addon."
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
 msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
-msgstr ""
+msgstr "Activez cette option pour limiter la longueur du tampon du différé. S'il est désactivé, le tampon s'agrandit indéfiniment jusqu'à ce que la lecture soit arrêtée. Indépendamment de ce paramètre, le tampon augmentera également indéfiniment s'il est mis en pause."
 
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr ""
+msgstr "La durée de la mémoire tampon du différé en heures. Une fois la valeur atteinte, les anciennes données du tampon seront supprimées pour s'assurer que la limite n'est pas dépassée. Notez que le stockage de votre appareil doit être suffisant pour permettre au tampon d'atteindre sa longueur maximale (sinon cela équivaut à désactiver cette option). Une bonne heuristique pour la taille de la vidéo est de 130 Mo par minute de vidéo 1080p et de 375 Mo par minute de vidéo 4K."
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
@@ -204,24 +205,24 @@ msgstr "Paramètres avancés"
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
-msgstr ""
+msgstr "Si activé, l'addon enregistrera toute journalisation FFmpeg dans le journal Kodi."
 
 #. help: Advanced - probeForFps
 msgctxt "#30642"
 msgid "Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used."
-msgstr ""
+msgstr "Sonder les images par seconde. Activé par défaut. Si désactivé, la valeur renvoyée par le codec sera utilisée."
 
 #. help: Advanced - enableTeletext
 msgctxt "#30643"
 msgid "Allow teletext. Default enabled."
-msgstr ""
+msgstr "Autoriser le télétexte. Activé par défaut."
 
 #. help: Advanced - useFastOpenForManifestStreams
 msgctxt "#30644"
 msgid "Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled."
-msgstr ""
+msgstr "Les flux qui ont un fichier manifest (par exemple HLD/DASH/Smooth Streaming) peuvent être ouverts plus rapidement avec FFmpeg avec cette option activée."
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
 msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] to the M3U entry in question. This setting should not be left enabled for all streams."
-msgstr ""
+msgstr "Pour certains flux de rattrapage tels que HLS, signalent qu'un flux en direct n'est pas en direct peut améliorer les heures d'ouverture du flux. Si le test de cette option fonctionne pour un flux/fournisseur de rattrapage, ajoutez un [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] à l'entrée M3U en question. Ce paramètre ne doit pas rester activé pour tous les flux."
