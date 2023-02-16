@@ -1,3 +1,7 @@
+v19.0.4
+- Translations updates from Weblate
+	- es_es
+
 v19.0.3
 - Revert: Update source URL to kodi mirror
 
