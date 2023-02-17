@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2021-11-14 14:13+0000\n"
+"PO-Revision-Date: 2022-11-17 11:15+0000\n"
 "Last-Translator: Christian Gade <gade@kodi.tv>\n"
 "Language-Team: Danish <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/da_dk/>\n"
 "Language: da_dk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9\n"
+"X-Generator: Weblate 4.14.2\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
@@ -21,7 +21,7 @@ msgstr "InputStream-klient til FFmpeg-streams (libavformat)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr "InputStream-klient til streams, der kan åbnes af enten FFmpeg's libavformat eller Kodi's cURL. Almindelige streamformater som f.eks. almindelig TS, HLS og DASH (uden DRM) understøttes såvel som mange andre.[CR][CR]Add-on'et har også understøttelse af Arkiv-/Catchup-tjenester, hvor der er et afspilningsvindue (normalt i dage) og kan tidsforskyde på tværs af dette spænd.[CR][CR]For dokumentation besøg: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
+msgstr "InputStream-klient til streams, der kan åbnes af enten FFmpeg's libavformat eller Kodi's cURL. Almindelige streamformater som f.eks. almindelig TS, HLS og DASH (uden DRM) understøttes såvel som mange andre.[CR][CR]Add-on'et har også understøttelse af arkiv-/indhentningstjenester, hvor der er et afspilningsvindue (normalt i dage) og kan tidsforskyde på tværs af dette spænd.[CR][CR]For dokumentation besøg: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
@@ -131,7 +131,7 @@ msgstr "Brug hurtig åbning til streams ved hjælp af en manifestfil"
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr "For catch-up-streams er rapportstream ikke i realtid"
+msgstr "For indhentning af streams er rapportstream ikke i realtid"
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -225,4 +225,4 @@ msgstr "Streams der har en manifestfil (f.eks. HLD/DASH/Smooth Streaming) kan å
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
 msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] to the M3U entry in question. This setting should not be left enabled for all streams."
-msgstr "For visse catch-up-streams, såsom HLS, kan rapportering om at en livestream ikke er direkte, forbedre tiden streamen er åben. Hvis test af denne mulighed virker for en catchup-stream/udbyder, skal du tilføje en [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] til den pågældende M3U-post. Denne indstilling bør ikke aktiveres for alle streams."
+msgstr "For visse indhentningsstreams, såsom HLS, kan rapportering om at en livestream ikke er direkte, forbedre tiden streamen er åben. Hvis test af denne mulighed virker for en indhentningsstream/udbyder, skal du tilføje en [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] til den pågældende M3U-post. Denne indstilling bør ikke aktiveres for alle streams."
