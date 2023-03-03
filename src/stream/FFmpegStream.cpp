@@ -920,7 +920,6 @@ bool FFmpegStream::OpenWithFFmpeg(const AVInputFormat* iformat, const AVIOInterr
     // We only process this condition for manifest streams when this setting is disabled
     if (!kodi::addon::GetSettingBoolean("useFastOpenForManifestStreams") || m_manifestType.empty())
     {
-      m_pFormatContext->flags |= AVFMT_FLAG_PRIV_OPT;
       if (avformat_open_input(&m_pFormatContext, strFile.c_str(), iformat, &options) < 0)
       {
         Log(LOGLEVEL_DEBUG, "Error, could not open file %s", CURL::GetRedacted(strFile).c_str());
@@ -935,7 +934,6 @@ bool FFmpegStream::OpenWithFFmpeg(const AVInputFormat* iformat, const AVIOInterr
     }
 
     m_pFormatContext->interrupt_callback = int_cb;
-    m_pFormatContext->flags &= ~AVFMT_FLAG_PRIV_OPT;
     options = GetFFMpegOptionsFromInput();
     av_dict_set_int(&options, "load_all_variants", 0, AV_OPT_SEARCH_CHILDREN);
 
