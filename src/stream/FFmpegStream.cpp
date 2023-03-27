@@ -1138,11 +1138,16 @@ void FFmpegStream::UpdateCurrentPTS()
   if (idx >= 0)
   {
     AVStream* stream = m_pFormatContext->streams[idx];
+    Log(LOGLEVEL_DEBUG, "%s - default stream is %s dts = %lld", __FUNCTION__, stream ? "not null" : "null", static_cast<long long>(m_pkt.pkt.dts));
     if (stream && m_pkt.pkt.dts != (int64_t)AV_NOPTS_VALUE)
     {
       double ts = ConvertTimestamp(m_pkt.pkt.dts, stream->time_base.den, stream->time_base.num);
       m_currentPts = ts;
     }
+  }
+  else
+  {
+    Log(LOGLEVEL_DEBUG, "%s - can't find default stream index", __FUNCTION__);
   }
 }
 
@@ -1481,7 +1486,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
   }
   else if (m_pFormatContext->start_time != (int64_t)AV_NOPTS_VALUE && !ismp3 && !m_bSup)
   {
-    Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect::FFmpegStream.SeekTime: seek_pts = %lld start_time = %lld", 
+    Log(LOGLEVEL_DEBUG, "%s - seek_pts = %lld start_time = %lld", __FUNCTION__,
         static_cast<long long>(seek_pts), static_cast<long long>(m_pFormatContext->start_time));
     //seek_pts += m_pFormatContext->start_time;
   }
@@ -1490,7 +1495,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
   {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     ret = av_seek_frame(m_pFormatContext, m_seekStream, seek_pts, backwards ? AVSEEK_FLAG_BACKWARD : 0);
-    Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect::FFmpegStream.SeekTime: av_seek_frame return %d ", ret);
+    Log(LOGLEVEL_DEBUG, "%s - av_seek_frame return %d ", __FUNCTION__, ret);
     
     if (ret < 0)
     {
