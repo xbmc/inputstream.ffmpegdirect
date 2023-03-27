@@ -1480,7 +1480,8 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
                           st->time_base.num);
   }
   else if (m_pFormatContext->start_time != (int64_t)AV_NOPTS_VALUE && !ismp3 && !m_bSup)
-    seek_pts += m_pFormatContext->start_time;
+    Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect::FFmpegStream.SeekTime: %lf StartTime: %lf", seek_pts, m_pFormatContext->start_time);
+    // seek_pts += m_pFormatContext->start_time;
 
   int ret;
   {
