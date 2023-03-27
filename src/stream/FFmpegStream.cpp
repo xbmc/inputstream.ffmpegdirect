@@ -1494,6 +1494,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
   int ret;
   {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    Log(LOGLEVEL_DEBUG, "%s - before seek pts = %lld dts = %lld", __FUNCTION__, static_cast<long long>(m_pkt.pkt.pts), static_cast<long long>(m_pkt.pkt.dts));
     ret = av_seek_frame(m_pFormatContext, m_seekStream, seek_pts, backwards ? AVSEEK_FLAG_BACKWARD : 0);
     Log(LOGLEVEL_DEBUG, "%s - av_seek_frame return %d ", __FUNCTION__, ret);
     
@@ -1531,6 +1532,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     }
   }
 
+  Log(LOGLEVEL_DEBUG, "%s - after seek pts = %lld dts = %lld", __FUNCTION__, static_cast<long long>(m_pkt.pkt.pts), static_cast<long long>(m_pkt.pkt.dts));
   if (m_currentPts == STREAM_NOPTS_VALUE)
     Log(LOGLEVEL_DEBUG, "%s - unknown position after seek", __FUNCTION__);
   else
