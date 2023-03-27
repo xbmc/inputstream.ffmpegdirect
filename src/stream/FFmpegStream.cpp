@@ -1481,15 +1481,17 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
   }
   else if (m_pFormatContext->start_time != (int64_t)AV_NOPTS_VALUE && !ismp3 && !m_bSup)
   {
-    Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect::FFmpegStream.SeekTime: %lld StartTime: %lld", static_cast<long long>(seek_pts), static_cast<long long>(m_pFormatContext->start_time));
-    seek_pts += m_pFormatContext->start_time;
+    Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect::FFmpegStream.SeekTime: seek_pts = %lld start_time = %lld", 
+        static_cast<long long>(seek_pts), static_cast<long long>(m_pFormatContext->start_time));
+    //seek_pts += m_pFormatContext->start_time;
   }
   
   int ret;
   {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     ret = av_seek_frame(m_pFormatContext, m_seekStream, seek_pts, backwards ? AVSEEK_FLAG_BACKWARD : 0);
-
+    Log(LOGLEVEL_DEBUG, "inputstream.ffmpegdirect::FFmpegStream.SeekTime: av_seek_frame return %d ", ret);
+    
     if (ret < 0)
     {
       int64_t starttime = m_pFormatContext->start_time;
