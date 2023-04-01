@@ -1,1 +1,1 @@
-ffmpeg https://github.com/FFmpeg/FFmpeg/archive/refs/tags/n5.1.2.tar.gz
+ffmpeg https://github.com/FFmpeg/FFmpeg/archive/refs/tags/n6.0.tar.gz
