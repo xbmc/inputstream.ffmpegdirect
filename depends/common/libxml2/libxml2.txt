@@ -1,1 +1,1 @@
-libxml2 http://xmlsoft.org/sources/libxml2-2.9.10.tar.gz
+libxml2 https://github.com/GNOME/libxml2/archive/refs/tags/v2.11.4.tar.gz
