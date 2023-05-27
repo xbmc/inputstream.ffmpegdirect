@@ -1,1 +1,2 @@
+xz-utils
 zlib

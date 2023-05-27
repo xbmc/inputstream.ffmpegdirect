@@ -1,0 +1,14 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -151,7 +151,10 @@ if (NOT MSVC)
+ 	check_include_files(inttypes.h HAVE_INTTYPES_H)
+ 	check_function_exists(isascii HAVE_ISASCII)
+ 	check_library_exists(history append_history "" HAVE_LIBHISTORY)
+-	check_library_exists(readline readline "" HAVE_LIBREADLINE)
++	check_library_exists(readline readline "" HAVE_LIBREADLINE_LIB)
++	if (HAVE_LIBREADLINE_LIB)
++		check_include_files(readline/readline.h HAVE_LIBREADLINE)
++	endif()
+ 	check_function_exists(mmap HAVE_MMAP)
+ 	check_function_exists(munmap HAVE_MUNMAP)
+ 	check_include_files(netdb.h HAVE_NETDB_H)
