@@ -1,3 +1,2 @@
-iconv
 xz-utils
 zlib

@@ -1,0 +1,15 @@
+--- a/src/conv.c
++++ b/src/conv.c
+@@ -1236,7 +1236,12 @@ vbi_locale_codeset		(void)
+ 	dst_format = bind_textdomain_codeset (vbi_intl_domainname, NULL);
+ 
+ 	if (NULL == dst_format)
++#if defined(__ANDROID__) && __ANDROID_API__ < 26
++		/* Value in ref. to https://android.googlesource.com/toolchain/sed/+/refs/heads/master/lib/nl_langinfo.c#152 */
++		dst_format = "ISO-8859-1";
++#else
+ 		dst_format = nl_langinfo (CODESET);
++#endif
+ 
+ 	return dst_format; /* may be NULL */
+ }

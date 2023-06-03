@@ -1,3 +1,2 @@
-iconv
 libpng
 zlib
