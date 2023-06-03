@@ -1,1 +1,1 @@
-gnutls http://mirrors.kodi.tv/build-deps/sources/gnutls-3.6.16.tar.xz
+gnutls https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/gnutls-3.8.0.tar.xz

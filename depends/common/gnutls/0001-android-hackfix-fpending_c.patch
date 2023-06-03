@@ -1,0 +1,17 @@
+--- a/src/gl/fpending.c
++++ b/src/gl/fpending.c
+@@ -40,8 +40,14 @@ __fpending (FILE *fp)
+   /* GNU libc, BeOS, Haiku, Linux libc5 */
+   return fp->_IO_write_ptr - fp->_IO_write_base;
+ #elif defined __sferror || defined __DragonFly__ || defined __ANDROID__
++#if defined ANDROID && __ANDROID_API__ < 23
++  /* Hack fix for Kodi as it still use Android API 21 */
++  #warning "ANDROID API to low, no __fpending usable"
++  return 1;
++#else
+   /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin < 1.7.34, Minix 3, Android */
+   return fp->_p - fp->_bf._base;
++#endif
+ #elif defined __EMX__                /* emx+gcc */
+   return fp->_ptr - fp->_buffer;
+ #elif defined __minix                /* Minix */
