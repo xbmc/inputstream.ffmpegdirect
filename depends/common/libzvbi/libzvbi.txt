@@ -1,1 +1,1 @@
-libzvbi http://mirrors.kodi.tv/build-deps/sources/zvbi-0.2.35.tar.bz2
+libzvbi https://github.com/zapping-vbi/zvbi/archive/refs/tags/v0.2.41.tar.gz

@@ -1,6 +1,5 @@
-diff -ru zvbi/src/misc.h zvbi-fixed/src/misc.h
---- zvbi/src/misc.h	2013-07-02 04:32:31.000000000 +0200
-+++ zvbi-fixed/src/misc.h	2013-08-08 21:37:22.000000000 +0200
+--- a/src/misc.h
++++ b/src/misc.h
 @@ -52,17 +52,6 @@
  #  define unlikely(expr) __builtin_expect(expr, 0)
  #endif
@@ -28,3 +27,4 @@ diff -ru zvbi/src/misc.h zvbi-fixed/src/misc.h
  
  static char *
  PARENT_HELPER (char *p, unsigned int offset)
+
