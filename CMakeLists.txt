@@ -116,9 +116,9 @@ set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS "${FFMPEG_L
 
 if(CORE_SYSTEM_NAME STREQUAL windowsstore)
   # fix linking
-  set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/LTCG /defaultlib:vccorlib.lib /defaultlib:msvcrt.lib")
-  set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS_RELEASE "/LTCG /defaultlib:vccorlib.lib /defaultlib:msvcrt.lib")
-  set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS_DEBUG "/LTCG /defaultlib:vccorlibd.lib /defaultlib:msvcrtd.lib")
+  set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/LTCG /defaultlib:vccorlib.lib /defaultlib:msvcrt.lib /defaultlib:onecore.lib")
+  set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS_RELEASE "/LTCG /defaultlib:vccorlib.lib /defaultlib:msvcrt.lib /defaultlib:onecore.lib")
+  set_target_properties(inputstream.ffmpegdirect PROPERTIES LINK_FLAGS_DEBUG "/LTCG /defaultlib:vccorlibd.lib /defaultlib:msvcrtd.lib /defaultlib:onecore.lib")
 endif()
 
 include(CPack)
