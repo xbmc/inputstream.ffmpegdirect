@@ -1,3 +1,16 @@
+v21.2.1
+- Update dependency xz-utils to version 5.4.3
+- Update dependency zlib to version 1.2.13
+- Update dependency libxml2 to version 2.11.4
+- Update dependency nettle to version 3.9
+- Update dependency libpng to version 1.6.39
+- Update dependency libzvbi to version 0.2.41
+- Update dependency libiconv to version 1.17
+- Update dependency gnutls to version 3.8.0
+- Update dependency strawberry perl to version 5.32.1.1 (about Windows builds)
+- Update dependency openssl to version 3.1.1 (about Windows builds)
+- Cleanup dependency builds to use only "depends/common" source folder
+
 v21.2.0
 - Kodi inputstream API update to version 3.3.0
 
