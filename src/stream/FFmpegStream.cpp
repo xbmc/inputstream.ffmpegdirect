@@ -180,7 +180,7 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
   if (m_opened)
   {
     FFmpegLog::SetEnabled(true);
-  //  av_dump_format(m_pFormatContext, 0, CURL::GetRedacted(streamUrl).c_str(), 0);
+    av_dump_format(m_pFormatContext, 0, streamUrl.c_str(), 0);
   }
   FFmpegLog::SetEnabled(kodi::addon::GetSettingBoolean("allowFFmpegLogging"));
 
