@@ -182,7 +182,7 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
     FFmpegLog::SetEnabled(true);
     std::string test = CURL::GetRedacted(streamUrl);
     Log(LOGLEVEL_DEBUG, "redacted ok");
-    Log(LOGLEVEL_DEBUG, "redacted: %s", test);
+    Log(LOGLEVEL_DEBUG, "redacted: %s", test.c_str());
     std::string test2 = "HelloWorld%20N";
     av_dump_format(m_pFormatContext, 0, test2.c_str(), 0);
     av_dump_format(m_pFormatContext, 0, test.c_str(), 0);
