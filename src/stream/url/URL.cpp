@@ -672,7 +672,7 @@ std::string CURL::GetWithoutUserDetails(bool redact) const
     // if (URIUtils::HasParentInHostname(*this))
     //   strHostName = CURL(m_strHostName).GetWithoutUserDetails();
     // else
-      strHostName = m_strHostName;
+    //  strHostName = m_strHostName;
 
     // if (URIUtils::HasEncodedHostname(*this))
     // strHostName = Encode(strHostName);
@@ -680,7 +680,7 @@ std::string CURL::GetWithoutUserDetails(bool redact) const
     if ( HasPort() )
     {
       protectIPv6(strHostName);
-      strURL += strHostName + StringUtils::Format(":{}", m_iPort);
+      strURL += strHostName + StringUtils::Format(":%i", m_iPort);
     }
     else
       strURL += strHostName;
