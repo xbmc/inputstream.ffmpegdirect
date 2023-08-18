@@ -764,7 +764,7 @@ bool FFmpegStream::Open(bool fileinfo)
     Log(LOGLEVEL_DEBUG, "%s - av_find_stream_info finished", __FUNCTION__);
 
     // print some extra information
-    av_dump_format(m_pFormatContext, 0, CURL::GetRedacted(strFile).c_str(), 0);
+    //av_dump_format(m_pFormatContext, 0, CURL::GetRedacted(strFile).c_str(), 0);
 
     if (m_checkTransportStream)
     {
