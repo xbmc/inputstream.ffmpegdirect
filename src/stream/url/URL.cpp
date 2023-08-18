@@ -675,7 +675,7 @@ std::string CURL::GetWithoutUserDetails(bool redact) const
       strHostName = m_strHostName;
 
     // if (URIUtils::HasEncodedHostname(*this))
-    //   strHostName = Encode(strHostName);
+    strHostName = Encode(strHostName);
 
     if ( HasPort() )
     {
