@@ -1,0 +1,12 @@
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -22,8 +22,6 @@
+ 	src \
+ 	$(proxy_dirs) \
+ 	contrib \
+-	examples \
+-	test \
+ 	po \
+ 	doc
+ 
+
