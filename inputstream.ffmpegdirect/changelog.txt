@@ -1,3 +1,6 @@
+v21.2.0
+- Kodi inputstream API update to version 3.3.0
+
 v21.1.0
 - Update to FFmpeg 6.0
 
