@@ -780,8 +780,6 @@ bool FFmpegStream::Open(bool fileinfo)
   // if format can be nonblocking, let's use that
   m_pFormatContext->flags |= AVFMT_FLAG_NONBLOCK;
 
-  UpdateCurrentPTS();
-
   // select the correct program if requested
   m_initialProgramNumber = UINT_MAX;
   CVariant programProp(m_programProperty.empty() ? CVariant::VariantTypeNull : CVariant(m_programProperty));
@@ -1126,22 +1124,6 @@ void FFmpegStream::ResetVideoStreams()
     {
       av_freep(&st->codecpar->extradata);
       st->codecpar->extradata_size = 0;
-    }
-  }
-}
-
-void FFmpegStream::UpdateCurrentPTS()
-{
-  m_currentPts = STREAM_NOPTS_VALUE;
-
-  int idx = av_find_default_stream_index(m_pFormatContext);
-  if (idx >= 0)
-  {
-    AVStream* stream = m_pFormatContext->streams[idx];
-    if (stream && m_pkt.pkt.dts != (int64_t)AV_NOPTS_VALUE)
-    {
-      double ts = ConvertTimestamp(m_pkt.pkt.dts, stream->time_base.den, stream->time_base.num);
-      m_currentPts = ts;
     }
   }
 }
@@ -1517,14 +1499,12 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
       if (m_pFormatContext->iformat->read_seek)
         m_seekToKeyFrame = true;
 
-      UpdateCurrentPTS();
+        m_currentPts = STREAM_NOPTS_VALUE;
     }
   }
 
-  if (m_currentPts == STREAM_NOPTS_VALUE)
-    Log(LOGLEVEL_DEBUG, "%s - unknown position after seek", __FUNCTION__);
-  else
-    Log(LOGLEVEL_DEBUG, "%s - seek ended up on time %d", __FUNCTION__, (int)(m_currentPts / STREAM_TIME_BASE * 1000));
+  Log(LOGLEVEL_DEBUG, "%s - seek to time:%.2f ret:%d hitEnd:%d", __FUNCTION__, time, ret,
+            hitEnd);
 
   // in this case the start time is requested time
   if (startpts)

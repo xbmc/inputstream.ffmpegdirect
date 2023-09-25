@@ -104,7 +104,6 @@ public:
 
 protected:
   virtual std::string GetStreamCodecName(int iStreamId);
-  virtual void UpdateCurrentPTS();
   bool IsPaused() { return m_speed == STREAM_PLAYSPEED_PAUSE; }
   virtual bool CheckReturnEmptyOnPacketResult(int result);
 
