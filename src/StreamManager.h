@@ -21,6 +21,7 @@ static const std::string IS_REALTIME_STREAM = "inputstream.ffmpegdirect.is_realt
 static const std::string STREAM_MODE = "inputstream.ffmpegdirect.stream_mode";
 static const std::string OPEN_MODE = "inputstream.ffmpegdirect.open_mode";
 static const std::string MANIFEST_TYPE = "inputstream.ffmpegdirect.manifest_type";
+static const std::string STREAM_HEADERS = "inputstream.ffmpegdirect.stream_headers";
 static const std::string DEFAULT_URL = "inputstream.ffmpegdirect.default_url";
 static const std::string PLAYBACK_AS_LIVE = "inputstream.ffmpegdirect.playback_as_live";
 static const std::string PROGRAMME_START_TIME = "inputstream.ffmpegdirect.programme_start_time";

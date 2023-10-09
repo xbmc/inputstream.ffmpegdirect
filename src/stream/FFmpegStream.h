@@ -193,6 +193,7 @@ private:
   std::string m_mimeType;
   std::string m_programProperty;
   std::string m_manifestType;
+  std::string m_streamHeaders;
   bool m_opened;
 
   HttpProxy m_httpProxy;

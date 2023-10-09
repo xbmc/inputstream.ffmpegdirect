@@ -176,14 +176,20 @@ void CURL::Reset()
   m_strFileType.clear();
   m_strOptions.clear();
   m_strProtocolOptions.clear();
+  m_strProtocolOptionsExtraURLEncoded.clear();
   m_options.Clear();
   m_protocolOptions.Clear();
   m_iPort = 0;
 }
 
-void CURL::Parse(const std::string& strURL1)
+void CURL::Parse(const std::string& strURL1, const std::string& strStreamHeaders)
 {
   Reset();
+
+  // This the stream_headers property sent to the add-on
+  // We store it here so we can add it when Get() is called.
+  m_strProtocolOptionsExtraURLEncoded = strStreamHeaders;
+
   // start by validating the path
   std::string strURL = ValidatePath(strURL1);
 
@@ -581,6 +587,7 @@ std::string CURL::Get() const
                         + m_strFileName.length()
                         + m_strOptions.length()
                         + m_strProtocolOptions.length()
+                        + m_strProtocolOptionsExtraURLEncoded.length()
                         + 10;
 
   std::string strURL;
@@ -591,8 +598,15 @@ std::string CURL::Get() const
   if( !m_strOptions.empty() )
     strURL += m_strOptions;
 
-  if (!m_strProtocolOptions.empty())
-    strURL += "|"+m_strProtocolOptions;
+  if (!m_strProtocolOptions.empty() || !m_strProtocolOptionsExtraURLEncoded.empty())
+  {
+    if (!m_strProtocolOptions.empty() && !m_strProtocolOptionsExtraURLEncoded.empty())
+      strURL += "|"+m_strProtocolOptions+"&"+m_strProtocolOptionsExtraURLEncoded;
+    else if (!m_strProtocolOptions.empty())
+      strURL += "|"+m_strProtocolOptions;
+    else
+      strURL += "|"+m_strProtocolOptionsExtraURLEncoded;
+  }
 
   return strURL;
 }
