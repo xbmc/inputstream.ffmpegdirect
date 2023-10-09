@@ -1,3 +1,6 @@
+v21.3.0
+- Add stream_headers property for the addon: to be appended to the stream URL after '|'
+
 v21.2.0
 - Kodi inputstream API update to version 3.3.0
 
