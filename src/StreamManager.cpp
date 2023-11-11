@@ -98,6 +98,10 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
     {
       m_properties.m_manifestType = prop.second;
     }
+    else if (STREAM_HEADERS == prop.first)
+    {
+      m_properties.m_streamHeaders = prop.second;
+    }
     else if (DEFAULT_URL == prop.first)
     {
       m_properties.m_defaultUrl = prop.second;

@@ -19,9 +19,9 @@
 class CURL
 {
 public:
-  explicit CURL(const std::string& strURL)
+  explicit CURL(const std::string& strURL, const std::string& strStreamHeaders = "")
   {
-    Parse(strURL);
+    Parse(strURL, strStreamHeaders);
   }
 
   CURL() = default;
@@ -31,7 +31,7 @@ public:
   bool operator==(const std::string &url) const { return Get() == url; }
 
   void Reset();
-  void Parse(const std::string& strURL);
+  void Parse(const std::string& strURL, const std::string& strStreamHeaders);
   void SetFileName(const std::string& strFileName);
   void SetHostName(const std::string& strHostName)
   {
@@ -196,6 +196,7 @@ protected:
   std::string m_strFileType;
   std::string m_strOptions;
   std::string m_strProtocolOptions;
+  std::string m_strProtocolOptionsExtraURLEncoded;
   CUrlOptions m_options;
   CUrlOptions m_protocolOptions;
 };

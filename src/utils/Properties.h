@@ -34,6 +34,7 @@ namespace ffmpegdirect
     StreamMode m_streamMode = StreamMode::NONE;
     OpenMode m_openMode = OpenMode::DEFAULT;
     std::string m_manifestType;
+    std::string m_streamHeaders;
     std::string m_defaultUrl;
 
     bool m_playbackAsLive = false;
@@ -48,6 +49,6 @@ namespace ffmpegdirect
     int m_catchupGranularity = 1;
     int m_timezoneShiftSecs = 0;
     int m_defaultProgrammeDurationSecs = 4 * 60 * 60; //Four hours
-    std::string m_programmeCatchupId;      
+    std::string m_programmeCatchupId;
   };
 } //namespace ffmpegdirect

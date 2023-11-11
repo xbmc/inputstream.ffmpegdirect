@@ -133,6 +133,7 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Propert
     m_openMode(props.m_openMode),
     m_streamMode(props.m_streamMode),
     m_manifestType(props.m_manifestType),
+    m_streamHeaders(props.m_streamHeaders),
     m_curlInput(curlInput),
     m_httpProxy(httpProxy),
     m_paused(false)
@@ -873,7 +874,7 @@ bool FFmpegStream::OpenWithFFmpeg(const AVInputFormat* iformat, const AVIOInterr
   AVDictionary* options = GetFFMpegOptionsFromInput();
 
   CURL url;
-  url.Parse(m_streamUrl);
+  url.Parse(m_streamUrl, m_streamHeaders); //add prop here
   url.SetProtocolOptions("");
   std::string strFile = url.Get();
 
@@ -956,7 +957,7 @@ bool FFmpegStream::OpenWithCURL(const AVInputFormat* iformat)
   Log(LOGLEVEL_INFO, "%s - IO handled by Kodi's cURL", __FUNCTION__);
 
   CURL url;
-  url.Parse(m_streamUrl);
+  url.Parse(m_streamUrl, m_streamHeaders);
   url.SetProtocolOptions("");
   std::string strFile = url.Get();
 
@@ -2205,7 +2206,7 @@ std::string FFmpegStream::GetStreamCodecName(int iStreamId)
 AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
 {
   CURL url;
-  url.Parse(m_streamUrl);
+  url.Parse(m_streamUrl, m_streamHeaders);
   AVDictionary* options = nullptr;
 
   // For a local file we need the following protocol whitelist
