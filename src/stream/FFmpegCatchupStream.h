@@ -43,7 +43,7 @@ public:
   virtual bool IsRealTimeStream() override;
 
 protected:
-  void UpdateCurrentPTS() override;
+  void CurrentPTSUpdated() override;
   bool CheckReturnEmptyOnPacketResult(int result) override;
 
   long long GetCurrentLiveOffset() { return std::time(nullptr) - m_catchupBufferStartTime; }

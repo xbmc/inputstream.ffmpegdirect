@@ -434,7 +434,10 @@ DEMUX_PACKET* FFmpegStream::DemuxRead()
 
         // used to guess streamlength
         if (pPacket->dts != STREAM_NOPTS_VALUE && (pPacket->dts > m_currentPts || m_currentPts == STREAM_NOPTS_VALUE))
+        {
           m_currentPts = pPacket->dts;
+          CurrentPTSUpdated();
+        }
 
         // store internal id until we know the continuous id presented to player
         // the stream might not have been created yet
@@ -795,8 +798,6 @@ bool FFmpegStream::Open(bool fileinfo)
   // if format can be nonblocking, let's use that
   m_pFormatContext->flags |= AVFMT_FLAG_NONBLOCK;
 
-  UpdateCurrentPTS();
-
   // select the correct program if requested
   m_initialProgramNumber = UINT_MAX;
   CVariant programProp(m_programProperty.empty() ? CVariant::VariantTypeNull : CVariant(m_programProperty));
@@ -1145,20 +1146,8 @@ void FFmpegStream::ResetVideoStreams()
   }
 }
 
-void FFmpegStream::UpdateCurrentPTS()
+void FFmpegStream::CurrentPTSUpdated()
 {
-  m_currentPts = STREAM_NOPTS_VALUE;
-
-  int idx = av_find_default_stream_index(m_pFormatContext);
-  if (idx >= 0)
-  {
-    AVStream* stream = m_pFormatContext->streams[idx];
-    if (stream && m_pkt.pkt.dts != (int64_t)AV_NOPTS_VALUE)
-    {
-      double ts = ConvertTimestamp(m_pkt.pkt.dts, stream->time_base.den, stream->time_base.num);
-      m_currentPts = ts;
-    }
-  }
 }
 
 double FFmpegStream::ConvertTimestamp(int64_t pts, int den, int num)
@@ -1541,7 +1530,7 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
       if (m_pFormatContext->iformat->read_seek)
         m_seekToKeyFrame = true;
 
-      UpdateCurrentPTS();
+        m_currentPts = STREAM_NOPTS_VALUE;
     }
   }
 

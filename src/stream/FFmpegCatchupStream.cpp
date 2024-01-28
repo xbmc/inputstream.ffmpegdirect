@@ -362,9 +362,9 @@ bool FFmpegCatchupStream::GetTimes(kodi::addon::InputstreamTimes& times)
   return true;
 }
 
-void FFmpegCatchupStream::UpdateCurrentPTS()
+void FFmpegCatchupStream::CurrentPTSUpdated()
 {
-  FFmpegStream::UpdateCurrentPTS();
+  FFmpegStream::CurrentPTSUpdated();
   if (m_currentPts != STREAM_NOPTS_VALUE)
     m_currentPts += m_seekOffset;
 }
