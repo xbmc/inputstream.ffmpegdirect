@@ -1545,6 +1545,24 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     }
   }
 
+  if (ret >= 0)
+  {
+    kodi::tools::CEndTime timer(1000);
+    while (m_currentPts == STREAM_NOPTS_VALUE && !timer.IsTimePast())
+    {
+      m_pkt.result = -1;
+      av_packet_unref(&m_pkt.pkt);
+
+      DEMUX_PACKET* pkt = DemuxRead();
+      if (!pkt)
+      {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        continue;
+      }
+      m_demuxPacketManager->FreeDemuxPacketFromInputStreamAPI(pkt);
+    }
+  }
+
   if (m_currentPts == STREAM_NOPTS_VALUE)
     Log(LOGLEVEL_DEBUG, "%s - unknown position after seek", __FUNCTION__);
   else
