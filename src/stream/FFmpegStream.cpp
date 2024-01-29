@@ -1431,7 +1431,7 @@ void FFmpegStream::StoreSideData(DEMUX_PACKET *pkt, AVPacket *src)
     pkt->pSideData = avPkt->side_data;
     pkt->iSideDataElems = avPkt->side_data_elems;
 
-    //! @todo: properly handle avpkt side_data. this works around our inproper use of the side_data
+    //! @todo: properly handle avpkt side_data. this works around our improper use of the side_data
     // as we pass pointers to ffmpeg allocated memory for the side_data. we should really be allocating
     // and storing our own AVPacket. This will require some extensive changes.
     // tl;dr: it frees the packet but not the side data.
@@ -2095,7 +2095,7 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
           }
           else
           {
-            // Note: libass only supports a single font directory to look for aditional fonts
+            // Note: libass only supports a single font directory to look for additional fonts
             // (c.f. ass_set_fonts_dir). To support both user defined fonts (those placed in
             // special://home/media/Fonts/) and fonts extracted by the demuxer, make it extract
             // fonts to the user directory with a known, easy to identify, prefix (tmp.font.*).
