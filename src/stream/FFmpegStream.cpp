@@ -1239,8 +1239,6 @@ bool FFmpegStream::IsProgramChange()
       return true;
     if (m_pFormatContext->streams[idx]->codecpar->codec_id != stream->codec)
       return true;
-      int codecparChannels =
-          m_pFormatContext->streams[idx]->codecpar->ch_layout.nb_channels;
     if (m_pFormatContext->streams[idx]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
     {
       DemuxStreamAudio* audiostream = dynamic_cast<DemuxStreamAudio*>(stream);
