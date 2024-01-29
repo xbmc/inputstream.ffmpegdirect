@@ -31,6 +31,7 @@
 extern "C" {
 #include <libavcodec/bsf.h>
 #include <libavutil/dict.h>
+#include <libavutil/dovi_meta.h>
 #include <libavutil/opt.h>
 #include "libavutil/pixdesc.h"
 }
@@ -2045,6 +2046,15 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
         // https://github.com/FFmpeg/FFmpeg/blob/release/5.0/doc/APIchanges
         size_t size = 0;
         uint8_t* side_data = nullptr;
+
+        if (st->hdr_type == StreamHdrType::HDR_TYPE_DOLBYVISION)
+        {
+          side_data = av_stream_get_side_data(pStream, AV_PKT_DATA_DOVI_CONF, &size);
+          if (side_data && size)
+          {
+            st->dovi = *reinterpret_cast<AVDOVIDecoderConfigurationRecord*>(side_data);
+          }
+        }
 
         side_data = av_stream_get_side_data(pStream, AV_PKT_DATA_MASTERING_DISPLAY_METADATA, &size);
         if (side_data && size)

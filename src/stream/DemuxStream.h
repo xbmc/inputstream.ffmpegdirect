@@ -22,6 +22,7 @@
 extern "C"
 {
 #include <libavcodec/avcodec.h>
+#include <libavutil/dovi_meta.h>
 #include <libavformat/avformat.h>
 #include <libavutil/mastering_display_metadata.h>
 }
@@ -122,6 +123,7 @@ public:
   std::shared_ptr<AVContentLightMetadata> contentLightMetaData;
 
   std::string stereo_mode; // expected stereo mode
+  AVDOVIDecoderConfigurationRecord dovi{};
   StreamHdrType hdr_type = StreamHdrType::HDR_TYPE_NONE; // type of HDR for this stream (hdr10, etc)
 };
 
