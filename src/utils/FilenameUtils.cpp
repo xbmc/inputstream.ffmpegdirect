@@ -9,8 +9,28 @@
 
 #include <kodi/tools/StringUtils.h>
 
+#include <regex>
+
 using namespace ffmpegdirect;
 using namespace kodi::tools;
+
+std::string FilenameUtils::FindLanguageCodeWithSubtag(const std::string& str)
+{
+  static std::regex regLangCode("(?:^|\\s|\\()(([A-Za-z]{2,3})-([A-Za-z]{2}|[0-9]{3}|[A-Za-z]{4}))(?:$|\\s|\\))");
+  std::smatch match;
+  std::string matchText = "";
+
+  if (std::regex_match(str, match, regLangCode))
+  {
+    if (match.size() == 2)
+    {
+      std::ssub_match base_sub_match = match[1];
+      matchText = base_sub_match.str();
+    }
+  }
+
+  return matchText;
+}
 
 std::string FilenameUtils::MakeLegalFileName(const std::string &strFile, int LegalType)
 {

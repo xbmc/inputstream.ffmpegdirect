@@ -2187,7 +2187,23 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
       }
     }
     if (langTag)
+    {
       stream->language = std::string(langTag->value, 3);
+      //! @FIXME: Matroska v4 support BCP-47 language code with LanguageIETF element
+      //! that have the priority over the Language element, but this is not currently
+      //! implemented in to ffmpeg library. Since ffmpeg read only the Language element
+      //! all tracks will be identified with same language (of Language element).
+      //! As workaround to allow set the right language code we provide the possibility
+      //! to set the language code in the title field, this allow to kodi to recognize
+      //! the right language and select the right track to be played at playback starts.
+      AVDictionaryEntry* title = av_dict_get(pStream->metadata, "title", NULL, 0);
+      if (title && title->value)
+      {
+        const std::string langCode = FilenameUtils::FindLanguageCodeWithSubtag(title->value);
+        if (!langCode.empty())
+          stream->language = langCode;
+      }
+    }
 
     if (stream->type != INPUTSTREAM_TYPE_NONE && pStream->codecpar->extradata && pStream->codecpar->extradata_size > 0)
     {
