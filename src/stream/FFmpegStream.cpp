@@ -31,6 +31,7 @@
 extern "C" {
 #include <libavcodec/bsf.h>
 #include <libavutil/dict.h>
+#include "libavutil/display.h"
 #include <libavutil/dovi_meta.h>
 #include <libavutil/opt.h>
 #include "libavutil/pixdesc.h"
@@ -2062,8 +2063,17 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
         }
 
         AVDictionaryEntry* rtag = av_dict_get(pStream->metadata, "rotate", NULL, 0);
-        if (rtag)
-          st->iOrientation = atoi(rtag->value);
+        uint8_t* displayMatrixSideData =
+            av_stream_get_side_data(pStream, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
+        if (displayMatrixSideData)
+        {
+          const double tetha =
+              av_display_rotation_get(reinterpret_cast<int32_t*>(displayMatrixSideData));
+          if (!std::isnan(tetha))
+          {
+            st->iOrientation = ((static_cast<int>(-tetha) % 360) + 360) % 360;
+          }
+        }
 
         // detect stereoscopic mode
         std::string stereoMode = GetStereoModeFromMetadata(pStream->metadata);
