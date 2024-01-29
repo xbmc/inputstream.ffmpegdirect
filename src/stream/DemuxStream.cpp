@@ -180,8 +180,10 @@ DemuxParserFFmpeg::~DemuxParserFFmpeg()
 }
 
 FFmpegExtraData::FFmpegExtraData(size_t size)
-  : m_data(reinterpret_cast<uint8_t*>(av_malloc(size + AV_INPUT_BUFFER_PADDING_SIZE))), m_size(size)
+  : m_data(reinterpret_cast<uint8_t*>(av_mallocz(size + AV_INPUT_BUFFER_PADDING_SIZE))),
+    m_size(size)
 {
+  // using av_mallocz because some APIs require at least the padding to be zeroed, e.g. AVCodecParameters
   if (!m_data)
     throw std::bad_alloc();
 }
