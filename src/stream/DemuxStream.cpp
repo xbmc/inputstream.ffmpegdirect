@@ -48,7 +48,7 @@ bool DemuxStream::GetInformation(kodi::addon::InputstreamInfo& info)
   info.SetCodecName(codecName);
   info.SetCodecProfile(static_cast<STREAMCODEC_PROFILE>(profile));
   info.SetPhysicalIndex(uniqueId);
-  info.SetExtraData(ExtraData, ExtraSize);
+  info.SetExtraData(extraData.GetData(), extraData.GetSize());
   info.SetLanguage(language);
   info.SetCodecFourCC(codec_fourcc);
 
@@ -177,4 +177,70 @@ DemuxParserFFmpeg::~DemuxParserFFmpeg()
     av_parser_close(m_parserCtx);
     m_parserCtx = nullptr;
   }
+}
+
+FFmpegExtraData::FFmpegExtraData(size_t size)
+  : m_data(reinterpret_cast<uint8_t*>(av_malloc(size + AV_INPUT_BUFFER_PADDING_SIZE))), m_size(size)
+{
+  if (!m_data)
+    throw std::bad_alloc();
+}
+
+FFmpegExtraData::FFmpegExtraData(const uint8_t* data, size_t size) : FFmpegExtraData(size)
+{
+  std::memcpy(m_data, data, size);
+}
+
+FFmpegExtraData::~FFmpegExtraData()
+{
+  av_free(m_data);
+}
+
+FFmpegExtraData::FFmpegExtraData(const FFmpegExtraData& e) : FFmpegExtraData(e.m_size)
+{
+  std::memcpy(m_data, e.m_data, m_size);
+}
+
+FFmpegExtraData::FFmpegExtraData(FFmpegExtraData&& other) noexcept : FFmpegExtraData()
+{
+  std::swap(m_data, other.m_data);
+  std::swap(m_size, other.m_size);
+}
+
+FFmpegExtraData& FFmpegExtraData::operator=(const FFmpegExtraData& other)
+{
+  if (this != &other)
+  {
+    if (m_size >= other.m_size) // reuse current buffer if large enough
+    {
+      std::memcpy(m_data, other.m_data, other.m_size);
+      m_size = other.m_size;
+    }
+    else
+    {
+      FFmpegExtraData extraData(other);
+      *this = std::move(extraData);
+    }
+  }
+  return *this;
+}
+
+FFmpegExtraData& FFmpegExtraData::operator=(FFmpegExtraData&& other) noexcept
+{
+  if (this != &other)
+  {
+    std::swap(m_data, other.m_data);
+    std::swap(m_size, other.m_size);
+  }
+  return *this;
+}
+
+bool FFmpegExtraData::operator==(const FFmpegExtraData& other) const
+{
+  return m_size == other.m_size && std::memcmp(m_data, other.m_data, m_size) == 0;
+}
+
+bool FFmpegExtraData::operator!=(const FFmpegExtraData& other) const
+{
+  return !(*this == other);
 }

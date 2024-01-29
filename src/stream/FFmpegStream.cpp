@@ -90,8 +90,6 @@ bool AttachmentIsFont(const AVDictionaryEntry* dict)
 }
 } // namespace
 
-#define FF_MAX_EXTRADATA_SIZE ((1 << 28) - AV_INPUT_BUFFER_PADDING_SIZE)
-
 static int interrupt_cb(void* ctx)
 {
   FFmpegStream* demuxer = static_cast<FFmpegStream*>(ctx);
@@ -1250,7 +1248,8 @@ bool FFmpegStream::IsProgramChange()
         return true;
       }
     }
-    if (m_pFormatContext->streams[idx]->codecpar->extradata_size != static_cast<int>(stream->ExtraSize))
+    if (m_pFormatContext->streams[idx]->codecpar->extradata_size !=
+        static_cast<int>(stream->extraData.GetSize()))
       return true;
   }
   return false;
@@ -1566,20 +1565,18 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     return false;
 }
 
-int FFmpegStream::GetPacketExtradata(const AVPacket* pkt, const AVCodecParserContext* parserCtx, AVCodecContext* codecCtx, uint8_t **p_extradata)
+FFmpegExtraData FFmpegStream::GetPacketExtradata(const AVPacket* pkt, const AVCodecParameters* codecPar)
 {
-  int extradata_size = 0;
+  constexpr int FF_MAX_EXTRADATA_SIZE = ((1 << 28) - AV_INPUT_BUFFER_PADDING_SIZE);
 
-  if (!pkt || !p_extradata)
-    return 0;
-
-  *p_extradata = nullptr;
+  if (!pkt)
+    return {};
 
   /* extract_extradata bitstream filter is implemented only
    * for certain codecs, as noted in discussion of PR#21248
    */
 
-  AVCodecID codecId = codecCtx->codec_id;
+  AVCodecID codecId = codecPar->codec_id;
 
   // clang-format off
   if (
@@ -1595,58 +1592,63 @@ int FFmpegStream::GetPacketExtradata(const AVPacket* pkt, const AVCodecParserCon
     codecId != AV_CODEC_ID_CAVS
   )
     // clang-format on
-    return 0;
+    return {};
 
-  AVBSFContext *bsf = nullptr;
-  AVPacket *dst_pkt = nullptr;
-  const AVBitStreamFilter *f;
-  AVPacket *pkt_ref = nullptr;
-  int ret = 0;
-  uint8_t *ret_extradata = nullptr;
-  size_t ret_extradata_size = 0;
-
-  f = av_bsf_get_by_name("extract_extradata");
+  const AVBitStreamFilter* f = av_bsf_get_by_name("extract_extradata");
   if (!f)
-    return 0;
+    return {};
 
-  bsf = nullptr;
-  ret = av_bsf_alloc(f, &bsf);
+  AVBSFContext* bsf = nullptr;
+  int ret = av_bsf_alloc(f, &bsf);
   if (ret < 0)
-    return 0;
+    return {};
 
-  bsf->par_in->codec_id = codecCtx->codec_id;
+  ret = avcodec_parameters_copy(bsf->par_in, codecPar);
+  if (ret < 0)
+  {
+    av_bsf_free(&bsf);
+    return {};
+  }
 
   ret = av_bsf_init(bsf);
   if (ret < 0)
   {
     av_bsf_free(&bsf);
-    return 0;
+    return {};
   }
 
-  dst_pkt = av_packet_alloc();
-  pkt_ref = dst_pkt;
+  AVPacket* dstPkt = av_packet_alloc();
+  if (!dstPkt)
+  {
+    Log(LOGLEVEL_ERROR, "failed to allocate packet");
 
-  ret = av_packet_ref(pkt_ref, pkt);
+    av_bsf_free(&bsf);
+    return {};
+  }
+  AVPacket* pktRef = dstPkt;
+
+  ret = av_packet_ref(pktRef, pkt);
   if (ret < 0)
   {
     av_bsf_free(&bsf);
-    av_packet_free(&dst_pkt);
-    return 0;
+    av_packet_free(&dstPkt);
+    return {};
   }
 
-  ret = av_bsf_send_packet(bsf, pkt_ref);
+  ret = av_bsf_send_packet(bsf, pktRef);
   if (ret < 0)
   {
-    av_packet_unref(pkt_ref);
+    av_packet_unref(pktRef);
     av_bsf_free(&bsf);
-    av_packet_free(&dst_pkt);
-    return 0;
+    av_packet_free(&dstPkt);
+    return {};
   }
 
+  FFmpegExtraData extraData;
   ret = 0;
   while (ret >= 0)
   {
-    ret = av_bsf_receive_packet(bsf, pkt_ref);
+    ret = av_bsf_receive_packet(bsf, pktRef);
     if (ret < 0)
     {
       if (ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
@@ -1655,47 +1657,38 @@ int FFmpegStream::GetPacketExtradata(const AVPacket* pkt, const AVCodecParserCon
       continue;
     }
 
-    ret_extradata = av_packet_get_side_data(pkt_ref,
-                                            AV_PKT_DATA_NEW_EXTRADATA,
-                                            &ret_extradata_size);
-    if (ret_extradata &&
-        ret_extradata_size > 0 &&
-        ret_extradata_size < FF_MAX_EXTRADATA_SIZE)
+    size_t retExtraDataSize = 0;
+    uint8_t* retExtraData =
+        av_packet_get_side_data(pktRef, AV_PKT_DATA_NEW_EXTRADATA, &retExtraDataSize);
+    if (retExtraData && retExtraDataSize > 0 && retExtraDataSize < FF_MAX_EXTRADATA_SIZE)
     {
-      *p_extradata = (uint8_t*)av_malloc(ret_extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
-      if (!*p_extradata)
+      try
       {
-        Log(LOGLEVEL_ERROR,
-            "%s - failed to allocate %zu bytes for extradata",
-            __FUNCTION__,
-            ret_extradata_size);
+        extraData = FFmpegExtraData(retExtraData, retExtraDataSize);
+      }
+      catch (const std::bad_alloc&)
+      {
+        Log(LOGLEVEL_ERROR, "failed to allocate %d bytes for extradata", retExtraDataSize);
 
-        av_packet_unref(pkt_ref);
+        av_packet_unref(pktRef);
         av_bsf_free(&bsf);
-        av_packet_free(&dst_pkt);
-        return 0;
+        av_packet_free(&dstPkt);
+        return {};
       }
 
-      Log(LOGLEVEL_DEBUG,
-          "%s - fetching extradata, extradata_size(%zu)",
-          __FUNCTION__,
-          ret_extradata_size);
+      Log(LOGLEVEL_DEBUG, "fetching extradata, extradata_size(%d)", retExtraDataSize);
 
-      memcpy(*p_extradata, ret_extradata, ret_extradata_size);
-      memset(*p_extradata + ret_extradata_size, 0, AV_INPUT_BUFFER_PADDING_SIZE);
-      extradata_size = ret_extradata_size;
-
-      av_packet_unref(pkt_ref);
+      av_packet_unref(pktRef);
       break;
     }
 
-    av_packet_unref(pkt_ref);
+    av_packet_unref(pktRef);
   }
 
   av_bsf_free(&bsf);
-  av_packet_free(&dst_pkt);
+  av_packet_free(&dstPkt);
 
-  return extradata_size;
+  return extraData;
 }
 
 void FFmpegStream::ParsePacket(AVPacket* pkt)
@@ -1731,13 +1724,11 @@ void FFmpegStream::ParsePacket(AVPacket* pkt)
         parser->second->m_parserCtx->parser &&
         !st->codecpar->extradata)
     {
-      int i = GetPacketExtradata(pkt,
-                               parser->second->m_parserCtx,
-                               parser->second->m_codecCtx,
-                               &st->codecpar->extradata);
-      if (i > 0)
+      FFmpegExtraData retExtraData = GetPacketExtradata(pkt, st->codecpar);
+      if (retExtraData)
       {
-        st->codecpar->extradata_size = i;
+        st->codecpar->extradata_size = retExtraData.GetSize();
+        st->codecpar->extradata = retExtraData.GetData();
 
         if (parser->second->m_parserCtx->parser->parser_parse)
         {
@@ -2228,9 +2219,8 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
 
     if (stream->type != INPUTSTREAM_TYPE_NONE && pStream->codecpar->extradata && pStream->codecpar->extradata_size > 0)
     {
-      stream->ExtraSize = pStream->codecpar->extradata_size;
-      stream->ExtraData = new uint8_t[pStream->codecpar->extradata_size];
-      memcpy(stream->ExtraData, pStream->codecpar->extradata, pStream->codecpar->extradata_size);
+      stream->extraData =
+          FFmpegExtraData(pStream->codecpar->extradata, pStream->codecpar->extradata_size);
     }
 
     stream->uniqueId = pStream->index;

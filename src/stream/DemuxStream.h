@@ -34,6 +34,34 @@ extern "C"
 namespace ffmpegdirect
 {
 
+
+class FFmpegExtraData
+{
+public:
+  FFmpegExtraData() = default;
+  explicit FFmpegExtraData(size_t size);
+  FFmpegExtraData(const uint8_t* data, size_t size);
+  FFmpegExtraData(const FFmpegExtraData& other);
+  FFmpegExtraData(FFmpegExtraData&& other) noexcept;
+
+  ~FFmpegExtraData();
+
+  FFmpegExtraData& operator=(const FFmpegExtraData& other);
+  FFmpegExtraData& operator=(FFmpegExtraData&& other) noexcept;
+
+  bool operator==(const FFmpegExtraData& other) const;
+  bool operator!=(const FFmpegExtraData& other) const;
+
+  operator bool() const { return m_data != nullptr && m_size != 0; }
+  uint8_t* GetData() { return m_data; }
+  const uint8_t* GetData() const { return m_data; }
+  size_t GetSize() const { return m_size; }
+
+private:
+  uint8_t* m_data{nullptr};
+  size_t m_size{};
+};
+
 class DemuxStream
 {
 public:
@@ -48,14 +76,13 @@ public:
     type = INPUTSTREAM_TYPE_NONE;
     iDuration = 0;
     pPrivate = NULL;
-    ExtraData = NULL;
-    ExtraSize = 0;
     disabled = false;
     changes = 0;
     flags = INPUTSTREAM_FLAG_NONE;
   }
 
-  virtual ~DemuxStream() { delete[] ExtraData; }
+  virtual ~DemuxStream() = default;
+  DemuxStream(DemuxStream&&) = default;
 
   virtual std::string GetStreamName();
   virtual bool GetInformation(kodi::addon::InputstreamInfo& info);
@@ -71,8 +98,7 @@ public:
 
   int iDuration; // in mseconds
   void* pPrivate; // private pointer for the demuxer
-  uint8_t* ExtraData; // extra data for codec to use
-  unsigned int ExtraSize; // size of extra data
+  FFmpegExtraData extraData;
 
   INPUTSTREAM_FLAGS flags;
   std::string language; // RFC 5646 language code (empty string if undefined)

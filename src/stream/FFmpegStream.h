@@ -108,7 +108,7 @@ protected:
   bool IsPaused() { return m_speed == STREAM_PLAYSPEED_PAUSE; }
   virtual bool CheckReturnEmptyOnPacketResult(int result);
 
-  int GetPacketExtradata(const AVPacket* pkt, const AVCodecParserContext* parserCtx, AVCodecContext* codecCtx, uint8_t **p_extradata);
+  FFmpegExtraData GetPacketExtradata(const AVPacket* pkt, const AVCodecParameters* codecPar);
 
   int64_t m_demuxerId;
   mutable std::recursive_mutex m_mutex;
