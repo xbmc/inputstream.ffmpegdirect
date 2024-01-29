@@ -32,6 +32,7 @@ extern "C" {
 #include <libavcodec/bsf.h>
 #include <libavutil/dict.h>
 #include <libavutil/opt.h>
+#include "libavutil/pixdesc.h"
 }
 
 #include <kodi/tools/StringUtils.h>
@@ -2015,6 +2016,11 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
         st->iOrientation = 0;
         st->iBitsPerPixel = pStream->codecpar->bits_per_coded_sample;
         st->iBitRate = static_cast<int>(pStream->codecpar->bit_rate);
+        st->iBitDepth = 8;
+        const AVPixFmtDescriptor* desc =
+            av_pix_fmt_desc_get(static_cast<AVPixelFormat>(pStream->codecpar->format));
+        if (desc != nullptr && desc->comp != nullptr)
+          st->iBitDepth = desc->comp[0].depth;
 
         st->colorPrimaries = pStream->codecpar->color_primaries;
         st->colorSpace = pStream->codecpar->color_space;

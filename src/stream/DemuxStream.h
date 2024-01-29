@@ -112,6 +112,7 @@ public:
   int iOrientation = 0; // orientation of the video in degrees counter clockwise
   int iBitsPerPixel = 0;
   int iBitRate = 0;
+  int iBitDepth = 0;
 
   AVColorSpace colorSpace = AVCOL_SPC_UNSPECIFIED;
   AVColorRange colorRange = AVCOL_RANGE_UNSPECIFIED;
