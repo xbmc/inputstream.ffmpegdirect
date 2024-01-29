@@ -2019,7 +2019,7 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
         st->iBitDepth = 8;
         const AVPixFmtDescriptor* desc =
             av_pix_fmt_desc_get(static_cast<AVPixelFormat>(pStream->codecpar->format));
-        if (desc != nullptr && desc->comp != nullptr)
+        if (desc != nullptr)
           st->iBitDepth = desc->comp[0].depth;
 
         st->colorPrimaries = pStream->codecpar->color_primaries;
