@@ -86,6 +86,14 @@ public:
   std::shared_ptr<kodi::addon::StreamCryptoSession> cryptoSession;
 };
 
+enum class StreamHdrType
+{
+  HDR_TYPE_NONE, ///< <b>None</b>, returns an empty string when used in infolabels
+  HDR_TYPE_HDR10, ///< <b>HDR10</b>, returns `hdr10` when used in infolabels
+  HDR_TYPE_DOLBYVISION, ///< <b>Dolby Vision</b>, returns `dolbyvision` when used in infolabels
+  HDR_TYPE_HLG ///< <b>HLG</b>, returns `hlg` when used in infolabels
+};
+
 class DemuxStreamVideo : public DemuxStream
 {
 public:
@@ -114,6 +122,7 @@ public:
   std::shared_ptr<AVContentLightMetadata> contentLightMetaData;
 
   std::string stereo_mode; // expected stereo mode
+  StreamHdrType hdr_type = StreamHdrType::HDR_TYPE_NONE; // type of HDR for this stream (hdr10, etc)
 };
 
 class DemuxStreamAudio : public DemuxStream
