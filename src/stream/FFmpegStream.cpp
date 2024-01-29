@@ -2015,6 +2015,11 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
           st->iFpsScale = 0;
         }
 
+        st->bInterlaced = pStream->codecpar->field_order == AV_FIELD_TT ||
+                         pStream->codecpar->field_order == AV_FIELD_BB ||
+                         pStream->codecpar->field_order == AV_FIELD_TB ||
+                         pStream->codecpar->field_order == AV_FIELD_BT;
+
         st->iWidth = pStream->codecpar->width;
         st->iHeight = pStream->codecpar->height;
         st->fAspect = SelectAspect(pStream, st->bForcedAspect);
