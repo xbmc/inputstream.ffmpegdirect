@@ -15,8 +15,7 @@ namespace ffmpegdirect
   static const int LEGAL_WIN32_COMPAT = 1;
   static const int LEGAL_FATX = 2;
 
-  // Prefix used to store temporary font files in the user fonts folder
-  constexpr const char* TEMP_FONT_FILENAME_PREFIX = "tmp.font.";
+  constexpr const char* TEMP_FONT_PATH = "special://temp/fonts/";
 
   class FilenameUtils
   {

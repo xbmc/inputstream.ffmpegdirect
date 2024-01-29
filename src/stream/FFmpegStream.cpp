@@ -2104,21 +2104,21 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
       }
       case AVMEDIA_TYPE_ATTACHMENT:
       {
-        //mkv attachments. Only bothering with fonts for now.
+        //MKV attachments. Only bothering with fonts for now.
         AVDictionaryEntry* attachmentMimetype =
             av_dict_get(pStream->metadata, "mimetype", nullptr, 0);
 
         if (pStream->codecpar->codec_id == AV_CODEC_ID_TTF ||
             pStream->codecpar->codec_id == AV_CODEC_ID_OTF || AttachmentIsFont(attachmentMimetype))
         {
-          std::string fileName = "special://home/media/Fonts/";
-          kodi::vfs::CreateDirectory(fileName);
+          // Temporary fonts are extracted to the temporary fonts path
+          //! @todo: temporary font file management should be completely
+          //! removed, by sending font data to the subtitle renderer and
+          //! using libass ass_add_font to add the fonts directly in memory.
+          std::string filePath{TEMP_FONT_PATH};
+          kodi::vfs::CreateDirectory(filePath);
           AVDictionaryEntry* nameTag = av_dict_get(pStream->metadata, "filename", NULL, 0);
-          if (!nameTag)
-          {
-            Log(LOGLEVEL_ERROR, "%s: TTF attachment has no name", __FUNCTION__);
-          }
-          else
+          if (nameTag)
           {
             // Note: Libass only supports a single additional font directory,
             // currently set for user fonts (c.f. ass_set_fonts_dir) therefore
@@ -2128,20 +2128,23 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
             //! @todo: this font file management system on disk could be completely
             //! removed, by sending font data to the subtitle renderer and
             //! using libass ass_add_font to add the fonts directly in memory.
-            fileName += FilenameUtils::TEMP_FONT_FILENAME_PREFIX +
-                        FilenameUtils::MakeLegalFileName(nameTag->value, LEGAL_WIN32_COMPAT);
+            filePath += FilenameUtils::MakeLegalFileName(nameTag->value, LEGAL_WIN32_COMPAT);
             kodi::vfs::CFile file;
-            if (pStream->codecpar->extradata && file.OpenFileForWrite(fileName))
+            if (pStream->codecpar->extradata && file.OpenFileForWrite(filePath))
             {
               if (file.Write(pStream->codecpar->extradata, pStream->codecpar->extradata_size) !=
                   pStream->codecpar->extradata_size)
               {
                 file.Close();
-                kodi::vfs::DeleteFile(fileName);
-                Log(LOGLEVEL_DEBUG, "%s: Error saving font file \"%s\"", __FUNCTION__, fileName.c_str());
+                kodi::vfs::DeleteFile(filePath);
+                Log(LOGLEVEL_DEBUG, "%s: Error saving font file \"%s\"", __FUNCTION__, filePath.c_str());
               }
             }
           }
+        }
+        else
+        {
+          Log(LOGLEVEL_ERROR, "%s: Attached font has no name", __FUNCTION__);
         }
         stream = new DemuxStream();
         stream->type = INPUTSTREAM_TYPE_NONE;
