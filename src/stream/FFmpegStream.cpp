@@ -1160,8 +1160,9 @@ double FFmpegStream::ConvertTimestamp(int64_t pts, int den, int num)
   double timestamp = (double)pts * num / den;
   double starttime = 0.0;
 
-  //std::shared_ptr<CDVDInputStream::IMenus> menu = std::dynamic_pointer_cast<CDVDInputStream::IMenus>(m_pInput);
-  //if ((!menu || !menu->HasMenu()) &&
+  //const std::shared_ptr<CDVDInputStream::IMenus> menuInterface =
+  //    std::dynamic_pointer_cast<CDVDInputStream::IMenus>(m_pInput);
+  //if ((!menuInterface || menuInterface->GetSupportedMenuType() != MenuType::NATIVE) &&
   if (m_pFormatContext->start_time != static_cast<int64_t>(AV_NOPTS_VALUE))
   {
     starttime = static_cast<double>(m_pFormatContext->start_time / AV_TIME_BASE);
