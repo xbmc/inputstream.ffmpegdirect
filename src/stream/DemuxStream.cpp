@@ -244,3 +244,11 @@ bool FFmpegExtraData::operator!=(const FFmpegExtraData& other) const
 {
   return !(*this == other);
 }
+
+uint8_t* FFmpegExtraData::TakeData()
+{
+  auto tmp = m_data;
+  m_data = nullptr;
+  m_size = 0;
+  return tmp;
+}

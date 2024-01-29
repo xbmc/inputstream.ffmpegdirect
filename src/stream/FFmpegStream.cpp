@@ -1728,7 +1728,7 @@ void FFmpegStream::ParsePacket(AVPacket* pkt)
       if (retExtraData)
       {
         st->codecpar->extradata_size = retExtraData.GetSize();
-        st->codecpar->extradata = retExtraData.GetData();
+        st->codecpar->extradata = retExtraData.TakeData();
 
         if (parser->second->m_parserCtx->parser->parser_parse)
         {
