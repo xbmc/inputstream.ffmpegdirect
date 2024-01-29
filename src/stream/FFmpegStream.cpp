@@ -721,8 +721,17 @@ bool FFmpegStream::Open(bool fileinfo)
 
   bool skipCreateStreams = false;
   bool isBluray = false;
+
+  // this should never happen. Log it to inform about the error.
+  if (m_pFormatContext->nb_streams > 0 && m_pFormatContext->streams == nullptr)
+  {
+    Log(LOGLEVEL_ERROR, "Detected number of streams is greater than zero but AVStream array is "
+                        "empty. Please report this bug.");
+  }
+
   // don't re-open mpegts streams with hevc encoding as the params are not correctly detected again
   if (iformat && (strcmp(iformat->name, "mpegts") == 0) && !fileinfo && !isBluray &&
+      m_pFormatContext->nb_streams > 0 && m_pFormatContext->streams != nullptr &&
       m_pFormatContext->streams[0]->codecpar->codec_id != AV_CODEC_ID_HEVC)
   {
     av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
@@ -730,8 +739,9 @@ bool FFmpegStream::Open(bool fileinfo)
     skipCreateStreams = true;
   }
   else if (!iformat || ((strcmp(iformat->name, "mpegts") != 0) ||
-           ((strcmp(iformat->name, "mpegts") == 0) &&
-            m_pFormatContext->streams[0]->codecpar->codec_id == AV_CODEC_ID_HEVC)))
+                        ((strcmp(iformat->name, "mpegts") == 0) &&
+                         m_pFormatContext->nb_streams > 0 && m_pFormatContext->streams != nullptr &&
+                         m_pFormatContext->streams[0]->codecpar->codec_id == AV_CODEC_ID_HEVC)))
   {
     m_streaminfo = true;
   }
