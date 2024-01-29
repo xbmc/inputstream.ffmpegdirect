@@ -1956,7 +1956,7 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
         st->iBlockAlign = pStream->codecpar->block_align;
         st->iBitRate = static_cast<int>(pStream->codecpar->bit_rate);
         st->iBitsPerSample = pStream->codecpar->bits_per_raw_sample;
-        char buf[32] = { 0 };
+        char buf[32] = {};
         // https://github.com/FFmpeg/FFmpeg/blob/6ccc3989d15/doc/APIchanges#L50-L53
         AVChannelLayout layout = {};
         av_channel_layout_from_mask(&layout, st->iChannelLayout);
