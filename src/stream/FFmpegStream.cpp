@@ -463,10 +463,9 @@ DEMUX_PACKET* FFmpegStream::DemuxRead()
     // we already check for a valid m_streams[pPacket->iStreamId] above
     else if (stream->type == INPUTSTREAM_TYPE_AUDIO)
     {
-      int codecparChannels =
-          m_pFormatContext->streams[pPacket->iStreamId]->codecpar->ch_layout.nb_channels;
-      if (static_cast<DemuxStreamAudio*>(stream)->iChannels != codecparChannels ||
-          static_cast<DemuxStreamAudio*>(stream)->iSampleRate != m_pFormatContext->streams[pPacket->iStreamId]->codecpar->sample_rate)
+      DemuxStreamAudio* audiostream = dynamic_cast<DemuxStreamAudio*>(stream);
+      if (audiostream && (audiostream->iChannels != m_pFormatContext->streams[pPacket->iStreamId]->codecpar->channels ||
+          audiostream->iSampleRate != m_pFormatContext->streams[pPacket->iStreamId]->codecpar->sample_rate))
       {
         // content has changed
         stream = AddStream(pPacket->iStreamId);
@@ -1223,9 +1222,15 @@ bool FFmpegStream::IsProgramChange()
       return true;
       int codecparChannels =
           m_pFormatContext->streams[idx]->codecpar->ch_layout.nb_channels;
-    if (m_pFormatContext->streams[idx]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO &&
-        codecparChannels != static_cast<DemuxStreamAudio*>(stream)->iChannels)
-      return true;
+    if (m_pFormatContext->streams[idx]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+    {
+      DemuxStreamAudio* audiostream = dynamic_cast<DemuxStreamAudio*>(stream);
+      if (audiostream &&
+          m_pFormatContext->streams[idx]->codecpar->channels != audiostream->iChannels)
+      {
+        return true;
+      }
+    }
     if (m_pFormatContext->streams[idx]->codecpar->extradata_size != static_cast<int>(stream->ExtraSize))
       return true;
   }
