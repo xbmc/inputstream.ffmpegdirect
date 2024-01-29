@@ -451,7 +451,7 @@ DEMUX_PACKET* FFmpegStream::DemuxRead()
     return nullptr;
 
   // check streams, can we make this a bit more simple?
-  if (pPacket && pPacket->iStreamId >= 0)
+  if (pPacket->iStreamId >= 0)
   {
     DemuxStream* stream = GetDemuxStream(pPacket->iStreamId);
     if (!stream ||
