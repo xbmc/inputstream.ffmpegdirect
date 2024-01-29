@@ -1328,6 +1328,7 @@ std::vector<DemuxStream*> FFmpegStream::GetDemuxStreams() const
 {
   std::vector<DemuxStream*> streams;
 
+  streams.reserve(m_streams.size());
   for (auto& iter : m_streams)
     streams.push_back(iter.second);
 
