@@ -438,6 +438,11 @@ DEMUX_PACKET* FFmpegStream::DemuxRead()
           m_currentPts = pPacket->dts;
           CurrentPTSUpdated();
         }
+        else if (pPacket->pts != STREAM_NOPTS_VALUE && (pPacket->pts > m_currentPts || m_currentPts == STREAM_NOPTS_VALUE))
+        {
+          m_currentPts = pPacket->pts;
+          CurrentPTSUpdated();
+        }
 
         // store internal id until we know the continuous id presented to player
         // the stream might not have been created yet
