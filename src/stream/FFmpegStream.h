@@ -136,6 +136,7 @@ private:
   DemuxStream* AddStream(int streamIdx);
   void GetL16Parameters(int& channels, int& samplerate);
   double SelectAspect(AVStream* st, bool& forced);
+  StreamHdrType DetermineHdrType(AVStream* pStream);
   std::string GetStereoModeFromMetadata(AVDictionary* pMetadata);
   std::string ConvertCodecToInternalStereoMode(const std::string &mode, const StereoModeConversionMap* conversionMap);
   bool SeekTime(double time, bool backwards = false, double* startpts = nullptr);
