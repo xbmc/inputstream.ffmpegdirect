@@ -16,6 +16,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <memory>
 #include <thread>
 
 #ifndef __STDC_CONSTANT_MACROS
@@ -1701,8 +1702,7 @@ void FFmpegStream::ParsePacket(AVPacket* pkt)
     auto parser = m_parsers.find(st->index);
     if (parser == m_parsers.end())
     {
-      m_parsers.insert(std::make_pair(st->index,
-                                      std::unique_ptr<DemuxParserFFmpeg>(new DemuxParserFFmpeg())));
+      m_parsers.insert(std::make_pair(st->index, std::make_unique<DemuxParserFFmpeg>()));
       parser = m_parsers.find(st->index);
 
       parser->second->m_parserCtx = av_parser_init(st->codecpar->codec_id);
