@@ -1,3 +1,7 @@
+v21.3.0
+- Fix seeking in FFmpegDirect caused by st->cur_pts replacement in FFmpeg6
+- Sync FFmpegStream.cpp and DemuxStream.cpp with xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp from https://github.com/xbmc/xbmc. Update for all commits up to the end of 2023
+
 v21.2.1
 - Update dependency xz-utils to version 5.4.3
 - Update dependency zlib to version 1.2.13
