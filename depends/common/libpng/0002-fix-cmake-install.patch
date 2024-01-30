@@ -1,0 +1,10 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1033,7 +1033,7 @@
+ # Create an export file that CMake users can include() to import our targets.
+ if(NOT SKIP_INSTALL_EXPORT AND NOT SKIP_INSTALL_ALL)
+   install(EXPORT libpng
+-          DESTINATION lib/libpng
++          DESTINATION lib/cmake/libpng
+           FILE lib${PNG_LIB_NAME}.cmake)
+ endif()

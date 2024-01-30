@@ -1,1 +1,1 @@
-libpng http://mirrors.kodi.tv/build-deps/sources/libpng-1.6.37.tar.xz
+libpng https://github.com/glennrp/libpng/archive/refs/tags/v1.6.39.tar.gz
