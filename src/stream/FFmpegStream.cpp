@@ -16,6 +16,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <memory>
 #include <thread>
 
 #ifndef __STDC_CONSTANT_MACROS
@@ -31,7 +32,10 @@
 extern "C" {
 #include <libavcodec/bsf.h>
 #include <libavutil/dict.h>
+#include "libavutil/display.h"
+#include <libavutil/dovi_meta.h>
 #include <libavutil/opt.h>
+#include "libavutil/pixdesc.h"
 }
 
 #include <kodi/tools/StringUtils.h>
@@ -80,15 +84,13 @@ bool AttachmentIsFont(const AVDictionaryEntry* dict)
   if (dict)
   {
     const std::string mimeType = dict->value;
-    return std::find_if(font_mimetypes.begin(), font_mimetypes.end(), [&mimeType](std::string str) {
-             return str == mimeType;
-           }) != font_mimetypes.end();
+    return std::find_if(font_mimetypes.begin(), font_mimetypes.end(),
+                        [&mimeType](std::string str) { return str == mimeType; }) !=
+           font_mimetypes.end();
   }
   return false;
 }
 } // namespace
-
-#define FF_MAX_EXTRADATA_SIZE ((1 << 28) - AV_INPUT_BUFFER_PADDING_SIZE)
 
 static int interrupt_cb(void* ctx)
 {
@@ -450,7 +452,7 @@ DEMUX_PACKET* FFmpegStream::DemuxRead()
     return nullptr;
 
   // check streams, can we make this a bit more simple?
-  if (pPacket && pPacket->iStreamId >= 0)
+  if (pPacket->iStreamId >= 0)
   {
     DemuxStream* stream = GetDemuxStream(pPacket->iStreamId);
     if (!stream ||
@@ -463,10 +465,9 @@ DEMUX_PACKET* FFmpegStream::DemuxRead()
     // we already check for a valid m_streams[pPacket->iStreamId] above
     else if (stream->type == INPUTSTREAM_TYPE_AUDIO)
     {
-      int codecparChannels =
-          m_pFormatContext->streams[pPacket->iStreamId]->codecpar->ch_layout.nb_channels;
-      if (static_cast<DemuxStreamAudio*>(stream)->iChannels != codecparChannels ||
-          static_cast<DemuxStreamAudio*>(stream)->iSampleRate != m_pFormatContext->streams[pPacket->iStreamId]->codecpar->sample_rate)
+      DemuxStreamAudio* audiostream = dynamic_cast<DemuxStreamAudio*>(stream);
+      if (audiostream && (audiostream->iChannels != m_pFormatContext->streams[pPacket->iStreamId]->codecpar->channels ||
+          audiostream->iSampleRate != m_pFormatContext->streams[pPacket->iStreamId]->codecpar->sample_rate))
       {
         // content has changed
         stream = AddStream(pPacket->iStreamId);
@@ -721,13 +722,27 @@ bool FFmpegStream::Open(bool fileinfo)
 
   bool skipCreateStreams = false;
   bool isBluray = false;
-  if (iformat && (strcmp(iformat->name, "mpegts") == 0) && !fileinfo && !isBluray)
+
+  // this should never happen. Log it to inform about the error.
+  if (m_pFormatContext->nb_streams > 0 && m_pFormatContext->streams == nullptr)
+  {
+    Log(LOGLEVEL_ERROR, "Detected number of streams is greater than zero but AVStream array is "
+                        "empty. Please report this bug.");
+  }
+
+  // don't re-open mpegts streams with hevc encoding as the params are not correctly detected again
+  if (iformat && (strcmp(iformat->name, "mpegts") == 0) && !fileinfo && !isBluray &&
+      m_pFormatContext->nb_streams > 0 && m_pFormatContext->streams != nullptr &&
+      m_pFormatContext->streams[0]->codecpar->codec_id != AV_CODEC_ID_HEVC)
   {
     av_opt_set_int(m_pFormatContext, "analyzeduration", 500000, 0);
     m_checkTransportStream = true;
     skipCreateStreams = true;
   }
-  else if (!iformat || (strcmp(iformat->name, "mpegts") != 0))
+  else if (!iformat || ((strcmp(iformat->name, "mpegts") != 0) ||
+                        ((strcmp(iformat->name, "mpegts") == 0) &&
+                         m_pFormatContext->nb_streams > 0 && m_pFormatContext->streams != nullptr &&
+                         m_pFormatContext->streams[0]->codecpar->codec_id == AV_CODEC_ID_HEVC)))
   {
     m_streaminfo = true;
   }
@@ -1154,12 +1169,15 @@ double FFmpegStream::ConvertTimestamp(int64_t pts, int den, int num)
   // do calculations in floats as they can easily overflow otherwise
   // we don't care for having a completely exact timestamp anyway
   double timestamp = (double)pts * num / den;
-  double starttime = 0.0f;
+  double starttime = 0.0;
 
-  //std::shared_ptr<CDVDInputStream::IMenus> menu = std::dynamic_pointer_cast<CDVDInputStream::IMenus>(m_pInput);
-  //if (!menu && m_pFormatContext->start_time != (int64_t)AV_NOPTS_VALUE)
-  if (m_pFormatContext->start_time != (int64_t)AV_NOPTS_VALUE)
-    starttime = (double)m_pFormatContext->start_time / AV_TIME_BASE;
+  //const std::shared_ptr<CDVDInputStream::IMenus> menuInterface =
+  //    std::dynamic_pointer_cast<CDVDInputStream::IMenus>(m_pInput);
+  //if ((!menuInterface || menuInterface->GetSupportedMenuType() != MenuType::NATIVE) &&
+  if (m_pFormatContext->start_time != static_cast<int64_t>(AV_NOPTS_VALUE))
+  {
+    starttime = static_cast<double>(m_pFormatContext->start_time) / AV_TIME_BASE;
+  }
 
   if (m_checkTransportStream)
     starttime = m_startTime;
@@ -1169,7 +1187,7 @@ double FFmpegStream::ConvertTimestamp(int64_t pts, int den, int num)
     if (timestamp > starttime || m_checkTransportStream)
       timestamp -= starttime;
     // allow for largest possible difference in pts and dts for a single packet
-    else if (timestamp + 0.5f > starttime)
+    else if (timestamp + 0.5 > starttime)
       timestamp = 0;
   }
 
@@ -1221,12 +1239,17 @@ bool FFmpegStream::IsProgramChange()
       return true;
     if (m_pFormatContext->streams[idx]->codecpar->codec_id != stream->codec)
       return true;
-      int codecparChannels =
-          m_pFormatContext->streams[idx]->codecpar->ch_layout.nb_channels;
-    if (m_pFormatContext->streams[idx]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO &&
-        codecparChannels != static_cast<DemuxStreamAudio*>(stream)->iChannels)
-      return true;
-    if (m_pFormatContext->streams[idx]->codecpar->extradata_size != static_cast<int>(stream->ExtraSize))
+    if (m_pFormatContext->streams[idx]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+    {
+      DemuxStreamAudio* audiostream = dynamic_cast<DemuxStreamAudio*>(stream);
+      if (audiostream &&
+          m_pFormatContext->streams[idx]->codecpar->channels != audiostream->iChannels)
+      {
+        return true;
+      }
+    }
+    if (m_pFormatContext->streams[idx]->codecpar->extradata_size !=
+        static_cast<int>(stream->extraData.GetSize()))
       return true;
   }
   return false;
@@ -1305,6 +1328,7 @@ std::vector<DemuxStream*> FFmpegStream::GetDemuxStreams() const
 {
   std::vector<DemuxStream*> streams;
 
+  streams.reserve(m_streams.size());
   for (auto& iter : m_streams)
     streams.push_back(iter.second);
 
@@ -1426,7 +1450,7 @@ void FFmpegStream::StoreSideData(DEMUX_PACKET *pkt, AVPacket *src)
     pkt->pSideData = avPkt->side_data;
     pkt->iSideDataElems = avPkt->side_data_elems;
 
-    //! @todo: properly handle avpkt side_data. this works around our inproper use of the side_data
+    //! @todo: properly handle avpkt side_data. this works around our improper use of the side_data
     // as we pass pointers to ffmpeg allocated memory for the side_data. we should really be allocating
     // and storing our own AVPacket. This will require some extensive changes.
     // tl;dr: it frees the packet but not the side data.
@@ -1541,20 +1565,18 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
     return false;
 }
 
-int FFmpegStream::GetPacketExtradata(const AVPacket* pkt, const AVCodecParserContext* parserCtx, AVCodecContext* codecCtx, uint8_t **p_extradata)
+FFmpegExtraData FFmpegStream::GetPacketExtradata(const AVPacket* pkt, const AVCodecParameters* codecPar)
 {
-  int extradata_size = 0;
+  constexpr int FF_MAX_EXTRADATA_SIZE = ((1 << 28) - AV_INPUT_BUFFER_PADDING_SIZE);
 
-  if (!pkt || !p_extradata)
-    return 0;
-
-  *p_extradata = nullptr;
+  if (!pkt)
+    return {};
 
   /* extract_extradata bitstream filter is implemented only
    * for certain codecs, as noted in discussion of PR#21248
    */
 
-  AVCodecID codecId = codecCtx->codec_id;
+  AVCodecID codecId = codecPar->codec_id;
 
   // clang-format off
   if (
@@ -1570,58 +1592,63 @@ int FFmpegStream::GetPacketExtradata(const AVPacket* pkt, const AVCodecParserCon
     codecId != AV_CODEC_ID_CAVS
   )
     // clang-format on
-    return 0;
+    return {};
 
-  AVBSFContext *bsf = nullptr;
-  AVPacket *dst_pkt = nullptr;
-  const AVBitStreamFilter *f;
-  AVPacket *pkt_ref = nullptr;
-  int ret = 0;
-  uint8_t *ret_extradata = nullptr;
-  size_t ret_extradata_size = 0;
-
-  f = av_bsf_get_by_name("extract_extradata");
+  const AVBitStreamFilter* f = av_bsf_get_by_name("extract_extradata");
   if (!f)
-    return 0;
+    return {};
 
-  bsf = nullptr;
-  ret = av_bsf_alloc(f, &bsf);
+  AVBSFContext* bsf = nullptr;
+  int ret = av_bsf_alloc(f, &bsf);
   if (ret < 0)
-    return 0;
+    return {};
 
-  bsf->par_in->codec_id = codecCtx->codec_id;
+  ret = avcodec_parameters_copy(bsf->par_in, codecPar);
+  if (ret < 0)
+  {
+    av_bsf_free(&bsf);
+    return {};
+  }
 
   ret = av_bsf_init(bsf);
   if (ret < 0)
   {
     av_bsf_free(&bsf);
-    return 0;
+    return {};
   }
 
-  dst_pkt = av_packet_alloc();
-  pkt_ref = dst_pkt;
+  AVPacket* dstPkt = av_packet_alloc();
+  if (!dstPkt)
+  {
+    Log(LOGLEVEL_ERROR, "failed to allocate packet");
 
-  ret = av_packet_ref(pkt_ref, pkt);
+    av_bsf_free(&bsf);
+    return {};
+  }
+  AVPacket* pktRef = dstPkt;
+
+  ret = av_packet_ref(pktRef, pkt);
   if (ret < 0)
   {
     av_bsf_free(&bsf);
-    av_packet_free(&dst_pkt);
-    return 0;
+    av_packet_free(&dstPkt);
+    return {};
   }
 
-  ret = av_bsf_send_packet(bsf, pkt_ref);
+  ret = av_bsf_send_packet(bsf, pktRef);
   if (ret < 0)
   {
-    av_packet_unref(pkt_ref);
+    av_packet_unref(pktRef);
     av_bsf_free(&bsf);
-    av_packet_free(&dst_pkt);
-    return 0;
+    av_packet_free(&dstPkt);
+    return {};
   }
 
+  FFmpegExtraData extraData;
   ret = 0;
   while (ret >= 0)
   {
-    ret = av_bsf_receive_packet(bsf, pkt_ref);
+    ret = av_bsf_receive_packet(bsf, pktRef);
     if (ret < 0)
     {
       if (ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
@@ -1630,47 +1657,38 @@ int FFmpegStream::GetPacketExtradata(const AVPacket* pkt, const AVCodecParserCon
       continue;
     }
 
-    ret_extradata = av_packet_get_side_data(pkt_ref,
-                                            AV_PKT_DATA_NEW_EXTRADATA,
-                                            &ret_extradata_size);
-    if (ret_extradata &&
-        ret_extradata_size > 0 &&
-        ret_extradata_size < FF_MAX_EXTRADATA_SIZE)
+    size_t retExtraDataSize = 0;
+    uint8_t* retExtraData =
+        av_packet_get_side_data(pktRef, AV_PKT_DATA_NEW_EXTRADATA, &retExtraDataSize);
+    if (retExtraData && retExtraDataSize > 0 && retExtraDataSize < FF_MAX_EXTRADATA_SIZE)
     {
-      *p_extradata = (uint8_t*)av_malloc(ret_extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
-      if (!*p_extradata)
+      try
       {
-        Log(LOGLEVEL_ERROR,
-            "%s - failed to allocate %zu bytes for extradata",
-            __FUNCTION__,
-            ret_extradata_size);
+        extraData = FFmpegExtraData(retExtraData, retExtraDataSize);
+      }
+      catch (const std::bad_alloc&)
+      {
+        Log(LOGLEVEL_ERROR, "failed to allocate %d bytes for extradata", retExtraDataSize);
 
-        av_packet_unref(pkt_ref);
+        av_packet_unref(pktRef);
         av_bsf_free(&bsf);
-        av_packet_free(&dst_pkt);
-        return 0;
+        av_packet_free(&dstPkt);
+        return {};
       }
 
-      Log(LOGLEVEL_DEBUG,
-          "%s - fetching extradata, extradata_size(%zu)",
-          __FUNCTION__,
-          ret_extradata_size);
+      Log(LOGLEVEL_DEBUG, "fetching extradata, extradata_size(%d)", retExtraDataSize);
 
-      memcpy(*p_extradata, ret_extradata, ret_extradata_size);
-      memset(*p_extradata + ret_extradata_size, 0, AV_INPUT_BUFFER_PADDING_SIZE);
-      extradata_size = ret_extradata_size;
-
-      av_packet_unref(pkt_ref);
+      av_packet_unref(pktRef);
       break;
     }
 
-    av_packet_unref(pkt_ref);
+    av_packet_unref(pktRef);
   }
 
   av_bsf_free(&bsf);
-  av_packet_free(&dst_pkt);
+  av_packet_free(&dstPkt);
 
-  return extradata_size;
+  return extraData;
 }
 
 void FFmpegStream::ParsePacket(AVPacket* pkt)
@@ -1682,8 +1700,7 @@ void FFmpegStream::ParsePacket(AVPacket* pkt)
     auto parser = m_parsers.find(st->index);
     if (parser == m_parsers.end())
     {
-      m_parsers.insert(std::make_pair(st->index,
-                                      std::unique_ptr<DemuxParserFFmpeg>(new DemuxParserFFmpeg())));
+      m_parsers.insert(std::make_pair(st->index, std::make_unique<DemuxParserFFmpeg>()));
       parser = m_parsers.find(st->index);
 
       parser->second->m_parserCtx = av_parser_init(st->codecpar->codec_id);
@@ -1706,13 +1723,11 @@ void FFmpegStream::ParsePacket(AVPacket* pkt)
         parser->second->m_parserCtx->parser &&
         !st->codecpar->extradata)
     {
-      int i = GetPacketExtradata(pkt,
-                               parser->second->m_parserCtx,
-                               parser->second->m_codecCtx,
-                               &st->codecpar->extradata);
-      if (i > 0)
+      FFmpegExtraData retExtraData = GetPacketExtradata(pkt, st->codecpar);
+      if (retExtraData)
       {
-        st->codecpar->extradata_size = i;
+        st->codecpar->extradata_size = retExtraData.GetSize();
+        st->codecpar->extradata = retExtraData.TakeData();
 
         if (parser->second->m_parserCtx->parser->parser_parse)
         {
@@ -1951,7 +1966,7 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
         st->iBlockAlign = pStream->codecpar->block_align;
         st->iBitRate = static_cast<int>(pStream->codecpar->bit_rate);
         st->iBitsPerSample = pStream->codecpar->bits_per_raw_sample;
-        char buf[32] = { 0 };
+        char buf[32] = {};
         // https://github.com/FFmpeg/FFmpeg/blob/6ccc3989d15/doc/APIchanges#L50-L53
         AVChannelLayout layout = {};
         av_channel_layout_from_mask(&layout, st->iChannelLayout);
@@ -1998,6 +2013,11 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
           st->iFpsScale = 0;
         }
 
+        st->bInterlaced = pStream->codecpar->field_order == AV_FIELD_TT ||
+                         pStream->codecpar->field_order == AV_FIELD_BB ||
+                         pStream->codecpar->field_order == AV_FIELD_TB ||
+                         pStream->codecpar->field_order == AV_FIELD_BT;
+
         st->iWidth = pStream->codecpar->width;
         st->iHeight = pStream->codecpar->height;
         st->fAspect = SelectAspect(pStream, st->bForcedAspect);
@@ -2006,10 +2026,57 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
         st->iOrientation = 0;
         st->iBitsPerPixel = pStream->codecpar->bits_per_coded_sample;
         st->iBitRate = static_cast<int>(pStream->codecpar->bit_rate);
+        st->iBitDepth = 8;
+        const AVPixFmtDescriptor* desc =
+            av_pix_fmt_desc_get(static_cast<AVPixelFormat>(pStream->codecpar->format));
+        if (desc != nullptr)
+          st->iBitDepth = desc->comp[0].depth;
+
+        st->colorPrimaries = pStream->codecpar->color_primaries;
+        st->colorSpace = pStream->codecpar->color_space;
+        st->colorTransferCharacteristic = pStream->codecpar->color_trc;
+        st->colorRange = pStream->codecpar->color_range;
+        st->hdr_type = DetermineHdrType(pStream);
+
+        // https://github.com/FFmpeg/FFmpeg/blob/release/5.0/doc/APIchanges
+        size_t size = 0;
+        uint8_t* side_data = nullptr;
+
+        if (st->hdr_type == StreamHdrType::HDR_TYPE_DOLBYVISION)
+        {
+          side_data = av_stream_get_side_data(pStream, AV_PKT_DATA_DOVI_CONF, &size);
+          if (side_data && size)
+          {
+            st->dovi = *reinterpret_cast<AVDOVIDecoderConfigurationRecord*>(side_data);
+          }
+        }
+
+        side_data = av_stream_get_side_data(pStream, AV_PKT_DATA_MASTERING_DISPLAY_METADATA, &size);
+        if (side_data && size)
+        {
+          st->masteringMetaData = std::make_shared<AVMasteringDisplayMetadata>(
+              *reinterpret_cast<AVMasteringDisplayMetadata*>(side_data));
+        }
+
+        side_data = av_stream_get_side_data(pStream, AV_PKT_DATA_CONTENT_LIGHT_LEVEL, &size);
+        if (side_data && size)
+        {
+          st->contentLightMetaData = std::make_shared<AVContentLightMetadata>(
+              *reinterpret_cast<AVContentLightMetadata*>(side_data));
+        }
 
         AVDictionaryEntry* rtag = av_dict_get(pStream->metadata, "rotate", NULL, 0);
-        if (rtag)
-          st->iOrientation = atoi(rtag->value);
+        uint8_t* displayMatrixSideData =
+            av_stream_get_side_data(pStream, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
+        if (displayMatrixSideData)
+        {
+          const double tetha =
+              av_display_rotation_get(reinterpret_cast<int32_t*>(displayMatrixSideData));
+          if (!std::isnan(tetha))
+          {
+            st->iOrientation = ((static_cast<int>(-tetha) % 360) + 360) % 360;
+          }
+        }
 
         // detect stereoscopic mode
         std::string stereoMode = GetStereoModeFromMetadata(pStream->metadata);
@@ -2051,36 +2118,47 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
       }
       case AVMEDIA_TYPE_ATTACHMENT:
       {
-        //mkv attachments. Only bothering with fonts for now.
+        //MKV attachments. Only bothering with fonts for now.
         AVDictionaryEntry* attachmentMimetype =
             av_dict_get(pStream->metadata, "mimetype", nullptr, 0);
 
         if (pStream->codecpar->codec_id == AV_CODEC_ID_TTF ||
-            pStream->codecpar->codec_id == AV_CODEC_ID_OTF ||
-            AttachmentIsFont(attachmentMimetype))
+            pStream->codecpar->codec_id == AV_CODEC_ID_OTF || AttachmentIsFont(attachmentMimetype))
         {
-          std::string fileName = "special://temp/fonts/";
-          kodi::vfs::CreateDirectory(fileName);
+          // Temporary fonts are extracted to the temporary fonts path
+          //! @todo: temporary font file management should be completely
+          //! removed, by sending font data to the subtitle renderer and
+          //! using libass ass_add_font to add the fonts directly in memory.
+          std::string filePath{TEMP_FONT_PATH};
+          kodi::vfs::CreateDirectory(filePath);
           AVDictionaryEntry* nameTag = av_dict_get(pStream->metadata, "filename", NULL, 0);
-          if (!nameTag)
+          if (nameTag)
           {
-            Log(LOGLEVEL_ERROR, "%s: TTF attachment has no name", __FUNCTION__);
-          }
-          else
-          {
-            fileName += FilenameUtils::MakeLegalFileName(nameTag->value, LEGAL_WIN32_COMPAT);
+            // Note: Libass only supports a single additional font directory,
+            // currently set for user fonts (c.f. ass_set_fonts_dir) therefore
+            // we will also use this folder to store fonts extracted by the
+            // demuxer. The extracted fonts will have a prefix in the filename
+            // for easy identification.
+            //! @todo: this font file management system on disk could be completely
+            //! removed, by sending font data to the subtitle renderer and
+            //! using libass ass_add_font to add the fonts directly in memory.
+            filePath += FilenameUtils::MakeLegalFileName(nameTag->value, LEGAL_WIN32_COMPAT);
             kodi::vfs::CFile file;
-            if (pStream->codecpar->extradata && file.OpenFileForWrite(fileName))
+            if (pStream->codecpar->extradata && file.OpenFileForWrite(filePath))
             {
               if (file.Write(pStream->codecpar->extradata, pStream->codecpar->extradata_size) !=
                   pStream->codecpar->extradata_size)
               {
                 file.Close();
-                kodi::vfs::DeleteFile(fileName);
-                Log(LOGLEVEL_DEBUG, "%s: Error saving font file \"%s\"", __FUNCTION__, fileName.c_str());
+                kodi::vfs::DeleteFile(filePath);
+                Log(LOGLEVEL_DEBUG, "%s: Error saving font file \"%s\"", __FUNCTION__, filePath.c_str());
               }
             }
           }
+        }
+        else
+        {
+          Log(LOGLEVEL_ERROR, "%s: Attached font has no name", __FUNCTION__);
         }
         stream = new DemuxStream();
         stream->type = INPUTSTREAM_TYPE_NONE;
@@ -2134,13 +2212,28 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
       }
     }
     if (langTag)
+    {
       stream->language = std::string(langTag->value, 3);
+      //! @FIXME: Matroska v4 support BCP-47 language code with LanguageIETF element
+      //! that have the priority over the Language element, but this is not currently
+      //! implemented in to ffmpeg library. Since ffmpeg read only the Language element
+      //! all tracks will be identified with same language (of Language element).
+      //! As workaround to allow set the right language code we provide the possibility
+      //! to set the language code in the title field, this allow to kodi to recognize
+      //! the right language and select the right track to be played at playback starts.
+      AVDictionaryEntry* title = av_dict_get(pStream->metadata, "title", NULL, 0);
+      if (title && title->value)
+      {
+        const std::string langCode = FilenameUtils::FindLanguageCodeWithSubtag(title->value);
+        if (!langCode.empty())
+          stream->language = langCode;
+      }
+    }
 
     if (stream->type != INPUTSTREAM_TYPE_NONE && pStream->codecpar->extradata && pStream->codecpar->extradata_size > 0)
     {
-      stream->ExtraSize = pStream->codecpar->extradata_size;
-      stream->ExtraData = new uint8_t[pStream->codecpar->extradata_size];
-      memcpy(stream->ExtraData, pStream->codecpar->extradata, pStream->codecpar->extradata_size);
+      stream->extraData =
+          FFmpegExtraData(pStream->codecpar->extradata, pStream->codecpar->extradata_size);
     }
 
     stream->uniqueId = pStream->index;
@@ -2151,6 +2244,24 @@ DemuxStream* FFmpegStream::AddStream(int streamIdx)
   }
   else
     return nullptr;
+}
+
+StreamHdrType FFmpegStream::DetermineHdrType(AVStream* pStream)
+{
+  StreamHdrType hdrType = StreamHdrType::HDR_TYPE_NONE;
+
+  if (av_stream_get_side_data(pStream, AV_PKT_DATA_DOVI_CONF, nullptr)) // DoVi
+    hdrType = StreamHdrType::HDR_TYPE_DOLBYVISION;
+  else if (pStream->codecpar->color_trc == AVCOL_TRC_SMPTE2084) // HDR10
+    hdrType = StreamHdrType::HDR_TYPE_HDR10;
+  else if (pStream->codecpar->color_trc == AVCOL_TRC_ARIB_STD_B67) // HLG
+    hdrType = StreamHdrType::HDR_TYPE_HLG;
+  // file could be SMPTE2086 which FFmpeg currently returns as unknown
+  // so use the presence of static metadata to detect it
+  else if (av_stream_get_side_data(pStream, AV_PKT_DATA_MASTERING_DISPLAY_METADATA, nullptr))
+    hdrType = StreamHdrType::HDR_TYPE_HDR10;
+
+  return hdrType;
 }
 
 /**

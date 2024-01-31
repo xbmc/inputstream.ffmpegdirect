@@ -108,7 +108,7 @@ protected:
   bool IsPaused() { return m_speed == STREAM_PLAYSPEED_PAUSE; }
   virtual bool CheckReturnEmptyOnPacketResult(int result);
 
-  int GetPacketExtradata(const AVPacket* pkt, const AVCodecParserContext* parserCtx, AVCodecContext* codecCtx, uint8_t **p_extradata);
+  FFmpegExtraData GetPacketExtradata(const AVPacket* pkt, const AVCodecParameters* codecPar);
 
   int64_t m_demuxerId;
   mutable std::recursive_mutex m_mutex;
@@ -136,6 +136,7 @@ private:
   DemuxStream* AddStream(int streamIdx);
   void GetL16Parameters(int& channels, int& samplerate);
   double SelectAspect(AVStream* st, bool& forced);
+  StreamHdrType DetermineHdrType(AVStream* pStream);
   std::string GetStereoModeFromMetadata(AVDictionary* pMetadata);
   std::string ConvertCodecToInternalStereoMode(const std::string &mode, const StereoModeConversionMap* conversionMap);
   bool SeekTime(double time, bool backwards = false, double* startpts = nullptr);

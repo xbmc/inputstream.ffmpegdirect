@@ -22,6 +22,7 @@
 extern "C"
 {
 #include <libavcodec/avcodec.h>
+#include <libavutil/dovi_meta.h>
 #include <libavformat/avformat.h>
 #include <libavutil/mastering_display_metadata.h>
 }
@@ -33,6 +34,43 @@ extern "C"
 namespace ffmpegdirect
 {
 
+
+class FFmpegExtraData
+{
+public:
+  FFmpegExtraData() = default;
+  explicit FFmpegExtraData(size_t size);
+  FFmpegExtraData(const uint8_t* data, size_t size);
+  FFmpegExtraData(const FFmpegExtraData& other);
+  FFmpegExtraData(FFmpegExtraData&& other) noexcept;
+
+  ~FFmpegExtraData();
+
+  FFmpegExtraData& operator=(const FFmpegExtraData& other);
+  FFmpegExtraData& operator=(FFmpegExtraData&& other) noexcept;
+
+  bool operator==(const FFmpegExtraData& other) const;
+  bool operator!=(const FFmpegExtraData& other) const;
+
+  operator bool() const { return m_data != nullptr && m_size != 0; }
+  uint8_t* GetData() { return m_data; }
+  const uint8_t* GetData() const { return m_data; }
+  size_t GetSize() const { return m_size; }
+  /*!
+   * \brief Take ownership over the extra data buffer
+   *
+   * It's in the responsibility of the caller to free the buffer with av_free. After the call
+   * FFmpegExtraData is empty.
+   *
+   * \return The extra data buffer or nullptr if FFmpegExtraData is empty.
+   */
+  uint8_t* TakeData();
+
+private:
+  uint8_t* m_data{nullptr};
+  size_t m_size{};
+};
+
 class DemuxStream
 {
 public:
@@ -41,21 +79,19 @@ public:
     uniqueId = 0;
     dvdNavId = 0;
     demuxerId = -1;
-    codec = (AVCodecID)0; // AV_CODEC_ID_NONE
     codec_fourcc = 0;
     profile = FF_PROFILE_UNKNOWN;
     level = FF_LEVEL_UNKNOWN;
     type = INPUTSTREAM_TYPE_NONE;
     iDuration = 0;
     pPrivate = NULL;
-    ExtraData = NULL;
-    ExtraSize = 0;
     disabled = false;
     changes = 0;
     flags = INPUTSTREAM_FLAG_NONE;
   }
 
-  virtual ~DemuxStream() { delete[] ExtraData; }
+  virtual ~DemuxStream() = default;
+  DemuxStream(DemuxStream&&) = default;
 
   virtual std::string GetStreamName();
   virtual bool GetInformation(kodi::addon::InputstreamInfo& info);
@@ -63,7 +99,7 @@ public:
   int uniqueId; // unique stream id
   int dvdNavId;
   int64_t demuxerId; // id of the associated demuxer
-  AVCodecID codec;
+  AVCodecID codec = AV_CODEC_ID_NONE;
   unsigned int codec_fourcc; // if available
   int profile; // encoder profile of the stream reported by the decoder. used to qualify hw decoders.
   int level; // encoder level of the stream reported by the decoder. used to qualify hw decoders.
@@ -71,8 +107,7 @@ public:
 
   int iDuration; // in mseconds
   void* pPrivate; // private pointer for the demuxer
-  uint8_t* ExtraData; // extra data for codec to use
-  unsigned int ExtraSize; // size of extra data
+  FFmpegExtraData extraData;
 
   INPUTSTREAM_FLAGS flags;
   std::string language; // RFC 5646 language code (empty string if undefined)
@@ -86,6 +121,14 @@ public:
   std::shared_ptr<kodi::addon::StreamCryptoSession> cryptoSession;
 };
 
+enum class StreamHdrType
+{
+  HDR_TYPE_NONE, ///< <b>None</b>, returns an empty string when used in infolabels
+  HDR_TYPE_HDR10, ///< <b>HDR10</b>, returns `hdr10` when used in infolabels
+  HDR_TYPE_DOLBYVISION, ///< <b>Dolby Vision</b>, returns `dolbyvision` when used in infolabels
+  HDR_TYPE_HLG ///< <b>HLG</b>, returns `hlg` when used in infolabels
+};
+
 class DemuxStreamVideo : public DemuxStream
 {
 public:
@@ -95,6 +138,7 @@ public:
 
   int iFpsScale = 0; // scale of 1000 and a rate of 29970 will result in 29.97 fps
   int iFpsRate = 0;
+  bool bInterlaced = false; // unknown or progressive => false, otherwise true.
   int iHeight = 0; // height of the stream reported by the demuxer
   int iWidth = 0; // width of the stream reported by the demuxer
   double fAspect = 0; // display aspect of stream
@@ -104,6 +148,7 @@ public:
   int iOrientation = 0; // orientation of the video in degrees counter clockwise
   int iBitsPerPixel = 0;
   int iBitRate = 0;
+  int iBitDepth = 0;
 
   AVColorSpace colorSpace = AVCOL_SPC_UNSPECIFIED;
   AVColorRange colorRange = AVCOL_RANGE_UNSPECIFIED;
@@ -114,6 +159,8 @@ public:
   std::shared_ptr<AVContentLightMetadata> contentLightMetaData;
 
   std::string stereo_mode; // expected stereo mode
+  AVDOVIDecoderConfigurationRecord dovi{};
+  StreamHdrType hdr_type = StreamHdrType::HDR_TYPE_NONE; // type of HDR for this stream (hdr10, etc)
 };
 
 class DemuxStreamAudio : public DemuxStream
