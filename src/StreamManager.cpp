@@ -47,7 +47,7 @@ void Log(const LogLevel logLevel, const char* format, ...)
   char buffer[16384];
   va_list args;
   va_start(args, format);
-  vsprintf(buffer, format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
   kodi::Log(addonLevel, buffer);
 }
