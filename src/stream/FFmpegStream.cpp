@@ -434,7 +434,15 @@ DEMUX_PACKET* FFmpegStream::DemuxRead()
 
         // used to guess streamlength
         if (pPacket->dts != STREAM_NOPTS_VALUE && (pPacket->dts > m_currentPts || m_currentPts == STREAM_NOPTS_VALUE))
+        {
           m_currentPts = pPacket->dts;
+          CurrentPTSUpdated();
+        }
+        else if (pPacket->pts != STREAM_NOPTS_VALUE && (pPacket->pts > m_currentPts || m_currentPts == STREAM_NOPTS_VALUE))
+        {
+          m_currentPts = pPacket->pts;
+          CurrentPTSUpdated();
+        }
 
         // store internal id until we know the continuous id presented to player
         // the stream might not have been created yet
@@ -795,8 +803,6 @@ bool FFmpegStream::Open(bool fileinfo)
   // if format can be nonblocking, let's use that
   m_pFormatContext->flags |= AVFMT_FLAG_NONBLOCK;
 
-  UpdateCurrentPTS();
-
   // select the correct program if requested
   m_initialProgramNumber = UINT_MAX;
   CVariant programProp(m_programProperty.empty() ? CVariant::VariantTypeNull : CVariant(m_programProperty));
@@ -1145,20 +1151,8 @@ void FFmpegStream::ResetVideoStreams()
   }
 }
 
-void FFmpegStream::UpdateCurrentPTS()
+void FFmpegStream::CurrentPTSUpdated()
 {
-  m_currentPts = STREAM_NOPTS_VALUE;
-
-  int idx = av_find_default_stream_index(m_pFormatContext);
-  if (idx >= 0)
-  {
-    AVStream* stream = m_pFormatContext->streams[idx];
-    if (stream && m_pkt.pkt.dts != (int64_t)AV_NOPTS_VALUE)
-    {
-      double ts = ConvertTimestamp(m_pkt.pkt.dts, stream->time_base.den, stream->time_base.num);
-      m_currentPts = ts;
-    }
-  }
 }
 
 double FFmpegStream::ConvertTimestamp(int64_t pts, int den, int num)
@@ -1541,7 +1535,25 @@ bool FFmpegStream::SeekTime(double time, bool backwards, double* startpts)
       if (m_pFormatContext->iformat->read_seek)
         m_seekToKeyFrame = true;
 
-      UpdateCurrentPTS();
+        m_currentPts = STREAM_NOPTS_VALUE;
+    }
+  }
+
+  if (ret >= 0)
+  {
+    kodi::tools::CEndTime timer(1000);
+    while (m_currentPts == STREAM_NOPTS_VALUE && !timer.IsTimePast())
+    {
+      m_pkt.result = -1;
+      av_packet_unref(&m_pkt.pkt);
+
+      DEMUX_PACKET* pkt = DemuxRead();
+      if (!pkt)
+      {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        continue;
+      }
+      m_demuxPacketManager->FreeDemuxPacketFromInputStreamAPI(pkt);
     }
   }
 
@@ -1771,7 +1783,7 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamAudioState()
       st = m_pFormatContext->streams[idx];
       if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
       {
-        if (st->start_time != AV_NOPTS_VALUE)
+        if (idx == m_pkt.pkt.stream_index && m_pkt.pkt.dts != AV_NOPTS_VALUE)
         {
           if (!m_startTime)
           {
@@ -1791,7 +1803,7 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamAudioState()
       st = m_pFormatContext->streams[i];
       if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
       {
-        if (st->start_time != AV_NOPTS_VALUE)
+        if (static_cast<int>(i) == m_pkt.pkt.stream_index && m_pkt.pkt.dts != AV_NOPTS_VALUE)
         {
           if (!m_startTime)
           {
@@ -1804,6 +1816,8 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamAudioState()
       }
     }
   }
+  if (hasAudio && m_startTime)
+    return TRANSPORT_STREAM_STATE::READY;
 
   return (hasAudio) ? TRANSPORT_STREAM_STATE::NOTREADY : TRANSPORT_STREAM_STATE::NONE;
 }
@@ -1824,7 +1838,8 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamVideoState()
       st = m_pFormatContext->streams[idx];
       if (st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
       {
-        if (st->codecpar->extradata)
+        if (idx == m_pkt.pkt.stream_index && m_pkt.pkt.dts != AV_NOPTS_VALUE &&
+            st->codecpar->extradata)
         {
           if (!m_startTime)
           {
@@ -1844,7 +1859,8 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamVideoState()
       st = m_pFormatContext->streams[i];
       if (st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
       {
-        if (st->codecpar->extradata)
+        if (static_cast<int>(i) == m_pkt.pkt.stream_index && m_pkt.pkt.dts != AV_NOPTS_VALUE &&
+            st->codecpar->extradata)
         {
           if (!m_startTime)
           {
@@ -1857,6 +1873,8 @@ TRANSPORT_STREAM_STATE FFmpegStream::TransportStreamVideoState()
       }
     }
   }
+  if (hasVideo && m_startTime)
+    return TRANSPORT_STREAM_STATE::READY;
 
   return (hasVideo) ? TRANSPORT_STREAM_STATE::NOTREADY : TRANSPORT_STREAM_STATE::NONE;
 }
