@@ -2,7 +2,7 @@ name: Sync addon metadata translations
 
 on:
   push:
-    branches: [ Matrix, Nexus ]
+    branches: [ Matrix, Nexus, Omega ]
     paths:
       - '**addon.xml.in'
       - '**resource.language.**strings.po'
@@ -32,7 +32,7 @@ jobs:
           path: sync_addon_metadata_translations
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
