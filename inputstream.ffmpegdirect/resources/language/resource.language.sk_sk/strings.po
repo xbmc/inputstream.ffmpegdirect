@@ -4,35 +4,30 @@
 # Addon Provider: phunkyfish
 msgid ""
 msgstr ""
-"Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2024-01-24 23:49+0000\n"
-"Last-Translator: rimasx <riks_12@hot.ee>\n"
-"Language-Team: Estonian <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/et_ee/>\n"
-"Language: et_ee\n"
+"Language: sk_sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
-msgstr "InputStream klient FFmpeg voogudele (libavformat)"
+msgstr ""
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr "InputStream vlient voogudele, mida avavad kas FFmpeg libavformat või Kodi cURL. Toetatakse tavalisi vorminguid, nagu TS, HLS ja DASH (ilma DRM-ita), aga ka paljusid teisi.[CR][CR]Lisamoodul toetab ka Archive/Catchup teenuseid, kus ajanihe on võimalik teatud ajavahemikus (tavaliselt päevades).[CR][CR]Dokumentatsiooni saamiseks külasta: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
+msgstr ""
 
 #. settings labels
 #. label-category: Network
 msgctxt "#30000"
 msgid "Network"
-msgstr "Võrk"
+msgstr ""
 
 #. label-group: Network - httpProxy
 msgctxt "#30001"
 msgid "HTTP proxy"
-msgstr "HTTP proksi"
+msgstr ""
 
 #. label: Network - useHttpProxy
 msgctxt "#30002"
@@ -52,39 +47,39 @@ msgstr ""
 #. label-option: Network - httpProxyUser
 msgctxt "#30005"
 msgid "Username"
-msgstr "Kasutajanimi"
+msgstr ""
 
 #. label-option: Network - httpProxyPassword
 msgctxt "#30006"
 msgid "Password"
-msgstr "Salasõna"
+msgstr ""
 
 #. label-group: Network - Bandwidth
 msgctxt "#30007"
 msgid "Bandwidth"
-msgstr "Ribalaius"
+msgstr ""
 
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
 msgstr ""
 
-# empty strings from id 30009 to 30019
+#empty strings from id 30009 to 30019
 #. label-category: timeshift
 #. label-group: Timeshift - Timeshift
 msgctxt "#30020"
 msgid "Timeshift"
-msgstr "Ajanihe"
+msgstr ""
 
 #. label: Timeshift - timeshiftBufferPath
 msgctxt "#30021"
 msgid "Timeshift buffer path"
-msgstr "Ajanihke puhverduse rada"
+msgstr ""
 
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
 msgid "Enable timeshift limit"
-msgstr "Luba ajanihke piirang"
+msgstr ""
 
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
@@ -94,13 +89,13 @@ msgstr ""
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
 msgid "{0:.2f} hours"
-msgstr "{0:.2f} tundi"
+msgstr ""
 
-# empty strings from id 30025 to 30039
+#empty strings from id 30025 to 30039
 #. label-category: advanced
 msgctxt "#30040"
 msgid "Advanced"
-msgstr "Edasijõudnud"
+msgstr ""
 
 #. label-category: advanced
 #. label-group: Advanced - Logging
@@ -111,7 +106,7 @@ msgstr ""
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
 msgid "Allow FFmpeg logging"
-msgstr "Luba FFmpeg logimine"
+msgstr ""
 
 #. label: Advanced - probeForFps
 msgctxt "#30043"
@@ -121,7 +116,7 @@ msgstr ""
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
 msgid "Enable teletext"
-msgstr "Luba teletekst"
+msgstr ""
 
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
@@ -133,7 +128,7 @@ msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
 msgstr ""
 
-# empty strings from id 30047 to 30599
+#empty strings from id 30047 to 30599
 #. ############
 #. help info #
 #. ############
@@ -151,29 +146,29 @@ msgstr ""
 #. help: Network - httpProxyHost
 msgctxt "#30602"
 msgid "Configure the proxy server address."
-msgstr "Määra puhverserveri aadress."
+msgstr ""
 
 #. help: Network- httpProxyPort
 msgctxt "#30603"
 msgid "Configure the proxy server port."
-msgstr "Määra puhverserveri port."
+msgstr ""
 
 #. help: Network - httpProxyUser
 msgctxt "#30604"
 msgid "Configure the proxy server username."
-msgstr "Määra puhverserveri kasutajanimi."
+msgstr ""
 
 #. help: Network - httpProxyPassword
 msgctxt "#30605"
 msgid "Configure the proxy server password."
-msgstr "Määra puhverserveri salasõna."
+msgstr ""
 
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
 msgstr ""
 
-# empty strings from id 30607 to 30619
+#empty strings from id 30607 to 30619
 #. help info - Timeshift
 #. help-category: timeshift
 msgctxt "#30620"
@@ -195,12 +190,12 @@ msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
 msgstr ""
 
-# empty strings from id 30624 to 30639
+#empty strings from id 30624 to 30639
 #. help info - Advanced
 #. help-category: advanced
 msgctxt "#30640"
 msgid "Advanced settings"
-msgstr "Põhjalikumad seaded"
+msgstr ""
 
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
