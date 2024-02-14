@@ -1,0 +1,34 @@
+diff -ur a/libavcodec/videotoolbox.c b/libavcodec/videotoolbox.c
+--- a/libavcodec/videotoolbox.c
++++ b/libavcodec/videotoolbox.c
+@@ -825,11 +825,18 @@
+         if (data)
+             CFDictionarySetValue(avc_info, CFSTR("esds"), data);
+         break;
+-    case kCMVideoCodecType_H264 :
++    case kCMVideoCodecType_H264 : {
++        H264Context *h = avctx->priv_data;
++        if (TARGET_OS_IPHONE && h->ps.sps->frame_mbs_only_flag == 0) {
++            av_log(avctx, AV_LOG_ERROR, "VideoToolbox cannot decode interlaced fields on iOS\n");
++            CFRelease(avc_info);
++            goto fail;
++        }
+         data = ff_videotoolbox_avcc_extradata_create(avctx);
+         if (data)
+             CFDictionarySetValue(avc_info, CFSTR("avcC"), data);
+         break;
++    }
+     case kCMVideoCodecType_HEVC :
+         data = ff_videotoolbox_hvcc_extradata_create(avctx);
+         if (data)
+@@ -855,6 +862,10 @@
+
+     CFRelease(avc_info);
+     return config_info;
++
++fail:
++    CFRelease(config_info);
++    return NULL;
+ }
+
+ static int videotoolbox_start(AVCodecContext *avctx)
