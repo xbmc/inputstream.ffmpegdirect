@@ -1,3 +1,6 @@
+v21.3.3
+- Patch to check for nullptr on surface for dxva2 on window
+
 v21.3.2
 - Fix deprecations for m_pFormatContext's codecpar->channels for streams ffmpeg6 and a single use of vsprintf
 
