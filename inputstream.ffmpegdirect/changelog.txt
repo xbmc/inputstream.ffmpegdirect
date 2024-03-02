@@ -1,3 +1,6 @@
+v21.3.4
+- Fix timeshift mode
+
 v21.3.3
 - Patch to check for nullptr on surface for dxva2 on window
 

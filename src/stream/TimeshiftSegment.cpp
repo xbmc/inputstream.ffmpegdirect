@@ -320,7 +320,7 @@ int TimeshiftSegment::LoadPacket(std::shared_ptr<DEMUX_PACKET>& packet)
     if (avPacket)
     {
       enum AVPacketSideDataType type;
-      int size;
+      size_t size;
       for (int i = 0; i < packet->iSideDataElems; i++)
       {
         m_fileHandle.Read(&type, sizeof(type));
