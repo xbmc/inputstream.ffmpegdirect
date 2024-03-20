@@ -1,1 +1,1 @@
-nettle https://ftp.gnu.org/gnu/nettle/nettle-3.9.tar.gz
+nettle https://ftp.gnu.org/gnu/nettle/nettle-3.9.1.tar.gz
