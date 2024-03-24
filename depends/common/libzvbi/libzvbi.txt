@@ -1,1 +1,1 @@
-libzvbi https://github.com/zapping-vbi/zvbi/archive/refs/tags/v0.2.41.tar.gz
+libzvbi https://github.com/zapping-vbi/zvbi/archive/refs/tags/v0.2.42.tar.gz
