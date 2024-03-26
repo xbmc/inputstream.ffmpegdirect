@@ -1,1 +1,1 @@
-libxml2 https://github.com/GNOME/libxml2/archive/refs/tags/v2.11.4.tar.gz
+libxml2 https://github.com/GNOME/libxml2/archive/refs/tags/v2.11.7.tar.gz
