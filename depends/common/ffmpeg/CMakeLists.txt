@@ -137,7 +137,14 @@ if(NOT WIN32)
                         --enable-gnutls
                         --enable-libzvbi
                         ${STANDARD_CONF}
-                        ${EXTRA_CONF})
+                        ${EXTRA_CONF} ||
+                         cmake -E echo "=========================================================" &&
+                         cmake -E echo "FFMPEG configure error" &&
+                         cmake -E echo "The associated config.log is output for troubleshooting." &&
+                         cmake -E echo "--------------------------------- FFMPEG CONFIG LOG START" &&
+                         cat ${CMAKE_BINARY_DIR}/ffmpeg-prefix/src/ffmpeg-build/ffbuild/config.log &&
+                         cmake -E echo "----------------------------------- FFMPEG CONFIG LOG END" &&
+                         exit 1)
 
   if(CORE_SYSTEM_NAME STREQUAL darwin_embedded)
     externalproject_add_step(ffmpeg
@@ -228,7 +235,15 @@ else()
                           ${EXTRA_CONF}
                           --extra-cflags=[DQ]${EXTRA_CFLAGS}[DQ]
                           --extra-cxxflags=[DQ]${EXTRA_CXXFLAGS}[DQ]
-                          --extra-ldflags=[DQ]${EXTRA_LDFLAGS}[DQ]
+                          --extra-ldflags=[DQ]${EXTRA_LDFLAGS}[DQ] ||
+                         cmake -E echo "=========================================================" &&
+                         cmake -E echo "FFMPEG configure error" &&
+                         cmake -E echo "The associated config.log is output for troubleshooting." &&
+                         cmake -E echo "--------------------------------- FFMPEG CONFIG LOG START" &&
+                         cd "${CMAKE_BINARY_DIR}\\..\\ffmpeg\\ffbuild" &&
+                         type config.log &&
+                         cmake -E echo "----------------------------------- FFMPEG CONFIG LOG END" &&
+                         exit 1
                       BUILD_COMMAND ${MINGW_CALL}
                         make -j$ENV{NUMBER_OF_PROCESSORS}
                       INSTALL_COMMAND ${MINGW_CALL}
