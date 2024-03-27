@@ -1,6 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -574,16 +574,6 @@ if(LIBXML2_WITH_PYTHON)
+@@ -574,16 +574,6 @@
  	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libxml2.py DESTINATION ${LIBXML2_PYTHON_INSTALL_DIR} COMPONENT runtime)
  endif()
  

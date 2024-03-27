@@ -1,0 +1,15 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -241,6 +241,11 @@
+ # This is used for liblzma.pc generation to add -lrt if needed.
+ set(LIBS)
+ 
++if(WIN32)
++    tuklib_add_definitions(ALL _CRT_SECURE_NO_DEPRECATE)
++    tuklib_add_definitions(ALL _CRT_NONSTDC_NO_DEPRECATE)
++endif()
++
+ # Check for clock_gettime(). Do this before checking for threading so
+ # that we know there if CLOCK_MONOTONIC is available.
+ check_symbol_exists(clock_gettime time.h HAVE_CLOCK_GETTIME)
+

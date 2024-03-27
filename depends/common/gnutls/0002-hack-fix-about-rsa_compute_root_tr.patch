@@ -1,0 +1,41 @@
+--- a/lib/nettle/backport/rsa-sign-tr.c
++++ b/lib/nettle/backport/rsa-sign-tr.c
+@@ -88,10 +88,10 @@
+  * attacks which rely on faults on hardware, or even software MPI
+  * implementation. */
+ int
+-rsa_compute_root_tr(const struct rsa_public_key *pub,
+-		    const struct rsa_private_key *key,
+-		    void *random_ctx, nettle_random_func *random,
+-		    mpz_t x, const mpz_t m)
++backport_rsa_compute_root_tr(const struct rsa_public_key *pub,
++			     const struct rsa_private_key *key,
++			     void *random_ctx, nettle_random_func *random,
++			     mpz_t x, const mpz_t m)
+ {
+   int res;
+   mpz_t t, mb, xb, ri;
+@@ -142,7 +142,7 @@
+ 
+   nn = mpz_size (pub->n);
+ 
+-  res = rsa_compute_root_tr(pub, key, random_ctx, random, xz,
++  res = backport_rsa_compute_root_tr(pub, key, random_ctx, random, xz,
+ 			    mpz_roinit_n(mz, m, nn));
+ 
+   if (res)
+@@ -347,10 +347,10 @@
+  * in buffer copying both in case of success or error.
+  */
+ int
+-rsa_compute_root_tr(const struct rsa_public_key *pub,
+-		    const struct rsa_private_key *key,
+-		    void *random_ctx, nettle_random_func *random,
+-		    mpz_t x, const mpz_t m)
++backport_rsa_compute_root_tr(const struct rsa_public_key *pub,
++			     const struct rsa_private_key *key,
++			     void *random_ctx, nettle_random_func *random,
++			     mpz_t x, const mpz_t m)
+ {
+   TMP_GMP_DECL (l, mp_limb_t);
+   mp_size_t nn = mpz_size(pub->n);

@@ -1,14 +1,12 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -92,8 +92,9 @@
+@@ -134,7 +134,7 @@
+ 
  # Set definitions and sources for ARM.
- if(TARGET_ARCH MATCHES "^arm" OR
-    TARGET_ARCH MATCHES "^aarch64")
--  if(TARGET_ARCH MATCHES "^arm64" OR
--     TARGET_ARCH MATCHES "^aarch64")
-+  if(NOT APPLE AND
-+     (TARGET_ARCH MATCHES "^arm64" OR
-+      TARGET_ARCH MATCHES "^aarch64"))
+ if(TARGET_ARCH MATCHES "^(ARM|arm|aarch)")
+-  if(TARGET_ARCH MATCHES "^(ARM64|arm64|aarch64)")
++  if(NOT APPLE AND TARGET_ARCH MATCHES "^(ARM64|arm64|aarch64)")
      set(PNG_ARM_NEON_POSSIBLE_VALUES on off)
      set(PNG_ARM_NEON "on"
          CACHE STRING "Enable ARM NEON optimizations: on|off; on is default")
+

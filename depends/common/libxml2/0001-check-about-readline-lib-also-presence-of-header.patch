@@ -1,6 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -151,7 +151,10 @@ if (NOT MSVC)
+@@ -151,7 +151,10 @@
  	check_include_files(inttypes.h HAVE_INTTYPES_H)
  	check_function_exists(isascii HAVE_ISASCII)
  	check_library_exists(history append_history "" HAVE_LIBHISTORY)

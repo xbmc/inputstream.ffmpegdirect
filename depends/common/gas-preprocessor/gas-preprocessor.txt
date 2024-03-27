@@ -1,1 +1,1 @@
-gas-preprocessor https://github.com/FFmpeg/gas-preprocessor/archive/9309c67acb535ca6248f092e96131d8eb07eefc1.tar.gz
+gas-preprocessor https://github.com/FFmpeg/gas-preprocessor/archive/971df11b06a94dd42881144e4e53be30eb3fee68.tar.gz
