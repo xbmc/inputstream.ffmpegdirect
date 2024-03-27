@@ -10,8 +10,8 @@
 +  return 1;
 +#else
    /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin < 1.7.34, Minix 3, Android */
-   return fp->_p - fp->_bf._base;
+   return fp_->_p - fp_->_bf._base;
 +#endif
  #elif defined __EMX__                /* emx+gcc */
-   return fp->_ptr - fp->_buffer;
+   return fp_->_ptr - fp_->_buffer;
  #elif defined __minix                /* Minix */
