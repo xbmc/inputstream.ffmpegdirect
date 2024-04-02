@@ -57,7 +57,7 @@ public:
   virtual DEMUX_PACKET* DemuxRead() override;
   virtual bool DemuxSeekTime(double time, bool backwards, double& startpts) override;
   virtual void DemuxSetSpeed(int speed) override;
-  virtual void SetVideoResolution(unsigned int width, unsigned int height) override;
+  virtual void SetVideoResolution(unsigned int width, unsigned int height);
 
   virtual int GetTotalTime() override;
   virtual int GetTime() override;
