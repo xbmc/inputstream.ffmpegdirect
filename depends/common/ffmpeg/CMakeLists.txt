@@ -45,6 +45,11 @@ else()
   list(APPEND EXTRA_CONF --enable-debug)
 endif()
 
+# Android NDK 26 doesn't come with vulkan_beta.h so let's disable it in that case
+if (CORE_SYSTEM_NAME STREQUAL android)
+  list(APPEND EXTRA_CONF --disable-vulkan)
+endif()
+
 # Run the builds
 include(ExternalProject)
 if(NOT WIN32)
