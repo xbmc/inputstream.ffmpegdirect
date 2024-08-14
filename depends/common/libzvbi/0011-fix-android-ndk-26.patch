@@ -1,0 +1,12 @@
+diff --color -aur a/configure.ac b/configure.ac
+--- a/configure.ac	2023-08-25 16:50:40
++++ b/configure.ac	2024-08-13 11:48:38
+@@ -248,7 +248,7 @@
+ dnl When upgrading to autoconf 2.71, AC_TRY_LINK deprecated and replaced
+ dnl with AC_LINK_IFELSE.
+ dnl
+-AC_CHECK_LIB(pthread, pthread_create,,[
++AC_SEARCH_LIBS([pthread_create], [pthread pthreads],,[
+   AC_CHECK_LIB(pthreadGC2, pthread_create,,[
+     AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[pthread_create();]])],[],[
+       # same as previous, but use '-pthread' instead of '-lpthread'
