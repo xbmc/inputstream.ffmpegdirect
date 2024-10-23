@@ -2367,6 +2367,10 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
                   "CDVDDemuxFFmpeg::GetFFMpegOptionsFromInput() adding ffmpeg option '%s: %s'",
                   it->first.c_str(), value.c_str());
         av_dict_set(&options, name.c_str(), value.c_str(), 0);
+        if (name == "http_proxy")
+          Log(LOGLEVEL_ERROR,
+                  "XXX CDVDDemuxFFmpeg::GetFFMpegOptionsFromInput() adding ffmpeg option '%s: %s'",
+                  name.c_str(), value.c_str());
       }
       // map some standard http headers to the ffmpeg related options
       else if (name == "user-agent")
