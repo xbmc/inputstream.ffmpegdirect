@@ -1,3 +1,7 @@
+v21.3.6
+- Translations updates from Weblate
+	- af_za, ast_es, cs_cz, da_dk, es_es, et_ee, fi_fi, fr_fr, hr_hr, it_it, pt_br, ro_md, ru_ru, sk_sk
+
 v21.3.5
 - Update depednencies to fix building on apple silicon (gnutls 3.8.4) and binutils on linux (2.41 or higher)
 
