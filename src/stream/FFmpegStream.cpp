@@ -2360,12 +2360,17 @@ AVDictionary* FFmpegStream::GetFFMpegOptionsFromInput()
       // set any of these ffmpeg options
       if (name == "seekable" || name == "reconnect" || name == "reconnect_at_eof" ||
           name == "reconnect_streamed" || name == "reconnect_delay_max" ||
-          name == "icy" || name == "icy_metadata_headers" || name == "icy_metadata_packet" || name == "cenc_decryption_key")
+          name == "icy" || name == "icy_metadata_headers" || name == "icy_metadata_packet" || name == "cenc_decryption_key" ||
+          name == "http_proxy")
       {
         Log(LOGLEVEL_DEBUG,
                   "CDVDDemuxFFmpeg::GetFFMpegOptionsFromInput() adding ffmpeg option '%s: %s'",
                   it->first.c_str(), value.c_str());
         av_dict_set(&options, name.c_str(), value.c_str(), 0);
+        if (name == "http_proxy")
+          Log(LOGLEVEL_ERROR,
+                  "XXX CDVDDemuxFFmpeg::GetFFMpegOptionsFromInput() adding ffmpeg option '%s: %s'",
+                  name.c_str(), value.c_str());
       }
       // map some standard http headers to the ffmpeg related options
       else if (name == "user-agent")

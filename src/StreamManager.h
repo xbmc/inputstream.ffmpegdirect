@@ -35,6 +35,10 @@ static const std::string CATCHUP_GRANULARITY = "inputstream.ffmpegdirect.catchup
 static const std::string TIMEZONE_SHIFT = "inputstream.ffmpegdirect.timezone_shift";
 static const std::string DEFAULT_PROGRAMME_DURATION = "inputstream.ffmpegdirect.default_programme_duration";
 static const std::string PROGRAMME_CATCHUP_ID = "inputstream.ffmpegdirect.programme_catchup_id";
+static const std::string HTTP_PROXY_HOST = "inputstream.ffmpegdirect.http_proxy_host";
+static const std::string HTTP_PROXY_PORT = "inputstream.ffmpegdirect.http_proxy_port";
+static const std::string HTTP_PROXY_USER = "inputstream.ffmpegdirect.http_proxy_user";
+static const std::string HTTP_PROXY_PASSWORD = "inputstream.ffmpegdirect.http_proxy_password";
 
 class ATTR_DLL_LOCAL InputStreamFFmpegDirect
   : public kodi::addon::CInstanceInputStream, ffmpegdirect::IManageDemuxPacket

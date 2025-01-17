@@ -1,3 +1,7 @@
+v22.1.0
+- Allow HTTP PROXY to be set via KODIPROP's
+- Allow http_proxy to be set via URL arguemnt using pipe
+
 v22.0.1
 - Add patch for pthread create and compile option for Android NDK 26 compatibility with libzvbi
 - Disable vulkan in ffmpeg for Android as NDK 26 doesn't have vulkan_beta.h

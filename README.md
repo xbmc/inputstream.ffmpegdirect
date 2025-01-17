@@ -157,6 +157,10 @@ http://127.0.0.1:3002/mystream.m3u8
 - `timezone_shift`: The value in seconds to shift the catchup times by for your timezone. Valid values range from -43200 to 50400 (from -12 hours to +14 hours).
 - `default_programme_duration`: If the programme duration is unknown use this default value in seconds instead. If this value is not provided 4 hours (14,400 secs) will be used  will be used.
 - `programme_catchup_id`: For providers that require a programme specifc id the following value can be used in the url format string.
+- `http_proxy_host`: Host to use for http proxy. Note that the general add-on setting will be ignored if this used. All proxy properties must be set.
+- `http_proxy_port`: Port to use for http proxy. Note that the general add-on setting will be ignored if this used. All proxy properties must be set.
+- `http_proxy_user`: User to use for http proxy. Note that the general add-on setting will be ignored if this used. All proxy properties must be set.
+- `http_proxy_password`: Password to use for http proxy. Note that the general add-on setting will be ignored if this used. All proxy properties must be set.
 
 **Notes:**
 - Setting `playback_as_live` to `true` only makes sense when the catchup start and end times are set to the size of the catchup windows (e.g. 3 days). If the catchup start and end times are set to the programme times then `playback_as_live` will have little effect.

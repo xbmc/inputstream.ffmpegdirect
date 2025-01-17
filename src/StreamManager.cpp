@@ -65,6 +65,8 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
 {
   Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect: OpenStream() - Num Props: %d", props.GetPropertiesAmount());
 
+  HttpProxy httpProxy;
+
   for (const auto& prop : props.GetProperties())
   {
     if (StringUtils::StartsWith(prop.second, "http://") || StringUtils::StartsWith(prop.second, "https://"))
@@ -154,6 +156,25 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
     {
       m_properties.m_programmeCatchupId = prop.second;
     }
+    else if (HTTP_PROXY_HOST == prop.first)
+    {
+      httpProxy.SetProxyHost(prop.second);
+      kodi::Log(ADDON_LOG_INFO, "HttpProxy host set vis KODIPROP: '%s'", httpProxy.GetProxyHost().c_str());
+    }
+    else if (HTTP_PROXY_PORT == prop.first)
+    {
+      httpProxy.SetProxyPort(std::atoi(prop.second.c_str()));
+      kodi::Log(ADDON_LOG_INFO, "HttpProxy port set as KODIPROP: %d", static_cast<int>(httpProxy.GetProxyPort()));
+    }
+    else if (HTTP_PROXY_USER == prop.first)
+    {
+      httpProxy.SetProxyUser(prop.second);
+      kodi::Log(ADDON_LOG_INFO, "HttpProxy user set as KODIPROP: '%s'", httpProxy.GetProxyUser().c_str());
+    }
+    else if (HTTP_PROXY_PASSWORD == prop.first)
+    {
+      httpProxy.SetProxyPassword(prop.second);
+    }
   }
 
   m_streamUrl = props.GetURL();
@@ -190,10 +211,8 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
       m_properties.m_openMode = OpenMode::CURL;
   }
 
-  HttpProxy httpProxy;
-
   bool useHttpProxy = kodi::addon::GetSettingBoolean("useHttpProxy");
-  if (useHttpProxy)
+  if (useHttpProxy && !httpProxy.GetProxyHost().empty()) // If a proxy host as not been set as a KODIPROP
   {
     httpProxy.SetProxyHost(kodi::addon::GetSettingString("httpProxyHost"));
     kodi::Log(ADDON_LOG_INFO, "HttpProxy host set: '%s'", httpProxy.GetProxyHost().c_str());
