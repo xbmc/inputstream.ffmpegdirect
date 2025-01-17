@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
-"PO-Revision-Date: 2024-01-24 23:49+0000\n"
+"PO-Revision-Date: 2024-04-15 07:39+0000\n"
 "Last-Translator: rimasx <riks_12@hot.ee>\n"
 "Language-Team: Estonian <https://kodi.weblate.cloud/projects/kodi-add-ons-videoplayer-inputstream/inputstream-ffmpegdirect/et_ee/>\n"
 "Language: et_ee\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3\n"
+"X-Generator: Weblate 5.4.3\n"
 
 msgctxt "Addon Summary"
 msgid "InputStream Client for FFmpeg streams (libavformat)"
@@ -21,7 +21,7 @@ msgstr "InputStream klient FFmpeg voogudele (libavformat)"
 
 msgctxt "Addon Description"
 msgid "InputStream Client for streams that can be opened by either FFmpeg's libavformat or Kodi's cURL. Common stream formats such as plain TS, HLS and DASH (without DRM) are supported as well as many others.[CR][CR]The addon also has support for Archive/Catchup services where there is a replay windows (usually in days) and can timeshift across that span.[CR][CR]For documenation visit: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
-msgstr "InputStream vlient voogudele, mida avavad kas FFmpeg libavformat või Kodi cURL. Toetatakse tavalisi vorminguid, nagu TS, HLS ja DASH (ilma DRM-ita), aga ka paljusid teisi.[CR][CR]Lisamoodul toetab ka Archive/Catchup teenuseid, kus ajanihe on võimalik teatud ajavahemikus (tavaliselt päevades).[CR][CR]Dokumentatsiooni saamiseks külasta: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
+msgstr "InputStream klient voogudele, mida avavad kas FFmpeg libavformat või Kodi cURL. Toetatakse tavalisi vorminguid, nagu TS, HLS ja DASH (ilma DRM-ita), aga ka paljusid teisi.[CR][CR]Lisamoodul toetab ka järelvaatamise teenuseid, kus ajanihe on võimalik teatud ajavahemikus (tavaliselt päevades).[CR][CR]Dokumentatsiooni saamiseks külasta: https://github.com/xbmc/inputstream.ffmpegdirect/blob/Matrix/README.md"
 
 #. settings labels
 #. label-category: Network
@@ -32,22 +32,22 @@ msgstr "Võrk"
 #. label-group: Network - httpProxy
 msgctxt "#30001"
 msgid "HTTP proxy"
-msgstr "HTTP proksi"
+msgstr "HTTP puhverserver"
 
 #. label: Network - useHttpProxy
 msgctxt "#30002"
 msgid "Use HTTP proxy when opening with FFmpeg"
-msgstr ""
+msgstr "Kasuta FFmpeg abil avamisel HTTP puhverserverit"
 
 #. label-option: Network - httpProxyHost
 msgctxt "#30003"
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #. label-option: Network - httpProxyPort
 msgctxt "#30004"
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #. label-option: Network - httpProxyUser
 msgctxt "#30005"
@@ -57,7 +57,7 @@ msgstr "Kasutajanimi"
 #. label-option: Network - httpProxyPassword
 msgctxt "#30006"
 msgid "Password"
-msgstr "Salasõna"
+msgstr "Parool"
 
 #. label-group: Network - Bandwidth
 msgctxt "#30007"
@@ -67,7 +67,7 @@ msgstr "Ribalaius"
 #. label-option: Network - networkBandwidth
 msgctxt "#30008"
 msgid "Stream selection bandwidth"
-msgstr ""
+msgstr "Voo valiku ribalaius"
 
 # empty strings from id 30009 to 30019
 #. label-category: timeshift
@@ -79,7 +79,7 @@ msgstr "Ajanihe"
 #. label: Timeshift - timeshiftBufferPath
 msgctxt "#30021"
 msgid "Timeshift buffer path"
-msgstr "Ajanihke puhverduse rada"
+msgstr "Ajanihke puhvri rada"
 
 #. label: Timeshift - timeshiftEnableLimit
 msgctxt "#30022"
@@ -89,7 +89,7 @@ msgstr "Luba ajanihke piirang"
 #. label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30023"
 msgid "Maximum timeshift buffer length"
-msgstr ""
+msgstr "Ajanihke puhvri maksimaalne pikkus"
 
 #. format-label: Timeshift - timeshiftOnDiskLength
 msgctxt "#30024"
@@ -106,7 +106,7 @@ msgstr "Edasijõudnud"
 #. label-group: Advanced - Logging
 msgctxt "#30041"
 msgid "FFmpeg"
-msgstr ""
+msgstr "FFmpeg"
 
 #. label: Advanced - allowFFmpegLogging
 msgctxt "#30042"
@@ -116,7 +116,7 @@ msgstr "Luba FFmpeg logimine"
 #. label: Advanced - probeForFps
 msgctxt "#30043"
 msgid "Probe for FPS"
-msgstr ""
+msgstr "FPS kontroll"
 
 #. label: Advanced - enableTeletext
 msgctxt "#30044"
@@ -126,12 +126,12 @@ msgstr "Luba teletekst"
 #. help: Advanced - useFastOpemForManifestStreams
 msgctxt "#30045"
 msgid "Use fast open for streams using a manifest file"
-msgstr ""
+msgstr "Kasuta manifestifaili kasutavate voogude jaoks kiiravamist"
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30046"
 msgid "For catchup streams report stream is not realtime"
-msgstr ""
+msgstr "Teavita järelvaatamisvoogude vaatamisel, et need ei ole reaalajas"
 
 # empty strings from id 30047 to 30599
 #. ############
@@ -141,12 +141,12 @@ msgstr ""
 #. help-category: Network
 msgctxt "#30600"
 msgid "This category contains the settings for network configuration such as FFmpeg proxy and bandwidth limits."
-msgstr ""
+msgstr "See kategooria sisaldab võrgukonfiguratsiooni sätteid, nagu FFmpeg puhverserver ja ribalaiuse piirangud."
 
 #. help: Network - useHttpProxy
 msgctxt "#30601"
 msgid "Whether or not a proxy should be used when opening with FFmpeg. Note that if opened using curl kodi's proxy settings will be used."
-msgstr ""
+msgstr "Kas FFmpeg abil avamisel tuleks kasutada puhverserverit või mitte.Tea, et curl abil avamisel kasutatakse Kodi puhverserveri sätteid."
 
 #. help: Network - httpProxyHost
 msgctxt "#30602"
@@ -166,34 +166,34 @@ msgstr "Määra puhverserveri kasutajanimi."
 #. help: Network - httpProxyPassword
 msgctxt "#30605"
 msgid "Configure the proxy server password."
-msgstr "Määra puhverserveri salasõna."
+msgstr "Määra puhverserveri parool."
 
 #. help: Network - streamBandwidth
 msgctxt "#30606"
 msgid "Use this value as a maximum when selecting which HLS stream to use."
-msgstr ""
+msgstr "See on maksimaalne väärtus HLS-voo valimisel."
 
 # empty strings from id 30607 to 30619
 #. help info - Timeshift
 #. help-category: timeshift
 msgctxt "#30620"
 msgid "This category contains the settings for timeshift. Timeshifting allows you to pause live TV as well as move back and forward from your current position similar to playing back a recording."
-msgstr ""
+msgstr "See kategooria sisaldab aja nihke seadeid. Ajanihe võimaldab peatada otsesaate ning liikuda praegusest kohast edasi-tagasi sarnaselt salvestise taasesitusega."
 
 #. help: Timeshift - timeshiftBufferPath
 msgctxt "#30621"
 msgid "The path used to store the timeshift buffer. The default is the [I]\"addon_data/inputstream.ffmpegdirect/timeshift\"[/I] folder in userdata. Note that this folder will be cleared  of timeshift files on Kodi startup. Only relevant when [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] property is passed to the addon."
-msgstr ""
+msgstr "Ajanihke puhvri salvestamiseks kasutatav tee. Vaikeväärtus on kaust [I]\"userdata/addon_data/inputstream.ffmpegdirect/timeshift\"[/I]. Tea, et see kaust puhastatakse ajanihkefailidest Kodi käivitamisel. Oluline ainult siis, kui [I]\"inputstream.ffmpegdirect.stream_mode=timeshift\"[/I] teave edastatakse lisamoodulile."
 
 #. help: Timeshift - timeshiftEnableLimit
 msgctxt "#30622"
 msgid "Enable this option to limit the length of the timeshift buffer. If disabled the buffer will grow forever until playback is stopped. Regardless of this setting the buffer will also grow forever if paused."
-msgstr ""
+msgstr "Luba see suvand ajanihke puhvri kestuse piiramiseks. Kui see on keelatud, kasvab puhver lõputult taasesituse lõppemiseni. Sellest seadistusest olenemata kasvab puhver pausimisel lõputult."
 
 #. help: Timeshift - timeshiftOnDiskLength
 msgctxt "#30623"
 msgid "The length of the timeshift buffer in hours. Once the value is reached the older buffer data will be deleted to ensure the limit is not breached. Note that the storage for your device should be sufficient to allow the buffer to grow to it's maximum length (otherwise it's equivalent to disabling this option). A good heuristic for video size is 130MB per minute of 1080p video and 375MB per minute of 4K video."
-msgstr ""
+msgstr "Ajanihke puhvri kestus tundides. Kui väärtus on saavutatud, kustutatakse vanemad puhvri andmed, et limiiti ei ületataks. Tea, et seadme salvestusruum peab olema piisav, et puhver saaks maksimaalse kestuseni kasvada (muidu võrdub see selle valiku keelamisega). Video suuruseks arvesta umbes 130 MB minutis 1080p video ja 375 MB minutis 4K video puhul."
 
 # empty strings from id 30624 to 30639
 #. help info - Advanced
@@ -205,24 +205,24 @@ msgstr "Põhjalikumad seaded"
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
 msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
-msgstr ""
+msgstr "Kui see on lubatud, logib lisamoodul kõik FFmpeg-logimised Kodi logisse."
 
 #. help: Advanced - probeForFps
 msgctxt "#30642"
 msgid "Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used."
-msgstr ""
+msgstr "Kaadrite arvu kontrollimine sekundis. Vaikimisi lubatud. Kui see on keelatud, kasutatakse koodeki tagastatud väärtust."
 
 #. help: Advanced - enableTeletext
 msgctxt "#30643"
 msgid "Allow teletext. Default enabled."
-msgstr ""
+msgstr "Luba teletekst. Vaikimisi lubatud."
 
 #. help: Advanced - useFastOpenForManifestStreams
 msgctxt "#30644"
 msgid "Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled."
-msgstr ""
+msgstr "Manifestifailiga vooge (nt HLD/DASH/Smooth Streaming) saab FFmpeg abil kiiremini avada, kui see valik on lubatud."
 
 #. help: Advanced - forceRealtimeOffCatchup
 msgctxt "#30645"
 msgid "For certain catchup streams such as HLS reporting that a live stream is not live can improve stream open times. If testing this option works for a catchup stream/provider, then add a [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I] to the M3U entry in question. This setting should not be left enabled for all streams."
-msgstr ""
+msgstr "Teatud järelvaatamisvoogude (nt HLS) puhul võib teavitamine, et tegemist pole otsevooga, kiirendada avamist. Kui selle valiku toimib järelvaatamisvoo/teenusepakkuja puhul, lisa kõnealusele M3U kirjele [I]\"#KODIPROP=inputstream.ffmpegdirect.is_realtime_stream=false\"[/I]. See säte ei tohiks olla lubatud kõigi voogude jaoks."
