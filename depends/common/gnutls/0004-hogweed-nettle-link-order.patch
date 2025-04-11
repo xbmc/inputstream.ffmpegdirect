@@ -1,0 +1,13 @@
+diff --git a/configure b/configure
+index e7bb291..a621557 100644
+--- a/configure
++++ b/configure
+@@ -12611,7 +12611,7 @@
+ printf "%s\n" "#define HAVE_LIBNETTLE 1" >>confdefs.h
+ 
+ 
+-  GNUTLS_REQUIRES_PRIVATE="Requires.private: nettle, hogweed"
++  GNUTLS_REQUIRES_PRIVATE="Requires.private: hogweed, nettle"
+ 
+ 
+ # Check whether --with-nettle-mini was given.

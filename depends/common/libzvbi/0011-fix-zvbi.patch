@@ -1,0 +1,42 @@
+diff --git a/configure.ac b/configure.ac
+index 3737442..72760a9 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -82,7 +82,7 @@
+ 		inet_ntoa localtime_r memmove memset mkdir modf munmap \
+ 		nl_langinfo putenv select setenv setlocale socket strcasecmp \
+ 		strchr strdup strerror strncasecmp strndup strrchr strstr \
+-		strtol strtoul tzset strptime getaddrinfo])
++		strtol strtoul tzset strptime getaddrinfo sincos])
+ 
+ AM_CONDITIONAL(HAVE_STRPTIME, [test "x$HAVE_STRPTIME" = xyes])
+ 
+@@ -103,28 +103,6 @@
+ dnl "Noteworthy changes in autoconf version 2.66 through 2.68"
+ dnl <https://autotools.info/forwardporting/autoconf.html>
+ 
+-dnl sincos() is a GNU extension (a macro, not a function).
+-dnl If not present we use a replacement.
+-AC_MSG_CHECKING([for sincos])
+-AC_LINK_IFELSE([AC_LANG_SOURCE([
+-#include <stdio.h>
+-#include <math.h>
+-int main (void) {
+-double s, c;
+-/* Make sure the compiler does not optimize sincos() away
+-   so the linker can confirm its availability. */
+-scanf ("%f", &s);
+-sincos (s, &s, &c);
+-printf ("%f %f", s, c);
+-return 0;
+-}
+-])],[
+-  AC_MSG_RESULT([yes])
+-  AC_DEFINE(HAVE_SINCOS, 1, [Define if the sincos() function is available])
+-],[
+-  AC_MSG_RESULT([no])
+-])
+-
+ dnl log2() is a GNU extension (a macro, not a function).
+ dnl If not present we use a replacement.
+ AC_MSG_CHECKING([for log2])
