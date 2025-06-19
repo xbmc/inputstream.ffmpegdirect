@@ -1,3 +1,6 @@
+v21.3.6
+- Fix crashing when % in headers caused by missing kodi::Log format arg
+
 v21.3.5
 - Update depednencies to fix building on apple silicon (gnutls 3.8.4) and binutils on linux (2.41 or higher)
 
