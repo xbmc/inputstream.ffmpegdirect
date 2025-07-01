@@ -153,9 +153,12 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Propert
   m_checkTransportStream = false;
   m_dtsAtDisplayTime = STREAM_NOPTS_VALUE;
 
-  FFmpegLog::SetLogLevel(AV_LOG_INFO);
-  FFmpegLog::SetEnabled(kodi::addon::GetSettingBoolean("allowFFmpegLogging"));
-  av_log_set_callback(ff_avutil_log);
+  if (kodi::addon::GetSettingBoolean("allowFFmpegLogging"))
+  {
+    FFmpegLog::SetLogLevel(AV_LOG_INFO);
+    FFmpegLog::SetEnabled(kodi::addon::GetSettingBoolean("allowFFmpegLogging"));
+    av_log_set_callback(ff_avutil_log);
+  }
 }
 
 FFmpegStream::~FFmpegStream()
@@ -184,7 +187,12 @@ bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeTyp
     FFmpegLog::SetEnabled(true);
     av_dump_format(m_pFormatContext, 0, CURL::GetRedacted(streamUrl).c_str(), 0);
   }
-  FFmpegLog::SetEnabled(kodi::addon::GetSettingBoolean("allowFFmpegLogging"));
+  if (kodi::addon::GetSettingBoolean("allowFFmpegLogging"))
+  {
+    FFmpegLog::SetLogLevel(AV_LOG_INFO);
+    FFmpegLog::SetEnabled(kodi::addon::GetSettingBoolean("allowFFmpegLogging"));
+    av_log_set_callback(ff_avutil_log);
+  }
 
   return m_opened;
 }
