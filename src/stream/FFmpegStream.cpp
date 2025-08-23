@@ -2260,9 +2260,9 @@ std::string FFmpegStream::GetStreamCodecName(int iStreamId)
     /* use profile to determine the DTS type */
     if (stream->codec == AV_CODEC_ID_DTS)
     {
-      if (stream->profile == FF_PROFILE_DTS_HD_MA)
+      if (stream->profile == AV_PROFILE_DTS_HD_MA)
         strName = "dtshd_ma";
-      else if (stream->profile == FF_PROFILE_DTS_HD_HRA)
+      else if (stream->profile == AV_PROFILE_DTS_HD_HRA)
         strName = "dtshd_hra";
       else
         strName = "dca";
