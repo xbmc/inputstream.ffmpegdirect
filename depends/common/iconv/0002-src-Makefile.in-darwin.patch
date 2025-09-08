@@ -1,14 +1,14 @@
-From adfa84dd83f2f2060ee2ebf321c551b2c5d84862 Mon Sep 17 00:00:00 2001
-From: Alwin Esch <alwin.esch@web.de>
-Date: Sun, 28 May 2023 23:44:50 +0200
-Subject: [PATCH 2/2] src-Makefile.in-darwin
+From 3b9cd7f9223761b232863a92830e631ff611e188 Mon Sep 17 00:00:00 2001
+From: Craig Carnell <1188869+cscd98@users.noreply.github.com>
+Date: Mon, 8 Sep 2025 11:21:48 +0100
+Subject: [PATCH] Add Darwin-specific install rule
 
 ---
  src/Makefile.in | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/src/Makefile.in b/src/Makefile.in
-index 7035316..59d9013 100644
+index e8fff47..002f9d1 100644
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
 @@ -113,6 +113,7 @@ install : all force
@@ -16,9 +16,9 @@ index 7035316..59d9013 100644
  	case "@host_os@" in \
  	  hpux*) $(CC) $(LDFLAGS) $(CFLAGS) $(iconv_LDFLAGS) iconv.@OBJEXT@ ../srclib/libicrt.a -L$(DESTDIR)$(libdir) -liconv @LIBINTL@ $(OBJECTS_RES_@WOE32@) `if test -n '$(DESTDIR)'; then echo " -Wl,+b -Wl,$(libdir)"; fi` -o iconv$(EXEEXT);; \
 +	  darwin*) $(CC) $(LDFLAGS) $(CFLAGS) $(iconv_LDFLAGS) iconv.@OBJEXT@ ../srclib/libicrt.a -L$(DESTDIR)$(libdir) -liconv @LIBINTL@ $(OBJECTS_RES_@WOE32@) -o iconv$(EXEEXT);; \
- 	  *) $(LIBTOOL_LINK) $(CC) $(LDFLAGS) $(CFLAGS) $(iconv_LDFLAGS) iconv.@OBJEXT@ ../srclib/libicrt.a $(DESTDIR)$(libdir)/libiconv.la @LTLIBINTL@ $(OBJECTS_RES_@WOE32@) -o iconv$(EXEEXT);; \
+	  *) $(LIBTOOL_LINK) $(CC) $(LDFLAGS) $(CFLAGS) $(iconv_LDFLAGS) iconv.@OBJEXT@ ../srclib/libicrt.a @LTLIBINTL@ $(DESTDIR)$(libdir)/libiconv.la $(OBJECTS_RES_@WOE32@) -o iconv$(EXEEXT);; \
  	esac
  	$(INSTALL_PROGRAM_ENV) $(LIBTOOL_INSTALL) $(INSTALL_PROGRAM) iconv$(EXEEXT) $(DESTDIR)$(bindir)/iconv$(EXEEXT)
 -- 
-2.40.1
+2.51.0
 
