@@ -1,3 +1,9 @@
+v22.1.4
+- Kodi inputstream API update to version 3.4.0
+- gmp: download from GNU Mirror
+- Update dependency libiconv to version 1.18
+- curl: use namespace ffmpegdirect to fix name clash
+
 v22.1.2
 - Fix crashing when % in headers caused by missing kodi::Log format arg
 - Fix building of openssl on windows caused by missing strawberryperl in path
