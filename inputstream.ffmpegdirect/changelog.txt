@@ -1,3 +1,6 @@
+v22.2.0
+- Kodi inputstream API update to version 3.4.0
+
 v22.1.2
 - Fix crashing when % in headers caused by missing kodi::Log format arg
 - Fix building of openssl on windows caused by missing strawberryperl in path
