@@ -52,6 +52,7 @@ else()
 
   externalproject_add(gmp
                       SOURCE_DIR ${CMAKE_SOURCE_DIR}
+                      PATCH_COMMAND autoreconf -vif
                       CONFIGURE_COMMAND <SOURCE_DIR>/configure
                         --prefix=${CMAKE_INSTALL_PREFIX}
                         --disable-assembly
