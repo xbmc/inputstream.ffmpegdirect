@@ -79,7 +79,7 @@ This category contains the settings for timeshift. Timeshifting allows you to pa
 ### Advanced
 This category contains the advanced settings for the addon.
 
-* **Allow FFmpeg logging**: If enabled the addon will log any FFmpeg logging to the Kodi log.
+* **Allow FFmpeg logging**: If enabled the addon will log any FFmpeg logging to the Kodi log. Takes effect where FFmpeg is built into the addon; with a shared FFmpeg, Kodi's own FFmpeg logging applies.
 * **Probe for FPS**: Probe for frames per second. Default enabled. If disabled the value returned by the codec will be used.
 * **Enable teletext**: Allow teletext. Default enabled.
 * **Use fast open for streams using a manifest file**: Streams which have a manifest file (e.g. HLD/DASH/Smooth Streaming) can be opened more quickly with FFmpeg with this option enabled.

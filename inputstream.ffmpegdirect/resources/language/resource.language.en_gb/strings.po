@@ -215,7 +215,7 @@ msgstr ""
 
 #. help: Advanced - allowFFmpegLogging
 msgctxt "#30641"
-msgid "If enabled the addon will log any FFmpeg logging to the Kodi log."
+msgid "If enabled the addon will log any FFmpeg logging to the Kodi log. Takes effect where FFmpeg is built into the addon; with a shared FFmpeg, Kodi's own FFmpeg logging applies."
 msgstr ""
 
 #. help: Advanced - probeForFps
