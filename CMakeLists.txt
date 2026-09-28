@@ -75,7 +75,8 @@ list(APPEND DEPLIBS ${ZLIB_LIBRARIES}
 if(WIN32)
   # Windows does need to know about FFMPEG_LIBRARIES here
   list(APPEND DEPLIBS ${ICONV_LIBRARIES}
-                      ${OPENSSL_LIBRARIES}
+                      OpenSSL::SSL
+                      OpenSSL::Crypto
                       ${LIBXML2_LIBRARIES}
                       ${FFMPEG_LIBRARIES}
                       Winmm.lib

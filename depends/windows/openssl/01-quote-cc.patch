@@ -1,0 +1,11 @@
+--- a/Configurations/windows-makefile.tmpl
++++ b/Configurations/windows-makefile.tmpl
+@@ -260,7 +260,7 @@
+ ##### User defined commands and flags ################################
+ 
+ CC="{- $config{CC} -}"
+-CPP={- $config{CPP} -}
++CPP="{- $config{CPP} -}"
+ CPPFLAGS={- our $cppflags1 = join(" ",
+                                   (map { "-D".$_} @{$config{CPPDEFINES}}),
+                                   (map { " -I".$_} @{$config{CPPINCLUDES}}),

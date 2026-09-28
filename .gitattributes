@@ -1,1 +1,2 @@
 depends/common/libzvbi/*.patch whitespace=-space-before-tab
+depends/windows/openssl/*.patch whitespace=-blank-at-eol
