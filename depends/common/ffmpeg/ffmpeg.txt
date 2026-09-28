@@ -1,1 +1,1 @@
-ffmpeg https://github.com/FFmpeg/FFmpeg/archive/refs/tags/n8.0.tar.gz
+ffmpeg https://ffmpeg.org/releases/ffmpeg-9.0.2.tar.xz

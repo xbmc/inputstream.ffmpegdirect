@@ -36,7 +36,8 @@ list(APPEND STANDARD_CONF --extra-version=kodi-${FFMPEG_VER}
                           --enable-demuxer=dash
                           --enable-libxml2
                           --enable-zlib
-                          --enable-static)
+                          --enable-static
+                          --disable-shared)
 
 # Determinate debug or release and set ffmpeg for
 if(CMAKE_BUILD_TYPE STREQUAL Release)
@@ -45,7 +46,7 @@ else()
   list(APPEND EXTRA_CONF --enable-debug)
 endif()
 
-# Android NDK 26 doesn't come with vulkan_beta.h so let's disable it in that case
+# Keep the Android Vulkan build disabled, consistent with Kodi dependencies.
 if (CORE_SYSTEM_NAME STREQUAL android)
   list(APPEND EXTRA_CONF --disable-vulkan)
 endif()
@@ -105,6 +106,8 @@ if(NOT WIN32)
       list(APPEND EXTRA_CONF --cpu=cortex-a53 --arch=aarch64)
     elseif(CPU MATCHES arm)
       list(APPEND EXTRA_CONF --cpu=cortex-a9)
+    elseif(CPU MATCHES x86_64)
+      list(APPEND EXTRA_CONF --cpu=x86-64)
     else()
       list(APPEND EXTRA_CONF --cpu=i686 --disable-mmx)
     endif()
@@ -113,14 +116,13 @@ if(NOT WIN32)
     if(NOT CPU MATCHES arm64)
       list(APPEND EXTRA_CONF --cpu=cortex-a8)
     else()
-      list(APPEND EXTRA_CONF "--as=${CMAKE_INSTALL_PREFIX}/bin/gas-preprocessor.pl -arch aarch64 -- ${CMAKE_C_COMPILER}")
       list(APPEND EXTRA_CONF --arch=aarch64)
       list(APPEND EXTRA_CONF --disable-filter=yadif_videotoolbox)
     endif()
-    list(APPEND EXTRA_CONF --disable-decoder=mpeg_xvmc --enable-videotoolbox
+    list(APPEND EXTRA_CONF --enable-videotoolbox
                            --target-os=darwin)
   elseif(CORE_SYSTEM_NAME STREQUAL osx)
-    list(APPEND EXTRA_CONF --disable-decoder=mpeg_xvmc --enable-videotoolbox
+    list(APPEND EXTRA_CONF --enable-videotoolbox
                            --target-os=darwin
                            --disable-securetransport)
   endif()
@@ -144,19 +146,7 @@ if(NOT WIN32)
                         ${STANDARD_CONF}
                         ${EXTRA_CONF})
 
-  if(CORE_SYSTEM_NAME STREQUAL darwin_embedded)
-    externalproject_add_step(ffmpeg
-                            RunSedCommand
-                            COMMAND echo "Setting HAVE_CLOCK_GETTIME to 0 for darwin_embedded using sed"
-                            COMMAND sed -i -- "s/HAVE_CLOCK_GETTIME 1/HAVE_CLOCK_GETTIME 0/g" ${CMAKE_CURRENT_BINARY_DIR}/ffmpeg-prefix/src/ffmpeg-build/config.h
-                            DEPENDEES configure)
-    externalproject_add_step(ffmpeg
-                            DisableVVCDecoderOnAArch64
-                            COMMAND echo "Disabling AArch64 implementation of VVC (H.266) on darwin_embedded using sed"
-                            COMMAND rm ${CMAKE_SOURCE_DIR}/libavcodec/aarch64/vvc/Makefile
-                            COMMAND sed -i -- "/ff_vvc_dsp_init_aarch64/d" ${CMAKE_SOURCE_DIR}/libavcodec/vvc/dsp.c
-                            DEPENDERS configure)
-  endif()
+
 else()
   find_package(MinGW REQUIRED)
 

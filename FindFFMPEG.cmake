@@ -33,14 +33,13 @@
 #
 
 # required ffmpeg library versions
-set(REQUIRED_FFMPEG_VERSION 7.0.0)
-set(_avcodec_ver ">=61.3.100")
-set(_avfilter_ver ">=10.1.100")
-set(_avformat_ver ">=61.1.100")
-set(_avutil_ver ">=59.8.100")
-set(_postproc_ver ">=58.1.100")
-set(_swresample_ver ">=5.1.100")
-set(_swscale_ver ">=8.1.100")
+set(REQUIRED_FFMPEG_VERSION 9.0.2)
+set(_avcodec_ver ">=63.1.102")
+set(_avfilter_ver ">=12.1.102")
+set(_avformat_ver ">=63.1.102")
+set(_avutil_ver ">=61.1.102")
+set(_swresample_ver ">=7.1.102")
+set(_swscale_ver ">=10.1.102")
 
 # Allows building with external ffmpeg not found in system paths,
 # without library version checks
@@ -54,7 +53,6 @@ if(WITH_FFMPEG)
   unset(_avutil_ver)
   unset(_swscale_ver)
   unset(_swresample_ver)
-  unset(_postproc_ver)
 endif()
 
 # Allows building with external ffmpeg not found in system paths,
@@ -74,8 +72,7 @@ if(NOT ENABLE_INTERNAL_FFMPEG OR KODI_DEPENDSBUILD)
                   libavformat${_avformat_ver}
                   libavutil${_avutil_ver}
                   libswscale${_swscale_ver}
-                  libswresample${_swresample_ver}
-                  libpostproc${_postproc_ver})
+                  libswresample${_swresample_ver})
 
   if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_FFMPEG ${FFMPEG_PKGS} QUIET)
@@ -83,12 +80,12 @@ if(NOT ENABLE_INTERNAL_FFMPEG OR KODI_DEPENDSBUILD)
   endif()
 
   find_path(FFMPEG_INCLUDE_DIRS libavcodec/avcodec.h libavfilter/avfilter.h libavformat/avformat.h
-                                libavutil/avutil.h libswscale/swscale.h libpostproc/postprocess.h
+                                libavutil/avutil.h libswscale/swscale.h
             PATH_SUFFIXES ffmpeg
             PATHS ${PC_FFMPEG_INCLUDE_DIRS}
             NO_DEFAULT_PATH)
   find_path(FFMPEG_INCLUDE_DIRS libavcodec/avcodec.h libavfilter/avfilter.h libavformat/avformat.h
-                                libavutil/avutil.h libswscale/swscale.h libpostproc/postprocess.h)
+                                libavutil/avutil.h libswscale/swscale.h)
 
   find_library(FFMPEG_LIBAVCODEC
                NAMES avcodec libavcodec
@@ -132,12 +129,6 @@ if(NOT ENABLE_INTERNAL_FFMPEG OR KODI_DEPENDSBUILD)
                NO_DEFAULT_PATH)
   find_library(FFMPEG_LIBSWRESAMPLE NAMES NAMES swresample libswresample PATH_SUFFIXES ffmpeg/libswresample)
 
-  find_library(FFMPEG_LIBPOSTPROC
-               NAMES postproc libpostproc
-               PATH_SUFFIXES ffmpeg/libpostproc
-               PATHS ${PC_FFMPEG_libpostproc_LIBDIR}
-               NO_DEFAULT_PATH)
-  find_library(FFMPEG_LIBPOSTPROC NAMES postproc libpostproc PATH_SUFFIXES ffmpeg/libpostproc)
 
   if((PC_FFMPEG_FOUND
       AND PC_FFMPEG_libavcodec_VERSION
@@ -145,8 +136,7 @@ if(NOT ENABLE_INTERNAL_FFMPEG OR KODI_DEPENDSBUILD)
       AND PC_FFMPEG_libavformat_VERSION
       AND PC_FFMPEG_libavutil_VERSION
       AND PC_FFMPEG_libswscale_VERSION
-      AND PC_FFMPEG_libswresample_VERSION
-      AND PC_FFMPEG_libpostproc_VERSION)
+      AND PC_FFMPEG_libswresample_VERSION)
      OR WIN32)
     set(FFMPEG_VERSION ${REQUIRED_FFMPEG_VERSION})
 
@@ -161,7 +151,6 @@ if(NOT ENABLE_INTERNAL_FFMPEG OR KODI_DEPENDSBUILD)
                                                     FFMPEG_LIBAVUTIL
                                                     FFMPEG_LIBSWSCALE
                                                     FFMPEG_LIBSWRESAMPLE
-                                                    FFMPEG_LIBPOSTPROC
                                                     FFMPEG_VERSION
                                       FAIL_MESSAGE "FFmpeg ${REQUIRED_FFMPEG_VERSION} not found, please consider using -DENABLE_INTERNAL_FFMPEG=ON")
 
@@ -181,7 +170,7 @@ if(NOT ENABLE_INTERNAL_FFMPEG OR KODI_DEPENDSBUILD)
     set(FFMPEG_LIBRARIES ${FFMPEG_LIBAVCODEC} ${FFMPEG_LIBAVFILTER}
                          ${FFMPEG_LIBAVFORMAT} ${FFMPEG_LIBAVUTIL}
                          ${FFMPEG_LIBSWSCALE} ${FFMPEG_LIBSWRESAMPLE}
-                         ${FFMPEG_LIBPOSTPROC} ${FFMPEG_LDFLAGS})
+                         ${FFMPEG_LDFLAGS})
     list(APPEND FFMPEG_DEFINITIONS -DFFMPEG_VER_SHA=\"${FFMPEG_VERSION}\")
 
     # check if ffmpeg libs are statically linked

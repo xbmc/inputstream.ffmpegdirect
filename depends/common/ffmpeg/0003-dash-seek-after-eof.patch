@@ -1,0 +1,78 @@
+Subject: [PATCH] avformat/dashdec: preserve stream selection across end-of-stream
+
+FFmpeg 9 closes ended components and changes the caller's discard flags to
+AVDISCARD_ALL. A subsequent seek only updates those components in dry-run
+mode, and packet reading never resumes. Track EOF independently of stream
+selection, retain the component context for single-fragment seeking, and
+clear EOF on seek. Other components can still finish independently.
+
+--- a/libavformat/dashdec.c
++++ b/libavformat/dashdec.c
+@@ -123,6 +123,7 @@
+     uint32_t init_sec_buf_read_offset;
+     int64_t cur_timestamp;
+     int is_restart_needed;
++    int eof;
+ };
+
+ typedef struct DASHContext {
+@@ -2324,7 +2325,7 @@
+         for (int j = 0; j < pls->nb_assoc_stream; j++)
+             needed |= pls->assoc_stream[j]->discard < AVDISCARD_ALL;
+
+-        if (needed && !pls->ctx) {
++        if (needed && !pls->ctx && !pls->eof) {
+             pls->cur_seg_offset = 0;
+             pls->init_sec_buf_read_offset = 0;
+             /* Catch up */
+@@ -2355,7 +2356,7 @@
+
+     for (i = 0; i < c->n_videos; i++) {
+         rep = c->videos[i];
+-        if (!rep->ctx)
++        if (!rep->ctx || rep->eof)
+             continue;
+         if (!cur || rep->cur_timestamp < mints) {
+             cur = rep;
+@@ -2364,7 +2365,7 @@
+     }
+     for (i = 0; i < c->n_audios; i++) {
+         rep = c->audios[i];
+-        if (!rep->ctx)
++        if (!rep->ctx || rep->eof)
+             continue;
+         if (!cur || rep->cur_timestamp < mints) {
+             cur = rep;
+@@ -2374,7 +2375,7 @@
+
+     for (i = 0; i < c->n_subtitles; i++) {
+         rep = c->subtitles[i];
+-        if (!rep->ctx)
++        if (!rep->ctx || rep->eof)
+             continue;
+         if (!cur || rep->cur_timestamp < mints) {
+             cur = rep;
+@@ -2400,12 +2401,9 @@
+             ff_format_io_close(cur->parent, &cur->input);
+             ret = reopen_demux_for_component(s, cur);
+         } else if (ret == AVERROR_EOF) {
+-            close_demux_for_component(cur);
+-            ff_format_io_close(cur->parent, &cur->input);
+             av_log(s, AV_LOG_DEBUG, "EOF on stream_index %d\n", cur->stream_index);
+-            // prevent recheck_discard_flags() from re-enabling the component
+-            for (int i = 0; i < cur->nb_assoc_stream; i++)
+-                cur->assoc_stream[i]->discard = AVDISCARD_ALL;
++            /* Keep selection flags and the demuxer available for seeking. */
++            cur->eof = 1;
+             return FFERROR_REDO;
+         }
+     }
+@@ -2432,6 +2430,8 @@
+
+     av_log(pls->parent, AV_LOG_VERBOSE, "DASH seek pos[%"PRId64"ms] %s\n",
+            seek_pos_msec, dry_run ? " (dry)" : "");
++
++    pls->eof = 0;
+
+     // single fragment mode
+     if (pls->n_fragments == 1) {
