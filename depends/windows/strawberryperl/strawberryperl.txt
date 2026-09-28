@@ -1,1 +1,1 @@
-strawberryperl http://mirrors.kodi.tv/build-deps/win32/strawberry-perl-5.32.1.1-64bit-portable.zip
+strawberryperl https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54231_64bit/strawberry-perl-5.42.3.1-64bit-portable.zip
