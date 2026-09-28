@@ -1,3 +1,26 @@
+v22.2.8
+- Updated zlib from 1.3.1 to 1.3.2
+- Updated libiconv from 1.18 to 1.19
+- Updated libpng from 1.6.43 to 1.6.58
+- Updated xz-utils from 5.4.3 to 5.8.4
+- Updated libxml2 from 2.11.7 to 2.15.4
+- Updated libzvbi from 0.2.42 to 0.2.45
+- Updated GnuTLS from 3.8.8 to 3.8.13
+- Updated Nettle from 3.9.1 to 4.0
+- Updated Strawberry Perl from 5.32.1.1 to 5.42.3.1
+- Updated OpenSSL from 3.1.1 to 3.5.8
+- Updated win-iconv from 0.0.8 to 0.0.10
+- Updated MSYS2 from 2023-10-26 to 2026-09-27
+- Updated FFmpeg from 8.0 to 9.0.2
+- Fixed FFmpeg 9 DASH seeking after end-of-stream while preserving stream selection
+
+v22.2.7
+- Fix build compatibility with FFmpeg 9 using av_parser_parse2
+- Updated translations
+
+v22.2.6
+- Updated translations
+
 v22.2.5
 - Fix catchup stream backward skip on EOF near live edge
 - Fix 6s close delay on timeshift HLS streams
