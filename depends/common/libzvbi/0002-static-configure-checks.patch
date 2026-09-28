@@ -1,0 +1,31 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -100,10 +100,8 @@
+ AC_FUNC_FORK
+ AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+ AC_HEADER_MAJOR
+-AC_FUNC_MALLOC
+ AC_FUNC_MKTIME
+ AC_FUNC_MMAP
+-AC_FUNC_REALLOC
+ AC_FUNC_STRTOD
+
+ AC_SYS_LARGEFILE
+@@ -237,7 +235,7 @@
+ dnl When upgrading to autoconf 2.71, AC_TRY_LINK deprecated and replaced
+ dnl with AC_LINK_IFELSE.
+ dnl
+-AC_CHECK_LIB(pthread, pthread_create,,[
++AC_SEARCH_LIBS([pthread_create], [pthread pthreads],,[
+   AC_CHECK_LIB(pthreadGC2, pthread_create,,[
+     AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[pthread_create();]])],[],[
+       # same as previous, but use '-pthread' instead of '-lpthread'
+@@ -317,7 +315,7 @@
+ dnl
+ HAVE_PNG="yes"
+ AC_CHECK_LIB(png, png_destroy_write_struct,
+-  LIBS="$LIBS -lpng -lz", HAVE_PNG="no", -lz -lm)
++  LIBS="-lpng -lz $LIBS", HAVE_PNG="no", -lz -lm)
+ if test "x$HAVE_PNG" = xyes; then
+   AC_DEFINE(HAVE_LIBPNG, 1, [Define if you have libpng])
+ fi

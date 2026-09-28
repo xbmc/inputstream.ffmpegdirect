@@ -3,7 +3,7 @@
 @@ -52,17 +52,6 @@
  #  define unlikely(expr) __builtin_expect(expr, 0)
  #endif
- 
+
 -#undef __i386__
 -#undef __i686__
 -/* FIXME #cpu is deprecated
@@ -19,11 +19,11 @@
     safer than &x == (struct tm *) &x.tm_min. A NULL _ptr is safe and
     will return NULL, not -offsetof(_member). */
 @@ -156,8 +145,6 @@
- 
+
  #define likely(expr) (expr)
  #define unlikely(expr) (expr)
 -#undef __i386__
 -#undef __i686__
- 
+
  static char *
  PARENT_HELPER (char *p, unsigned int offset)

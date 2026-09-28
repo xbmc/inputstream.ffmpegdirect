@@ -1,0 +1,16 @@
+--- a/src/conv.c
++++ b/src/conv.c
+@@ -1253,9 +1253,12 @@
+
+ 	dst_format = bind_textdomain_codeset (vbi_intl_domainname, NULL);
+
+-#ifdef HAVE_LANGINFO_H
++#if defined(HAVE_LANGINFO_H) && defined(HAVE_NL_LANGINFO)
+ 	if (NULL == dst_format)
+ 		dst_format = nl_langinfo (CODESET);
++#else
++	if (NULL == dst_format)
++		dst_format = "UTF-8";
+ #endif
+
+ 	return dst_format; /* may be NULL */
