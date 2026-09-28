@@ -4,3 +4,4 @@ gnutls
 zlib
 libzvbi
 libxml2
+xz-utils

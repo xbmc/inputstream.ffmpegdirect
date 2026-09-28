@@ -1,0 +1,30 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -438,10 +438,10 @@
+         set_target_properties(
+             LibXml2
+             PROPERTIES
+-            DEBUG_POSTFIX sd
+-            MINSIZEREL_POSTFIX s
+-            RELEASE_POSTFIX s
+-            RELWITHDEBINFO_POSTFIX s
++            DEBUG_POSTFIX ""
++            MINSIZEREL_POSTFIX ""
++            RELEASE_POSTFIX ""
++            RELWITHDEBINFO_POSTFIX ""
+         )
+     endif()
+ endif()
+@@ -759,7 +759,11 @@
+
+ set(XML_INCLUDEDIR "-I\${includedir}/libxml2")
+ set(XML_LIBDIR "-L\${libdir}")
+-set(XML_LIBS "-lxml2")
++if(MSVC)
++    set(XML_LIBS "-llibxml2")
++else()
++    set(XML_LIBS "-lxml2")
++endif()
+
+ if(BUILD_SHARED_LIBS)
+     set(XML_PC_PRIVATE ".private")
