@@ -12,14 +12,8 @@ if(0)
   endforeach()
 endif()
 
-if($ENV{PROCESSOR_ARCHITECTURE} MATCHES "AMD64" OR
-   $ENV{PROCESSOR_ARCHITECTURE} MATCHES "IA64")
-   set(HOST mingw-w64-x86_64)
-   set(MINGW_PATH "mingw64")
-else()
-   set(HOST mingw-w64-i686)
-   set(MINGW_PATH "mingw32")
-endif()
+# This recipe downloads the x86_64 MSYS2 host environment.
+set(MINGW_PATH "mingw64")
 
 execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe -lc
     " " ERROR_QUIET)
@@ -31,6 +25,7 @@ execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe -lc
                            make \
                            pkg-config \
                            nasm \
+                           perl \
                            patch")
 
 file(GLOB_RECURSE shared_libs ${CMAKE_CURRENT_SOURCE_DIR}/${MINGW_PATH}/*.dll.a)

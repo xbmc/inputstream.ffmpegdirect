@@ -1,8 +1,8 @@
 --- /dev/null
 +++ b/MinGWConfig.cmake.in
-@@ -0,0 +1,116 @@
+@@ -0,0 +1,112 @@
 +# The from build defined Path where bash.exe is found
-+set(MINGW_BASH_DIR @CMAKE_CURRENT_SOURCE_DIR@/usr/bin)
++set(MINGW_BASH_DIR "@CMAKE_CURRENT_SOURCE_DIR@/usr/bin")
 +
 +# @brief Translate on ${WINDOWS_PATH_ENTRY} defined content to Mingw path style
 +macro(MinGW_convertPathToPosix)
@@ -38,12 +38,8 @@
 +  endif()
 +endfunction()
 +
-+if($ENV{PROCESSOR_ARCHITECTURE} MATCHES "AMD64" OR
-+   $ENV{PROCESSOR_ARCHITECTURE} MATCHES "IA64")
-+  set(MINGW_CPU_ARCH "x86_64")
-+else()
-+  set(MINGW_CPU_ARCH "i686")
-+endif()
++# Host architecture follows the x86_64 base archive; target is detected below.
++set(MINGW_CPU_ARCH "x86_64")
 +
 +include(CheckSymbolExists)
 +check_symbol_exists(_X86_ "Windows.h" _X86_)
