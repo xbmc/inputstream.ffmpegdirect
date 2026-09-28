@@ -1,21 +1,22 @@
+cmake_minimum_required(VERSION 3.5)
 project(gnutls)
 
-cmake_minimum_required(VERSION 3.5)
+# Preserve the target architecture, SDK and deployment flags supplied by Kodi.
+list(APPEND gnutls_conf "CC=${CMAKE_C_COMPILER}"
+                       "CXX=${CMAKE_CXX_COMPILER}"
+                       "CFLAGS=${CMAKE_C_FLAGS}"
+                       "CXXFLAGS=${CMAKE_CXX_FLAGS}"
+                       "CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/include $ENV{CPPFLAGS}"
+                       "LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_EXE_LINKER_FLAGS} $ENV{LDFLAGS}"
+                       "PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+if(HOST)
+  list(APPEND gnutls_conf --host=${HOST})
+endif()
 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
-
-# GnuTLS automake can request a rebuild even though we don't have
-# all the tools installed so we disable it for the build
-list(APPEND gnutls_conf --disable-maintainer-mode)
-
-list(APPEND gnutls_conf PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
-list(APPEND gnutls_conf CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/include)
-list(APPEND gnutls_conf LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/lib)
-list(APPEND gnutls_conf LIBS=-lgmp)
-
+# Keep optional compression dependencies linked into the static add-on.
+list(APPEND gnutls_conf gnutls_cv_dlopen_soname_works=no)
 if(CORE_SYSTEM_NAME STREQUAL darwin_embedded)
-  list(APPEND gnutls_conf ac_cv_func_vfork_works=no)
-  list(APPEND gnutls_conf ac_cv_func_fork=no)
+  list(APPEND gnutls_conf ac_cv_func_vfork_works=no ac_cv_func_fork=no)
 endif()
 
 include(ExternalProject)
@@ -23,28 +24,19 @@ externalproject_add(gnutls
                     SOURCE_DIR ${CMAKE_SOURCE_DIR}
                     CONFIGURE_COMMAND <SOURCE_DIR>/configure
                       --prefix=${CMAKE_INSTALL_PREFIX}
+                      --enable-static
                       --disable-shared
                       --without-p11-kit
                       --without-idn
                       --disable-nls
                       --with-included-unistring
                       --with-included-libtasn1
-                      --enable-local-libopts
                       --without-nettle-mini
                       --disable-doc
                       --disable-tests
-                      --disable-guile
                       --disable-tools
+                      --disable-maintainer-mode
                       --with-pic
                       ${gnutls_conf})
-
-if(CORE_SYSTEM_NAME STREQUAL darwin_embedded)
-  externalproject_add_step(gnutls
-                           RunSedCommand
-                           # Apple CCAS requires stripping ; from comment block # to build successfully
-                           COMMAND echo "Stripping semi-colon from comment blocks for Apple CCAS to build successfully"
-                           COMMAND bash -c "sed -ie 's|\\(^# .*\\)[;]\\(.*\\)|\\1\\2|g' ${CMAKE_CURRENT_SOURCE_DIR}/lib/accelerated/aarch64/macosx/*.s"
-                           DEPENDERS configure)
-endif()
 
 install(CODE "Message(Done)")

@@ -1,0 +1,46 @@
+--- a/configure
++++ b/configure
+@@ -14653,7 +14653,7 @@
+ printf "%s\n" "#define HAVE_LIBNETTLE 1" >>confdefs.h
+
+
+-  GNUTLS_REQUIRES_PRIVATE="Requires.private: nettle, hogweed"
++  GNUTLS_REQUIRES_PRIVATE="Requires.private: hogweed, nettle"
+
+
+ # Check whether --with-nettle-mini was given.
+--- a/m4/hooks.m4
++++ b/m4/hooks.m4
+@@ -84,7 +84,7 @@
+   AM_CONDITIONAL(ENABLE_NETTLE, test "$cryptolib" = "nettle")
+   AC_DEFINE([HAVE_LIBNETTLE], 1, [nettle is enabled])
+
+-  GNUTLS_REQUIRES_PRIVATE="Requires.private: nettle, hogweed"
++  GNUTLS_REQUIRES_PRIVATE="Requires.private: hogweed, nettle"
+
+   AC_ARG_WITH(nettle-mini,
+     AS_HELP_STRING([--with-nettle-mini], [Link against a mini-nettle (that includes mini-gmp)]),
+--- a/configure.ac
++++ b/configure.ac
+@@ -1322,6 +1322,9 @@
+     LIBS=$save_LIBS
+ ])
+
++AS_IF([test "$need_ltlibdl" = yes || test "$enable_fips" = yes], [
++  GNUTLS_LIBS_PRIVATE="$GNUTLS_LIBS_PRIVATE $LIBDL"
++])
+ AM_CONDITIONAL(NEED_LTLIBDL, test "$need_ltlibdl" = yes)
+
+ # export for use in scripts
+--- a/configure
++++ b/configure
+@@ -107708,6 +107708,9 @@
+
+ fi
+
++if test "$need_ltlibdl" = yes || test "$enable_fips" = yes; then
++  GNUTLS_LIBS_PRIVATE="$GNUTLS_LIBS_PRIVATE $LIBDL"
++fi
+  if test "$need_ltlibdl" = yes; then
+   NEED_LTLIBDL_TRUE=
+   NEED_LTLIBDL_FALSE='#'
