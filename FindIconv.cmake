@@ -15,7 +15,7 @@
 
 find_path(ICONV_INCLUDE_DIR NAMES iconv.h)
 
-find_library(ICONV_LIBRARY NAMES iconv libiconv c)
+find_library(ICONV_LIBRARY NAMES iconv libiconv iconvd libiconvd c)
 
 set(CMAKE_REQUIRED_LIBRARIES ${ICONV_LIBRARY})
 include(CheckFunctionExists)

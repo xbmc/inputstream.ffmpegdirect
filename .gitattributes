@@ -1,2 +1,3 @@
 depends/common/libzvbi/*.patch whitespace=-space-before-tab
 depends/windows/openssl/*.patch whitespace=-blank-at-eol
+depends/windows/iconv/01-Win-UWP-fix.patch text eol=crlf
