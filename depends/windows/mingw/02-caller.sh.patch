@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/caller.sh
-@@ -0,0 +1,116@@
+@@ -0,0 +1,150 @@
 +#!/usr/bin/env bash
 +
 +# usage function
@@ -116,4 +116,38 @@
 +
 +# Call given commands
 +cd $source_path
++if [[ $1 == ./configure && " $* " == *" --toolchain=msvc "* ]]; then
++  for tool in cl.exe cl link.exe lib.exe rc.exe nasm pkg-config; do
++    printf '%s: ' "$tool"
++    command -v "$tool" || echo "not found"
++  done
++  for var in INCLUDE LIB LIBPATH; do
++    if [ -n "${!var}" ]; then
++      echo "$var: nonempty"
++    else
++      echo "$var: empty"
++    fi
++  done
++  cl_path=$(command -v cl.exe)
++  if [ -n "$cl_path" ]; then
++    cl_dir=$(dirname "$cl_path")
++    echo "cl.exe directory: $cl_dir"
++    if [ -f "$cl_dir/link.exe" ]; then
++      echo "link.exe beside cl.exe: present"
++    else
++      echo "link.exe beside cl.exe: missing"
++    fi
++  fi
++fi
++
 +eval $CALLCMD
++result=$?
++
++if [ $result -ne 0 ] && [ -f ffbuild/config.log ]; then
++  echo
++  echo "----- ffbuild/config.log -----"
++  cat ffbuild/config.log
++  echo "----- end ffbuild/config.log -----"
++fi
++
++exit $result
