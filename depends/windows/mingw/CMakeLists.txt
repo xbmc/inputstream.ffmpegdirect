@@ -34,21 +34,37 @@ file(DOWNLOAD https://repo.msys2.org/msys/x86_64/pkgconf-2.5.0-2-x86_64.pkg.tar.
 # This recipe downloads the x86_64 MSYS2 host environment.
 set(MINGW_PATH "mingw64")
 
-execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe --login -c
-    "pacman-key --init")
-execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe --login -c
-    "pacman --noconfirm --needed -S make nasm perl"
-    RESULT_VARIABLE PACMAN_RESULT)
-if(NOT PACMAN_RESULT EQUAL 0)
-  message(FATAL_ERROR "MSYS2 host-tool installation failed: ${PACMAN_RESULT}")
-endif()
+# Use the Windows shell to keep GPG helpers from inheriting MSBuild's pipes.
+function(msys2_setup name command)
+  file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/tmp/${name}.log" "")
+  file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/tmp/${name}.bat"
+       "@echo off\r\n"
+       "\"${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe\" --login -c \"${command}\""
+       " > \"${CMAKE_CURRENT_SOURCE_DIR}/tmp/${name}.log\" 2>&1\r\n")
+  # Wait for the setup process, not its daemon descendants.
+  execute_process(COMMAND powershell -NoProfile -NonInteractive -Command
+      "try {
+         $p = Start-Process -FilePath './tmp/${name}.bat' -WindowStyle Hidden -PassThru -ErrorAction Stop
+         # Retain the process handle so ExitCode remains available after waiting.
+         $null = $p.Handle
+         $p.WaitForExit()
+         exit $p.ExitCode
+       } catch {
+         Write-Error \"MSYS2 ${name} launcher failed: $_\"
+         exit 1
+       }"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+      RESULT_VARIABLE result)
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/tmp/${name}.log" output)
+  message("${output}")
+  if(NOT result EQUAL 0)
+    message(FATAL_ERROR "MSYS2 ${name} failed: ${result}")
+  endif()
+endfunction()
 
-execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe --login -c
-    "pacman --noconfirm --needed -U /var/cache/pacman/pkg/pkgconf-2.5.0-2-x86_64.pkg.tar.zst"
-    RESULT_VARIABLE PKGCONF_RESULT)
-if(NOT PKGCONF_RESULT EQUAL 0)
-  message(FATAL_ERROR "MSYS2 pkgconf installation failed: ${PKGCONF_RESULT}")
-endif()
+msys2_setup(pacman-key "pacman-key --init")
+msys2_setup(pacman-install "pacman --noconfirm --needed -S make nasm perl")
+msys2_setup(pkgconf-install "pacman --noconfirm --needed -U /var/cache/pacman/pkg/pkgconf-2.5.0-2-x86_64.pkg.tar.zst")
 
 file(GLOB_RECURSE shared_libs ${CMAKE_CURRENT_SOURCE_DIR}/${MINGW_PATH}/*.dll.a)
 if(shared_libs)
