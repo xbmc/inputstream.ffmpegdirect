@@ -22,14 +22,14 @@ foreach(repo clangarm64 ucrt64 clang64)
 endforeach()
 file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/etc/pacman.conf "${PACMAN_CONFIG}")
 
-# These packages are absent from Kodi's mirror. Cache the exact versions and
-# SHA-256 values from the snapshot's bundled msys.db without refreshing it.
+# pkgconf is absent from Kodi's mirror. Download the exact package and signature
+# from the snapshot's bundled msys.db for direct installation without a refresh.
 file(DOWNLOAD https://repo.msys2.org/msys/x86_64/pkgconf-2.5.0-2-x86_64.pkg.tar.zst
      ${CMAKE_CURRENT_SOURCE_DIR}/var/cache/pacman/pkg/pkgconf-2.5.0-2-x86_64.pkg.tar.zst
      EXPECTED_HASH SHA256=4cc1a938d316800a7361be533497543fd173b4d68b3ddb6df9212ef4bf1ea9b2)
-file(DOWNLOAD https://repo.msys2.org/msys/x86_64/patch-2.7.6-3-x86_64.pkg.tar.zst
-     ${CMAKE_CURRENT_SOURCE_DIR}/var/cache/pacman/pkg/patch-2.7.6-3-x86_64.pkg.tar.zst
-     EXPECTED_HASH SHA256=dd75ca0f715dd9c71a43af6a0ff3d068faeee1d768e02282d319671201cd5d45)
+file(DOWNLOAD https://repo.msys2.org/msys/x86_64/pkgconf-2.5.0-2-x86_64.pkg.tar.zst.sig
+     ${CMAKE_CURRENT_SOURCE_DIR}/var/cache/pacman/pkg/pkgconf-2.5.0-2-x86_64.pkg.tar.zst.sig
+     EXPECTED_HASH SHA256=cc12ef0a443d02d35a3d86c8d53729ff2d080d65794e0a24a591227b8242167a)
 
 # This recipe downloads the x86_64 MSYS2 host environment.
 set(MINGW_PATH "mingw64")
@@ -37,10 +37,17 @@ set(MINGW_PATH "mingw64")
 execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe --login -c
     "pacman-key --init")
 execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe --login -c
-    "pacman --noconfirm --needed -S make pkgconf nasm perl patch"
+    "pacman --noconfirm --needed -S make nasm perl"
     RESULT_VARIABLE PACMAN_RESULT)
 if(NOT PACMAN_RESULT EQUAL 0)
   message(FATAL_ERROR "MSYS2 host-tool installation failed: ${PACMAN_RESULT}")
+endif()
+
+execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/usr/bin/bash.exe --login -c
+    "pacman --noconfirm --needed -U /var/cache/pacman/pkg/pkgconf-2.5.0-2-x86_64.pkg.tar.zst"
+    RESULT_VARIABLE PKGCONF_RESULT)
+if(NOT PKGCONF_RESULT EQUAL 0)
+  message(FATAL_ERROR "MSYS2 pkgconf installation failed: ${PKGCONF_RESULT}")
 endif()
 
 file(GLOB_RECURSE shared_libs ${CMAKE_CURRENT_SOURCE_DIR}/${MINGW_PATH}/*.dll.a)
