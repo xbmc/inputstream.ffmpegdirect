@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/caller.sh
-@@ -0,0 +1,150 @@
+@@ -0,0 +1,152 @@
 +#!/usr/bin/env bash
 +
 +# usage function
@@ -93,10 +93,12 @@
 +CCAS="${CCAS:-$MINGW_CPU_ARCH-w64-mingw32-gcc -c}"
 +RANLIB="${RANLIB:-$MINGW_CPU_ARCH-w64-mingw32-ranlib}"
 +STRIP="${STRIP:-$MINGW_CPU_ARCH-w64-mingw32-strip}"
-+CPPFLAGS="${CPPFLAGS:--I$MINGW_INSTALL_PREFIX/include $CPPFLAGS}"
-+CFLAGS="${CFLAGS:--I$MINGW_INSTALL_PREFIX/include -g -O2 $CFLAGS}"
-+CXXFLAGS="${CXXFLAGS:--I$MINGW_INSTALL_PREFIX/include -g -O2 $CXXFLAGS}"
-+LDFLAGS="${LDFLAGS:--L$MINGW_INSTALL_PREFIX/lib $LDFLAGS}"
++if [[ $1 != ./configure || " $* " != *" --toolchain=msvc "* ]]; then
++  CPPFLAGS="${CPPFLAGS:--I$MINGW_INSTALL_PREFIX/include $CPPFLAGS}"
++  CFLAGS="${CFLAGS:--I$MINGW_INSTALL_PREFIX/include -g -O2 $CFLAGS}"
++  CXXFLAGS="${CXXFLAGS:--I$MINGW_INSTALL_PREFIX/include -g -O2 $CXXFLAGS}"
++  LDFLAGS="${LDFLAGS:--L$MINGW_INSTALL_PREFIX/lib $LDFLAGS}"
++fi
 +
 +# Set the paths
 +PATH=$PATH:$MINGW_ENV_PATH
