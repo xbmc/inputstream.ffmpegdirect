@@ -1,0 +1,44 @@
+From a1dd71edca3127c38bdd70cbaf0cb63abd5b7d2a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Martin=20Storsj=C3=B6?= <martin@martin.st>
+Date: Wed, 1 Jul 2026 13:42:34 +0300
+Subject: [PATCH] configure: Add a dependency on user32 to the gfxcapture
+ filter
+
+This filter uses a bunch of user32 functions, like GetMessage,
+DispatchMessage, PeekMessage, GetWindowRect, etc.
+
+This makes it clear that if the gfxcapture filter is built, we
+need to link user32, if other components that depend on user32
+would happen to be disabled.
+
+Separately, if targeting UWP (with -DWINAPI_FAMILY=WINAPI_FAMILY_APP)
+then these user32 APIs are unavailable. We have an existing
+configure check for user32, checking for the GetShellWindow
+function. This function isn't used by gfxfilter, but its
+availability on UWP matches the other functions that gfxfilter
+uses.
+
+This fixes builds for UWP, by excluding the gfxcapture filter.
+(This is somewhat ironic, as the gfxcapture filter uses
+"winrt" APIs - but the implementation of the filter also relies
+on lots of APIs that are unavailable in UWP/"winrt".)
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 70e31c563d..4573d69f28 100755
+--- a/configure
++++ b/configure
+@@ -3591,7 +3591,7 @@ pad_cuda_filter_deps="ffnvcodec"
+ pad_cuda_filter_deps_any="cuda_nvcc cuda_llvm"
+ 
+ ddagrab_filter_deps="d3d11va IDXGIOutput1 DXGI_OUTDUPL_FRAME_INFO"
+-gfxcapture_filter_deps="cxx17 threads d3d11va IGraphicsCaptureItemInterop __x_ABI_CWindows_CGraphics_CCapture_CIGraphicsCaptureSession3"
++gfxcapture_filter_deps="cxx17 threads d3d11va IGraphicsCaptureItemInterop __x_ABI_CWindows_CGraphics_CCapture_CIGraphicsCaptureSession3 user32"
+ gfxcapture_filter_extralibs="-lstdc++"
+ scale_d3d11_filter_deps="d3d11va"
+ scale_d3d12_filter_deps="d3d12va ID3D12VideoProcessor"
+-- 
+2.50.1 (Apple Git-155)
+
