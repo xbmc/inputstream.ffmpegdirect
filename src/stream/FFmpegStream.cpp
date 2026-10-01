@@ -155,13 +155,14 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Propert
 
   FFmpegLog::SetLogLevel(AV_LOG_INFO);
   FFmpegLog::SetEnabled(kodi::addon::GetSettingBoolean("allowFFmpegLogging"));
-  av_log_set_callback(ff_avutil_log);
+  ff_install_avutil_log();
 }
 
 FFmpegStream::~FFmpegStream()
 {
   Dispose();
   ff_flush_avutil_log_buffers();
+  ff_restore_avutil_log();
 }
 
 bool FFmpegStream::Open(const std::string& streamUrl, const std::string& mimeType, bool isRealTimeStream, const std::string& programProperty)
