@@ -17,27 +17,12 @@ endif()
 
 # The upstream archive uses README.md rather than Automake's GNU README name.
 find_program(ZVBI_AUTOMAKE automake)
-
-# Kodi copies only this CMakeLists.txt into the dependency source tree.
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/configure-wrapper.sh" [=[
-#!/bin/sh
-"$@"
-result=$?
-if [ "$result" -ne 0 ] && [ -f config.log ]; then
-  echo
-  echo "----- libzvbi config.log -----"
-  cat config.log
-  echo "----- end libzvbi config.log -----"
-fi
-exit "$result"
-]=])
 include(ExternalProject)
 externalproject_add(libzvbi
                     SOURCE_DIR ${CMAKE_SOURCE_DIR}
                     PATCH_COMMAND ${CMAKE_COMMAND} -E env
                       "AUTOMAKE=${ZVBI_AUTOMAKE} --foreign" autoreconf -vif
-                    CONFIGURE_COMMAND sh "${CMAKE_CURRENT_BINARY_DIR}/configure-wrapper.sh"
-                      <SOURCE_DIR>/configure
+                    CONFIGURE_COMMAND <SOURCE_DIR>/configure
                       --prefix=${CMAKE_INSTALL_PREFIX}
                       --disable-shared
                       --enable-static
