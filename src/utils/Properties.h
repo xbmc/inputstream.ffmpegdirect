@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
 
 namespace ffmpegdirect
@@ -29,8 +30,13 @@ namespace ffmpegdirect
 
   struct Properties
   {
+    bool IsRealTimeStream() const
+    {
+      return m_isRealTimeStream.value_or(m_streamMode == StreamMode::TIMESHIFT);
+    }
+
     std::string m_programProperty;
-    bool m_isRealTimeStream;
+    std::optional<bool> m_isRealTimeStream;
     StreamMode m_streamMode = StreamMode::NONE;
     OpenMode m_openMode = OpenMode::DEFAULT;
     std::string m_manifestType;

@@ -135,7 +135,7 @@ bool TimeshiftStream::GetTimes(kodi::addon::InputstreamTimes& times)
 
 bool TimeshiftStream::IsRealTimeStream()
 {
-  return true;
+  return m_isRealTimeStream;
 }
 
 bool TimeshiftStream::DemuxSeekTime(double timeMs, bool backwards, double& startpts)
