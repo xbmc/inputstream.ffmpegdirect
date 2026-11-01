@@ -37,6 +37,7 @@ namespace ffmpegdirect
 
     std::string m_programProperty;
     std::optional<bool> m_isRealTimeStream;
+    bool m_terminalEof = false;
     StreamMode m_streamMode = StreamMode::NONE;
     OpenMode m_openMode = OpenMode::DEFAULT;
     std::string m_manifestType;

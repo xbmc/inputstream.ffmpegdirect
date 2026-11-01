@@ -66,6 +66,7 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
   Log(LOGLEVEL_INFO, "inputstream.ffmpegdirect: OpenStream() - Num Props: %d", props.GetPropertiesAmount());
 
   m_properties.m_isRealTimeStream.reset();
+  m_properties.m_terminalEof = false;
   for (const auto& prop : props.GetProperties())
   {
     if (StringUtils::StartsWith(prop.second, "http://") || StringUtils::StartsWith(prop.second, "https://"))
@@ -80,6 +81,10 @@ bool InputStreamFFmpegDirect::Open(const kodi::addon::InputstreamProperty& props
     else if (IS_REALTIME_STREAM == prop.first)
     {
       m_properties.m_isRealTimeStream = StringUtils::EqualsNoCase(prop.second, "true");
+    }
+    else if (TERMINAL_EOF == prop.first)
+    {
+      m_properties.m_terminalEof = StringUtils::EqualsNoCase(prop.second, "true");
     }
     else if (STREAM_MODE == prop.first)
     {

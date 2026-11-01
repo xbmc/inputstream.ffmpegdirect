@@ -47,7 +47,13 @@ int main()
     props.m_isRealTimeStream = false;
     expect(false, "false");
   }
+  Properties finiteFixture;
+  if (finiteFixture.m_terminalEof)
+  {
+    std::cerr << "terminal EOF must be disabled by default\n";
+    ++failures;
+  }
   if (failures == 0)
-    std::cout << "All 9 realtime policy cases passed\n";
+    std::cout << "Realtime policy and terminal EOF default passed\n";
   return failures == 0 ? 0 : 1;
 }

@@ -102,6 +102,13 @@ void TimeshiftBuffer::AddPacket(DEMUX_PACKET* packet)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
 
+  if (packet->pts != STREAM_NOPTS_VALUE)
+  {
+    const int64_t packetMilliseconds = static_cast<int64_t>(packet->pts / STREAM_TIME_BASE * 1000);
+    if (packetMilliseconds > m_lastPacketMilliseconds)
+      m_lastPacketMilliseconds = packetMilliseconds;
+  }
+
   // Useful for debugging the initial set of packets in a stream
   if (m_readingInitialPackets)
   {
