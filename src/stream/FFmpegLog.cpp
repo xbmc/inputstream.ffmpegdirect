@@ -43,7 +43,25 @@ int FFmpegLog::GetLogLevel()
 }
 
 static std::mutex m_ffmpegdirectLogMutex;
+static int g_ffmpegdirectLogUsers;
 std::map<const std::thread::id, std::string> g_ffmpegdirectLogbuffer;
+
+void ff_install_avutil_log(void)
+{
+  std::lock_guard<std::mutex> lock(m_ffmpegdirectLogMutex);
+
+  if (g_ffmpegdirectLogUsers++ == 0)
+    av_log_set_callback(ff_avutil_log);
+}
+
+void ff_restore_avutil_log(void)
+{
+  std::lock_guard<std::mutex> lock(m_ffmpegdirectLogMutex);
+
+  /* the callback is global to the process, so it must not outlive us */
+  if (--g_ffmpegdirectLogUsers == 0)
+    av_log_set_callback(av_log_default_callback);
+}
 
 void ff_flush_avutil_log_buffers(void)
 {
@@ -62,6 +80,13 @@ void ff_flush_avutil_log_buffers(void)
 void ff_avutil_log(void* ptr, int level, const char* format, va_list va)
 {
   std::lock_guard<std::mutex> lock(m_ffmpegdirectLogMutex);
+
+  /* A thread that read the callback pointer before it was replaced still
+     arrives here afterwards, with ptr pointing into a context that went
+     away with the stream. */
+  if (g_ffmpegdirectLogUsers == 0)
+    return;
+
   const std::thread::id threadId = std::this_thread::get_id();
   std::string &buffer = g_ffmpegdirectLogbuffer[threadId];
 
