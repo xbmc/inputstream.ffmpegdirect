@@ -141,7 +141,9 @@ if(NOT WIN32)
                       CONFIGURE_COMMAND PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/lib/pkgconfig ${CMAKE_SOURCE_DIR}/configure
                         --prefix=${CMAKE_INSTALL_PREFIX}
                         --enable-pthreads
-                        --enable-gnutls
+                        --enable-openssl
+                        --disable-gnutls
+                        --enable-version3
                         --enable-libzvbi
                         ${STANDARD_CONF}
                         ${EXTRA_CONF})

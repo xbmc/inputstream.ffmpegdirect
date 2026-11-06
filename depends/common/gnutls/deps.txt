@@ -1,4 +1,0 @@
-nettle
-gmp
-xz-utils
-zlib

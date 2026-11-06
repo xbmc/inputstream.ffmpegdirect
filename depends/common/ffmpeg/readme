@@ -1,5 +1,9 @@
-All patches are required for windows and allow both static building
-and openssl. Note there is no impact to applying these to other platforms
-as openssl is not used (gnutls is used for non-windows).
+The Windows-specific patches support static builds and MSVC OpenSSL detection.
+Applying them on other platforms leaves the MSVC code paths inactive.
+
+FFmpeg uses OpenSSL on all platforms. The bundled OpenSSL definitions in
+depends/common/openssl and depends/windows/openssl match inputstream.rtmp's
+Piers branch. FFmpeg depends on OpenSSL so it is built and installed first.
+GPLv3 is enabled on non-Windows builds for compatibility with OpenSSL 3.
 
 Last update and patches refreshed for FFmpeg-n8.0
