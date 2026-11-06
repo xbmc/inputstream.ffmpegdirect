@@ -25,6 +25,7 @@ TimeshiftStream::TimeshiftStream(IManageDemuxPacket* demuxPacketManager,
                                  const Properties& props,
                                  const HttpProxy& httpProxy)
   : FFmpegStream(demuxPacketManager, props, httpProxy)
+  , m_terminalEof(props.m_terminalEof)
 {
   std::random_device randomDevice; //Will be used to obtain a seed for the random number engine
   m_randomGenerator = std::mt19937(randomDevice()); //Standard mersenne_twister_engine seeded with randomDevice()
@@ -52,9 +53,17 @@ bool TimeshiftStream::Open(const std::string& streamUrl, const std::string& mime
 DEMUX_PACKET* TimeshiftStream::DemuxRead()
 {
   std::unique_lock<std::mutex> lock(m_mutex);
-  m_condition.wait_for(lock, std::chrono::milliseconds(10), [&] { return m_timeshiftBuffer.HasPacketAvailable(); });
+  m_condition.wait_for(lock, std::chrono::milliseconds(10), [&] { return !m_running || m_timeshiftBuffer.HasPacketAvailable(); });
 
-  return m_timeshiftBuffer.ReadPacket();
+  DEMUX_PACKET* packet = m_timeshiftBuffer.ReadPacket();
+  // An empty packet is EOF only if the source ended and the reader has caught
+  // up; disk segments still pending or failed to load also read empty.
+  if (m_sourceEnded && packet && packet->iSize == 0 && m_timeshiftBuffer.ReadAllWrittenPackets())
+  {
+    m_demuxPacketManager->FreeDemuxPacketFromInputStreamAPI(packet);
+    return nullptr;
+  }
+  return packet;
 }
 
 bool TimeshiftStream::Start()
@@ -65,6 +74,7 @@ bool TimeshiftStream::Start()
   if (m_timeshiftBuffer.Start(GenerateStreamId(m_streamUrl)))
   {
     Log(LOGLEVEL_DEBUG, "%s - Timeshift: started", __FUNCTION__);
+    m_sourceEnded = false;
     m_running = true;
     m_inputThread = std::thread([&] { DoReadWrite(); });
 
@@ -99,6 +109,21 @@ void TimeshiftStream::DoReadWrite()
       m_timeshiftBuffer.AddPacket(pPacket);
     }
 
+    else if (m_lastPacketResult == AVERROR_EOF)
+    {
+      if (m_terminalEof)
+      {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_sourceEnded = true;
+        m_condition.notify_all();
+        break;
+      }
+
+      // A live HLS reload can hit FFmpeg's retry limit without the source
+      // ending. Sleep so the retry is not a busy loop.
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
     m_condition.notify_one();
   }
   Log(LOGLEVEL_DEBUG, "%s - Timeshift: stopped", __FUNCTION__);
@@ -125,17 +150,27 @@ int64_t TimeshiftStream::LengthStream()
 
 bool TimeshiftStream::GetTimes(kodi::addon::InputstreamTimes& times)
 {
+  // A finite source is read faster than it plays, so the buffered endpoint can
+  // sit ahead of wall time; after the source ends it stops moving.
+  int64_t endMilliseconds = m_timeshiftBuffer.GetBufferedMillisecondsSinceStart();
+  if (!m_sourceEnded)
+  {
+    const int64_t wallMilliseconds = m_timeshiftBuffer.GetMillisecondsSinceStart();
+    if (wallMilliseconds > endMilliseconds)
+      endMilliseconds = wallMilliseconds;
+  }
+
   times.SetStartTime(m_timeshiftBuffer.GetStartTimeSecs());
   times.SetPtsStart(0);
   times.SetPtsBegin(m_timeshiftBuffer.GetEarliestSegmentMillisecondsSinceStart() * 1000);
-  times.SetPtsEnd(m_timeshiftBuffer.GetMillisecondsSinceStart() * 1000);
+  times.SetPtsEnd(endMilliseconds * 1000);
 
   return true;
 }
 
 bool TimeshiftStream::IsRealTimeStream()
 {
-  return true;
+  return m_isRealTimeStream;
 }
 
 bool TimeshiftStream::DemuxSeekTime(double timeMs, bool backwards, double& startpts)

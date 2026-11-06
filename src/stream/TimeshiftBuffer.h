@@ -61,6 +61,12 @@ public:
                       std::chrono::high_resolution_clock::now() - m_startedTimePoint).count();
   }
 
+  int64_t GetBufferedMillisecondsSinceStart()
+  {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPacketMilliseconds;
+  }
+
   int64_t GetEarliestSegmentMillisecondsSinceStart()
   {
     return m_minOnDiskSeekTimeIndex * 1000;
@@ -70,6 +76,13 @@ public:
   {
     std::lock_guard<std::mutex> lock(m_mutex);
     return m_readSegment && m_readSegment->HasPacketAvailable();
+  }
+
+  // A failed disk segment load never matches, so reads keep retrying.
+  bool ReadAllWrittenPackets()
+  {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_readSegment && m_readSegment == m_writeSegment && !m_readSegment->HasPacketAvailable();
   }
 
 protected:
@@ -86,6 +99,7 @@ private:
   SegmentIndexOnDiskEntry SearchOnDiskIndex(const SegmentIndexSearchBy& segmentIndexSearchBy, int searchValue);
 
   int m_lastPacketSecondsSinceStart = 0;
+  int64_t m_lastPacketMilliseconds = 0;
   int m_lastSegmentSecondsSinceStart = 0;
   int m_minInMemorySeekTimeIndex = 0;
   int m_segmentInMemoryIndexOffset = 0;

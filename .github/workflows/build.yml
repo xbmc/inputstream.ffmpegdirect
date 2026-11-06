@@ -35,6 +35,14 @@ jobs:
       run: |
         mkdir -p ${{ github.workspace }}/xbmc/cmake/addons/addons/${app_id}
         echo ${app_id} ${{ github.workspace }}/${app_id} > ${{ github.workspace }}/xbmc/cmake/addons/addons/${app_id}/${app_id}.txt
+    - name: Test realtime policy
+      env:
+        CC: ${{ matrix.CC }}
+        CXX: ${{ matrix.CXX }}
+      run: |
+        cmake -S ${app_id}/tests -B ${app_id}/build-tests
+        cmake --build ${app_id}/build-tests
+        ctest --test-dir ${app_id}/build-tests --output-on-failure
     - name: Configure
       env:
         CC: ${{ matrix.CC }}
