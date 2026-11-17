@@ -93,9 +93,12 @@ void TimeshiftSegment::AddPacket(DEMUX_PACKET* packet)
   if (newPacket->pts != STREAM_NOPTS_VALUE && newPacket->pts > 0)
     secondsSinceStart = newPacket->pts / STREAM_TIME_BASE;
 
-  if (secondsSinceStart != m_lastPacketSecondsSinceStart)
+  // Always index the first packet, otherwise a seek to the segment start
+  // skips the opening audio. Packets without a PTS report second 0, so keep
+  // the earliest index for a second instead of overwriting it.
+  if (m_currentPacketIndex == 0 || secondsSinceStart != m_lastPacketSecondsSinceStart)
   {
-    m_packetTimeIndexMap[secondsSinceStart] = m_currentPacketIndex;
+    m_packetTimeIndexMap.emplace(secondsSinceStart, m_currentPacketIndex);
     m_lastPacketSecondsSinceStart = secondsSinceStart;
   }
 
@@ -479,8 +482,18 @@ bool TimeshiftSegment::Seek(double timeMs)
 
   auto seekPacketIndex = m_packetTimeIndexMap.upper_bound(seekSeconds);
   // Upper bound gets the packet after the one we want
-  if (seekPacketIndex != m_packetTimeIndexMap.begin())
+  const bool beforeFirstIndex =
+      seekPacketIndex == m_packetTimeIndexMap.begin() &&
+      seekPacketIndex != m_packetTimeIndexMap.end() && seekPacketIndex->first > seekSeconds;
+  if (beforeFirstIndex)
+  {
+    m_readPacketIndex = 0;
+  }
+  else if (seekPacketIndex != m_packetTimeIndexMap.begin())
     --seekPacketIndex;
+
+  if (beforeFirstIndex)
+    return true;
 
   if (seekPacketIndex != m_packetTimeIndexMap.end())
   {

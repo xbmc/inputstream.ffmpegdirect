@@ -53,6 +53,8 @@ private:
   std::uniform_int_distribution<> m_randomDistribution;
 
   std::atomic<bool> m_running = {false};
+  std::atomic<bool> m_sourceEnded = {false}; // Buffered packets stay readable.
+  const bool m_terminalEof;
   std::thread m_inputThread;
   std::condition_variable m_condition;
   std::mutex m_mutex;

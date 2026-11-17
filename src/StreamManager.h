@@ -18,6 +18,7 @@
 
 static const std::string PROGRAM_NUMBER = "inputstream.ffmpegdirect.program_number";
 static const std::string IS_REALTIME_STREAM = "inputstream.ffmpegdirect.is_realtime_stream";
+static const std::string TERMINAL_EOF = "inputstream.ffmpegdirect.terminal_eof";
 static const std::string STREAM_MODE = "inputstream.ffmpegdirect.stream_mode";
 static const std::string OPEN_MODE = "inputstream.ffmpegdirect.open_mode";
 static const std::string MANIFEST_TYPE = "inputstream.ffmpegdirect.manifest_type";
