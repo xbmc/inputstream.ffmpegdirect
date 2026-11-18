@@ -155,7 +155,9 @@ FFmpegStream::FFmpegStream(IManageDemuxPacket* demuxPacketManager, const Propert
 
   FFmpegLog::SetLogLevel(AV_LOG_INFO);
   FFmpegLog::SetEnabled(kodi::addon::GetSettingBoolean("allowFFmpegLogging"));
+#ifdef FFMPEG_STATIC
   av_log_set_callback(ff_avutil_log);
+#endif
 }
 
 FFmpegStream::~FFmpegStream()

@@ -110,6 +110,11 @@ endif()
 addon_version(inputstream.ffmpegdirect FFMPEGDIRECT)
 add_definitions(-DFFMPEGDIRECT_VERSION=${FFMPEGDIRECT_VERSION})
 
+# A shared libavutil is Kodi's as well, and so is its log callback
+if(WIN32 OR FFMPEG_LIB_TYPE STREQUAL STATIC)
+  add_definitions(-DFFMPEG_STATIC)
+endif()
+
 build_addon(inputstream.ffmpegdirect FFMPEGDIRECT DEPLIBS)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
